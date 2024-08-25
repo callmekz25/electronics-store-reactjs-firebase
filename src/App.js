@@ -1,25 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
-
+import "./App.css";
+import React, { Suspense, lazy, useContext, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Loading } from "./components/Loading";
+// Animation Lib
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { Error } from "./Pages/Error";
+import { UserContext } from "./Context/UserContext";
+import RouteApp from "./routes/RouteApp";
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    // Animation init
+    useEffect(() => {
+        AOS.init({
+            duration: 1200,
+        });
+    }, []);
+    return <RouteApp />;
 }
 
 export default App;
