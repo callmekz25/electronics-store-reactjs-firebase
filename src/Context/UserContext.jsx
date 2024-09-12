@@ -80,6 +80,7 @@ export const UserProvider = ({ children }) => {
     // Context user trên firestore sau khi đăng nhập
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            setCurrentUser(user);
             // Check đã xác thực email chưa mới log in
             try {
                 if (user) {
@@ -88,13 +89,17 @@ export const UserProvider = ({ children }) => {
                         const getUser = await getDoc(userRef);
                         if (getUser.exists()) {
                             setUser(getUser.data());
+                            localStorage.setItem(
+                                "user",
+                                JSON.stringify(getUser.data())
+                            );
                         }
                     } else {
                         return <Error />;
                     }
                 } else {
                     setUser(null);
-                    return <Error />;
+                    localStorage.removeItem("user");
                 }
             } catch (e) {
                 return <Error />;
@@ -105,16 +110,17 @@ export const UserProvider = ({ children }) => {
 
         return () => unsubscribe();
     }, []);
-    // Context lấy ra user hiện tại của firebase auth
-    useEffect(() => {
-        const auth = getAuth();
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            setCurrentUser(user);
-        });
 
-        // Clean up the subscription
-        return () => unsubscribe();
-    }, []);
+    // Context lấy ra user hiện tại của firebase auth
+    // useEffect(() => {
+    //     const auth = getAuth();
+    //     const unsubscribe = auth.onAuthStateChanged((user) => {
+    //         setCurrentUser(user);
+    //     });
+
+    //     // Clean up the subscription
+    //     return () => unsubscribe();
+    // }, []);
 
     return (
         <UserContext.Provider

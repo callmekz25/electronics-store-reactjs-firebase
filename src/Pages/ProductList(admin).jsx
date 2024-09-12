@@ -61,6 +61,7 @@ const ProductsList = () => {
             setAllProducts(products);
         }
     }, [products]);
+
     // Xử lí xóa product khỏi database
     const handleDeleteProduct = async (productId) => {
         try {

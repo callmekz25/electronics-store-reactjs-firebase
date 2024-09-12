@@ -1,56 +1,67 @@
-import { CardProductsStandard } from "./CardProductsStandard";
-import { ref, get, child } from "firebase/database";
-import { database } from "../firebase";
-import { useState, useEffect } from "react";
+import CardProductsStandard from "./CardProductsStandard";
+import { useQuery } from "@tanstack/react-query";
+import { fetchProductsBestSellingLimit } from "../FetchAPI/FetchAPI";
+import SkeletonCard from "./SkeletonLoadingCard";
 export const Month = () => {
-    const [products, setProducts] = useState([]);
-    const dbRef = ref(database);
-    useEffect(() => {
-        get(child(dbRef, `product-month`))
-            .then((snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    setProducts(data);
-                } else {
-                    console.log("No data available");
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }, [dbRef]);
-    return (
-        <div className="py-[80px] px-[135px] ">
-            <div className="flex items-end justify-between">
-                <div className="flex flex-col gap-[24px]">
-                    <div className="flex items-center gap-[16px]">
-                        <div className="w-[20px] h-[40px] rounded-md bg-[#DB4444]"></div>
-                        <span className="text-[16px] text-[#DB4444] font-semibold leading-[20px]">
-                            This Month
-                        </span>
-                    </div>
-                    <h1 className="text-[36px] font-semibold leading-[48px] tracking-[1.44px]">
-                        Best Selling Products
-                    </h1>
-                </div>
-                <div className="">
-                    <button className="px-[48px] bg-[#DB4444] rounded py-[16px] text-[16px] text-white font-medium leading-[24px]">
-                        <span>View All</span>
-                    </button>
-                </div>
-            </div>
-            <div className="py-[60px] grid grid-cols-4 gap-[30px]">
-                {products.map((product, index) => {
-                    return (
-                        <div
-                            className=""
-                            key={index}
-                        >
-                            <CardProductsStandard data={product} />;
-                        </div>
-                    );
-                })}
-            </div>
+  const { data, isLoading } = useQuery({
+    queryKey: ["products best sell"],
+    queryFn: fetchProductsBestSellingLimit,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
+  return (
+    <div className=" lg:pl-0 pl-[20px] lg:py-[100px] py-[40px]">
+      <div className="flex items-end justify-between pr-[20px] lg:pr-0">
+        <div className="flex flex-col gap-[24px]">
+          <div
+            className="flex items-center gap-[16px]"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+          >
+            <div className="w-[20px] h-[40px] rounded-md bg-black"></div>
+            <span className="text-[16px] text-black font-semibold leading-[20px]">
+              Best Selling
+            </span>
+          </div>
+          <h1
+            className="lg:text-[36px] text-[25px] font-semibold lg:leading-[48px] tracking-[1.44px]"
+            data-aos="fade-up"
+            data-aos-duration="1000"
+          >
+            Best Selling Products
+          </h1>
         </div>
-    );
+      </div>
+      <div className="lg:my-[80px] my-[50px] grid lg:grid-cols-4 scroll-slides lg:gap-[30px] gap-[20px]">
+        {isLoading ? (
+          <>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <SkeletonCard key={index} />
+            ))}
+          </>
+        ) : (
+          data.map((product, index) => {
+            return (
+              <div key={product.id}>
+                <CardProductsStandard
+                  data={product}
+                  index={index}
+                />
+              </div>
+            );
+          })
+        )}
+      </div>
+      <div
+        className="flex items-center justify-center mt-8"
+        data-aos="fade-up"
+        data-aos-duration="1000"
+      >
+        <button className="px-[30px] bg-[#0077ed] rounded-full py-3 text-[16px] text-white font-medium leading-[24px] hover:opacity-90">
+          <span>View More</span>
+        </button>
+      </div>
+    </div>
+  );
 };

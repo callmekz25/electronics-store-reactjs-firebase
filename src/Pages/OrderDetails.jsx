@@ -11,290 +11,258 @@ import { Error } from "./Error";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const OrderDetails = () => {
-    const [loading, setLoadding] = useState(false);
-    const navigate = useNavigate();
-    // Sử dụng state bên MyOrder truyền vào
-    const location = useLocation();
-    // Lấy ra thông tin đã order
-    const { orders } = location.state || [];
-    // Tổng tiền của đơn hàng
-    const { total } = location.state || null;
+  const [loading, setLoadding] = useState(false);
+  const navigate = useNavigate();
+  // Sử dụng state bên MyOrder truyền vào
+  const location = useLocation();
+  // Lấy ra thông tin đã order
+  const { orders } = location.state || [];
+  // Tổng tiền của đơn hàng
+  const { total } = location.state || null;
 
-    // Popup
-    const [isCancel, setIsCancel] = useState(false);
-    // Progress của order
-    const steps = [
-        {
-            label: "Order confirmed",
-            date: orders.updateConfirmedAt,
-            completed:
-                orders.status.toString().toLowerCase() === "confirm" ||
-                orders.status.toString().toLowerCase() === "shipping" ||
-                orders.status.toString().toLowerCase() === "completed"
-                    ? true
-                    : false,
-        },
-        {
-            label: "Shipping",
-            date: orders.updateShippingAt,
-            completed:
-                orders.status.toString().toLowerCase() === "shipping" ||
-                orders.status.toString().toLowerCase() === "completed"
-                    ? true
-                    : false,
-        },
-        {
-            label: "Completed",
-            date: orders.updateCompletedAt,
-            completed:
-                orders.status.toString().toLowerCase() === "completed"
-                    ? true
-                    : false,
-        },
-    ];
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-    // Hàm xử lí cancel đơn hàng
-    const handleCancelOrder = async (orders) => {
-        setLoadding(true);
-        const user = await auth.currentUser;
-        if (user) {
-            let date = new Date();
-            let day = date.getDate();
-            let month = date.getMonth() + 1;
-            let year = date.getFullYear();
-            let hour = date.getHours();
-            let minute = date.getMinutes();
-            let currDay = `${day}/${month}/${year} ${hour}:${minute}`;
+  // Popup
+  const [isCancel, setIsCancel] = useState(false);
+  // Progress của order
+  const steps = [
+    {
+      label: "Order confirmed",
+      date: orders.updateConfirmedAt,
+      completed:
+        orders.status.toString().toLowerCase() === "confirm" ||
+        orders.status.toString().toLowerCase() === "shipping" ||
+        orders.status.toString().toLowerCase() === "completed"
+          ? true
+          : false,
+    },
+    {
+      label: "Shipping",
+      date: orders.updateShippingAt,
+      completed:
+        orders.status.toString().toLowerCase() === "shipping" ||
+        orders.status.toString().toLowerCase() === "completed"
+          ? true
+          : false,
+    },
+    {
+      label: "Completed",
+      date: orders.updateCompletedAt,
+      completed:
+        orders.status.toString().toLowerCase() === "completed" ? true : false,
+    },
+  ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  // Hàm xử lí cancel đơn hàng
+  const handleCancelOrder = async (orders) => {
+    setLoadding(true);
+    const user = await auth.currentUser;
+    if (user) {
+      let date = new Date();
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
+      let hour = date.getHours();
+      let minute = date.getMinutes();
+      let currDay = `${day}/${month}/${year} ${hour}:${minute}`;
 
-            const orderRef = doc(db, "Orders", orders.orderId);
-            // Collection all orders update lại status của order nếu bị cancel
-            const allOrdersRef = doc(db, "AllOrders", orders.orderId);
-            if (orderRef) {
-                // Update trạng thái đơn hàng của user
-                await updateDoc(orderRef, {
-                    cancelAt: currDay,
-                    status: "Cancel",
-                });
-                setLoadding(false);
-                navigate("/orders/purchase/status=canceled");
-                console.log("Cancel success!");
-            } else {
-                console.log("No found data!");
-            }
-            if (allOrdersRef) {
-                // Update trạng thái orders nếu bị cancel
-                await updateDoc(allOrdersRef, {
-                    deletedAt: currDay,
-                    status: "Cancel",
-                });
-            } else {
-                console.log("Cann't find ref to all orders");
-            }
-        } else {
-            console.log("Not found user!");
-        }
-    };
-    if (loading) {
-        return <Loading />;
+      const orderRef = doc(db, "Orders", orders.orderId);
+      // Collection all orders update lại status của order nếu bị cancel
+      const allOrdersRef = doc(db, "AllOrders", orders.orderId);
+      if (orderRef) {
+        // Update trạng thái đơn hàng của user
+        await updateDoc(orderRef, {
+          cancelAt: currDay,
+          status: "Cancel",
+        });
+        setLoadding(false);
+        navigate("/orders/purchase/status=canceled");
+        console.log("Cancel success!");
+      } else {
+        console.log("No found data!");
+      }
+      if (allOrdersRef) {
+        // Update trạng thái orders nếu bị cancel
+        await updateDoc(allOrdersRef, {
+          deletedAt: currDay,
+          status: "Cancel",
+        });
+      } else {
+        console.log("Cann't find ref to all orders");
+      }
+    } else {
+      console.log("Not found user!");
     }
-    return (
+  };
+  if (loading) {
+    return <Loading />;
+  }
+  return (
+    <div className="lg:px-[135px] px-[20px]">
+      <Nav />
+      {orders ? (
         <>
-            {orders ? (
-                <>
-                    {isCancel && (
-                        <div className="overlay">
-                            <div className="popup w-[500px] h-[250px] bg-white rounded-lg p-7 flex flex-col justify-between">
-                                <div className="">
-                                    <h3 className="text-[25px] font-medium text-red-500">
-                                        Are you sure want to cancel order?
-                                    </h3>
-                                    <p className="text-[17px] text-gray-400 font-normal mt-5">
-                                        If you confirm this action cannot be
-                                        undone and your orders will be cancel.
-                                    </p>
-                                </div>
-                                <div className="flex items-center justify-end gap-4">
-                                    <button
-                                        className="px-4 py-2 bg-red-500 rounded flex items-center justify-center text-white font-medium text-[15px] outline-none"
-                                        onClick={() =>
-                                            handleCancelOrder(orders)
-                                        }
-                                    >
-                                        Yes, cancel
-                                    </button>
-                                    <button
-                                        className="px-8 py-2 bg-[#e0e0e3] rounded flex items-center justify-center text-gray-400 font-medium text-[15px] outline-none"
-                                        onClick={() => setIsCancel(false)}
-                                    >
-                                        No
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    <Nav />
-                    <div className="px-[135px]">
-                        <div className="flex items-center gap-2 py-[80px]">
-                            <span className="text-[14px] font-normal opacity-40 leading-[21px]">
-                                Profile
-                            </span>
-                            <span className="text-[14px] font-normal opacity-40 leading-[21px]">
-                                /
-                            </span>
-                            <span className="text-black text-[14px] font-normal  leading-[21px]">
-                                My Orders
-                            </span>
-                            <span className="text-[14px] font-normal opacity-40 leading-[21px]">
-                                /
-                            </span>
-                            <span className="text-black text-[14px] font-normal  leading-[21px]">
-                                Orders
-                            </span>
-                        </div>
-                        <div className="py-[40px] flex items-center gap-2 font-semibold px-1 text-[#801415] text-[20px]">
-                            <span>Order ID:</span>
-                            <span>{orders.orderId}</span>
-                        </div>
-                        <div className="grid grid-cols-5 pb-[80px] gap-10">
-                            <div className="col-span-3">
-                                <span className="text-[24px] font-bold leading-[24px]">
-                                    Items Ordered & Delivery Details
-                                </span>
-                                <div className="py-[40px] flex items-center justify-center">
-                                    <OrderProgress steps={steps} />
-                                </div>
-                                <div className="flex flex-col gap-7">
-                                    <div className="flex flex-col border-2 border-gray-300 rounded-xl">
-                                        {orders.products.map((product) => (
-                                            <div
-                                                key={product.id}
-                                                className="flex justify-between p-5 hover:cursor-pointer"
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/dp/${product.name}/${product.productId}`
-                                                    )
-                                                }
-                                            >
-                                                <div className="flex items-start gap-4">
-                                                    <LazyLoadImage
-                                                        src={product.image}
-                                                        alt={product.name}
-                                                        effect="blur"
-                                                        className="size-[80px] object-contain"
-                                                    />
+          {isCancel && (
+            <div className="overlay">
+              <div className="popup w-[500px] h-[250px] bg-white rounded-lg p-7 flex flex-col justify-between">
+                <div className="">
+                  <h3 className="text-[25px] font-medium text-red-500">
+                    Are you sure want to cancel order?
+                  </h3>
+                  <p className="text-[17px] text-gray-400 font-normal mt-5">
+                    If you confirm this action cannot be undone and your orders
+                    will be cancel.
+                  </p>
+                </div>
+                <div className="flex items-center justify-end gap-4">
+                  <button
+                    className="px-4 py-2 bg-red-500 rounded flex items-center justify-center text-white font-medium text-[15px] outline-none"
+                    onClick={() => handleCancelOrder(orders)}
+                  >
+                    Yes, cancel
+                  </button>
+                  <button
+                    className="px-8 py-2 bg-[#e0e0e3] rounded flex items-center justify-center text-gray-400 font-medium text-[15px] outline-none"
+                    onClick={() => setIsCancel(false)}
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
-                                                    <div className="flex flex-col gap-3">
-                                                        <span className="text-[18px] font-medium">
-                                                            {product.name}
-                                                        </span>
-                                                        <div className="flex items-center gap-2 text-gray-500">
-                                                            <span>Type:</span>
-                                                            <span>
-                                                                {product.color}
-                                                            </span>
-                                                            <span>|</span>
-                                                            <span>
-                                                                Quantity:
-                                                            </span>
-                                                            <span>
-                                                                {
-                                                                    product.quantity
-                                                                }
-                                                            </span>
-                                                            <span>|</span>
-                                                            <span>Price:</span>
-                                                            <span>
-                                                                ${product.price}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-4 text-[18px] font-semibold">
-                                                            <span>Total:</span>
-                                                            <span>
-                                                                $
-                                                                {Math.round(
-                                                                    product.price *
-                                                                        product.quantity *
-                                                                        100
-                                                                ) / 100}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        <button
-                                            className={`py-3 flex border-t-2 items-center justify-center text-red-700 font-medium text-[16px] leading-[24px] ${
-                                                orders.status
-                                                    .toString()
-                                                    .toLowerCase() ===
-                                                    "shipping" ||
-                                                orders.status
-                                                    .toString()
-                                                    .toLowerCase() ===
-                                                    "completed"
-                                                    ? "hidden"
-                                                    : "flex"
-                                            }`}
-                                            onClick={() => setIsCancel(true)}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
+          <div className="">
+            <div className="flex items-center gap-2 py-[80px]">
+              <span className="text-[14px] font-normal opacity-40 leading-[21px]">
+                Profile
+              </span>
+              <span className="text-[14px] font-normal opacity-40 leading-[21px]">
+                /
+              </span>
+              <span className="text-black text-[14px] font-normal  leading-[21px]">
+                My Orders
+              </span>
+              <span className="text-[14px] font-normal opacity-40 leading-[21px]">
+                /
+              </span>
+              <span className="text-black text-[14px] font-normal  leading-[21px]">
+                Orders
+              </span>
+            </div>
+            <div className="py-[40px] flex items-center gap-2 font-semibold px-1 text-[#801415] text-[20px]">
+              <span>Order ID:</span>
+              <span>{orders.orderId}</span>
+            </div>
+            <div className="grid grid-cols-5 pb-[80px] gap-10">
+              <div className="col-span-3">
+                <span className="text-[24px] font-bold leading-[24px]">
+                  Items Ordered & Delivery Details
+                </span>
+                <div className="py-[40px] flex items-center justify-center">
+                  <OrderProgress steps={steps} />
+                </div>
+                <div className="flex flex-col gap-7">
+                  <div className="flex flex-col border-2 border-gray-300 rounded-xl">
+                    {orders.products.map((product) => (
+                      <div
+                        key={product.id}
+                        className="flex justify-between p-5 hover:cursor-pointer"
+                        onClick={() =>
+                          navigate(`/dp/${product.name}/${product.productId}`)
+                        }
+                      >
+                        <div className="flex items-start gap-4">
+                          <LazyLoadImage
+                            src={product.image}
+                            alt={product.name}
+                            effect="blur"
+                            className="size-[80px] object-contain"
+                          />
+
+                          <div className="flex flex-col gap-3">
+                            <span className="text-[18px] font-medium">
+                              {product.name}
+                            </span>
+                            <div className="flex items-center gap-2 text-gray-500">
+                              <span>Type:</span>
+                              <span>{product.color}</span>
+                              <span>|</span>
+                              <span>Quantity:</span>
+                              <span>{product.quantity}</span>
+                              <span>|</span>
+                              <span>Price:</span>
+                              <span>${product.price}</span>
                             </div>
-                            <div className="col-span-2">
-                                <span className="font-bold text-[23px] leading-[24px]">
-                                    Payment Details
-                                </span>
-                                <div className="bg-[#fbf5f3] rounded-xl p-8 flex flex-col gap-4 mt-4">
-                                    {orders.products.map((product) => (
-                                        <div
-                                            key={product.id}
-                                            className="flex items-center justify-between"
-                                        >
-                                            <div className="flex items-center gap-4 font-medium">
-                                                <span>{product.name}</span>
-                                                <span>x{product.quantity}</span>
-                                            </div>
-                                            <span className="font-medium">
-                                                $
-                                                {Math.round(
-                                                    product.price *
-                                                        product.quantity *
-                                                        100
-                                                ) / 100}
-                                            </span>
-                                        </div>
-                                    ))}
-                                    <div className="flex items-center justify-between">
-                                        <span className="font-medium">
-                                            Shipping
-                                        </span>
-                                        <span className="font-medium">
-                                            Free
-                                        </span>
-                                    </div>
-                                    <div className="h-[2px] border-dashed border-2 border-gray-300"></div>
-                                    <div className="flex items-center justify-between text-[18px]">
-                                        <span className="font-semibold">
-                                            Total
-                                        </span>
-                                        <span className="font-semibold">
-                                            ${Math.round(total * 100) / 100}
-                                        </span>
-                                    </div>
-                                </div>
+                            <div className="flex items-center gap-4 text-[18px] font-semibold">
+                              <span>Total:</span>
+                              <span>
+                                $
+                                {Math.round(
+                                  product.price * product.quantity * 100
+                                ) / 100}
+                              </span>
                             </div>
+                          </div>
                         </div>
+                      </div>
+                    ))}
+                    <button
+                      className={`py-3 flex border-t-2 items-center justify-center text-red-700 font-medium text-[16px] leading-[24px] ${
+                        orders.status.toString().toLowerCase() === "shipping" ||
+                        orders.status.toString().toLowerCase() === "completed"
+                          ? "hidden"
+                          : "flex"
+                      }`}
+                      onClick={() => setIsCancel(true)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="col-span-2">
+                <span className="font-bold text-[23px] leading-[24px]">
+                  Payment Details
+                </span>
+                <div className="bg-[#fbf5f3] rounded-xl p-8 flex flex-col gap-4 mt-4">
+                  {orders.products.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-4 font-medium">
+                        <span>{product.name}</span>
+                        <span>x{product.quantity}</span>
+                      </div>
+                      <span className="font-medium">
+                        $
+                        {Math.round(product.price * product.quantity * 100) /
+                          100}
+                      </span>
                     </div>
-                    <Footer />
-                </>
-            ) : (
-                <Error />
-            )}
+                  ))}
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">Shipping</span>
+                    <span className="font-medium">Free</span>
+                  </div>
+                  <div className="h-[2px] border-dashed border-2 border-gray-300"></div>
+                  <div className="flex items-center justify-between text-[18px]">
+                    <span className="font-semibold">Total</span>
+                    <span className="font-semibold">
+                      ${Math.round(total * 100) / 100}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <Footer />
         </>
-    );
+      ) : (
+        <Error />
+      )}
+    </div>
+  );
 };
 export default OrderDetails;

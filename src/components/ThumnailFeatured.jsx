@@ -7,8 +7,8 @@ export const ThumnailFeatured = ({ data, style, key }) => {
         >
             <LazyLoadImage
                 src={data.img}
-                alt=""
-                effect="blurr"
+                alt="feature"
+                effect="blur"
                 className="absolute h-full w-full object-cover left-0  top-0 z-0"
             />
             <div className="absolute left-0 bottom-0 flex flex-col gap-[16px] z-10 pb-[32px] w-[252px] px-[30px]">

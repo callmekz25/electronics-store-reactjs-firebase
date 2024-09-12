@@ -3,7 +3,6 @@ export const Pagination = ({
     postsPerPage,
     setCurrentPage,
     currentPage,
-    typePage,
 }) => {
     let pages = [];
     // Lấy số pages

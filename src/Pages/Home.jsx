@@ -9,34 +9,32 @@ import ExploreProducts from "../components/ExploreProducts";
 import Featured from "../components/Featured";
 import Footer from "../components/Footer";
 import { ToastContainer } from "react-toastify";
-
 import { useContext, useEffect } from "react";
-
+import SkeletonCart from "../components/SkeletonCart";
 import { UserContext } from "../Context/UserContext";
 const Home = () => {
-    const { loading } = useContext(UserContext);
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+  const { loading } = useContext(UserContext);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-    if (loading) {
-        return <Loading />;
-    }
-    return (
-        <div className="App">
-            <>
-                <Nav />
-                <Section />
-                <Today />
-                <Category />
-                <Month />
-                <SpecialProduct />
-                <ExploreProducts />
-                <Featured />
-                <Footer />
-                <ToastContainer />
-            </>
-        </div>
-    );
+  if (loading) {
+    return <Loading />;
+  }
+  return (
+    <div className="App lg:px-[135px]">
+      <Nav />
+      <Section />
+      <Today />
+      <Category />
+      <Month />
+      <SpecialProduct />
+      <ExploreProducts />
+      <Featured />
+      <Footer />
+      <SkeletonCart />
+      <ToastContainer />
+    </div>
+  );
 };
 export default Home;
