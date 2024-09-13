@@ -1,8 +1,6 @@
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import { memo, useContext, useEffect, useState } from "react";
-
-import { Loading } from "../components/Loading";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { Error } from "./Error";
@@ -10,14 +8,16 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { UserContext } from "../Context/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOrdersByUser } from "../FetchAPI/FetchAPI";
+import SkeletonOrder from "../components/SkekletonOrder";
 const MyOrders = () => {
-  const { user, loading } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["orders", user?.userId],
     queryFn: () => fetchOrdersByUser(user),
-    staleTime: 1000 * 60 * 6,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const MyOrders = () => {
                   Returns
                 </button>
               </div>
-              <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-6">
                 {!isLoading ? (
                   data ? (
                     data.length > 0 ? (
@@ -239,7 +239,11 @@ const MyOrders = () => {
                     </div>
                   )
                 ) : (
-                  <Loading css={"py-[52.5px]"} />
+                  <div className="flex flex-col gap-6">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <SkeletonOrder key={index} />
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

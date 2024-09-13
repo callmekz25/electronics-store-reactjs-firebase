@@ -35,11 +35,12 @@ import { ChevronRightIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import ProductDetailSkeleton from "../components/SkeletonProductDetail";
 import countingRate from "../Service/countingRate";
+import { useQueryClient } from "@tanstack/react-query";
 const ProductDetail = () => {
   const [active, setActive] = useState("");
   // State đếm số lượng sản phẩm khi user increase hoặc decrease
   const [count, setCount] = useState(1);
-
+  const queryClient = useQueryClient();
   // Slide image của sản phẩm
   const [currentIndex, setCurrentIndex] = useState(0);
   // Loading
@@ -76,6 +77,10 @@ const ProductDetail = () => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
+  // Hàm refecth lại data của carts khi thêm 1 sản phẩm mới vào cart
+  const handleRefetchCarts = () => {
+    queryClient.invalidateQueries("carts");
+  };
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -109,6 +114,7 @@ const ProductDetail = () => {
         }
 
         setAddSuccess(true);
+        handleRefetchCarts();
         setTimeout(() => {
           setAddSuccess(false);
         }, 1500);

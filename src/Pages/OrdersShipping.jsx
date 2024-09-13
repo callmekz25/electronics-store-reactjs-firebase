@@ -11,6 +11,7 @@ import { UserContext } from "../Context/UserContext";
 import { Error } from "./Error";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOrdersShipping } from "../FetchAPI/FetchAPI";
+import SkeletonOrder from "../components/SkekletonOrder";
 const OrdersShipping = () => {
   const navigate = useNavigate();
 
@@ -24,6 +25,8 @@ const OrdersShipping = () => {
   } = useQuery({
     queryKey: ["orders shipping", user?.userId],
     queryFn: () => fetchOrdersShipping(user),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -229,7 +232,11 @@ const OrdersShipping = () => {
                     </div>
                   )
                 ) : (
-                  <Loading css={"py-[52.5px]"} />
+                  <div className="flex flex-col gap-6">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <SkeletonOrder key={index} />
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

@@ -10,7 +10,6 @@ import Featured from "../components/Featured";
 import Footer from "../components/Footer";
 import { ToastContainer } from "react-toastify";
 import { useContext, useEffect } from "react";
-import SkeletonCart from "../components/SkeletonCart";
 import { UserContext } from "../Context/UserContext";
 const Home = () => {
   const { loading } = useContext(UserContext);
@@ -32,7 +31,6 @@ const Home = () => {
       <ExploreProducts />
       <Featured />
       <Footer />
-      <SkeletonCart />
       <ToastContainer />
     </div>
   );

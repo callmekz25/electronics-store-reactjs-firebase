@@ -17,8 +17,9 @@ import { doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCartsByUser } from "../FetchAPI/FetchAPI";
-
+import { useQueryClient } from "@tanstack/react-query";
 const Cart = () => {
+  const queryClient = useQueryClient();
   const { user, loading } = useContext(UserContext);
   const [isScrollLast, setIsScrollLast] = useState(false);
   const [isScrollFooter, setIsScrollFooter] = useState(false);
@@ -30,17 +31,22 @@ const Cart = () => {
   const { isEmpty, setItems, items, updateItemQuantity } = useCart();
   const isMobile = useMobile();
   const navigate = useNavigate();
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["carts", user?.userId],
     queryFn: () => fetchCartsByUser(user),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
+  const handleRefetchCarts = () => {
+    queryClient.invalidateQueries("carts");
+  };
 
   useEffect(() => {
     if (data) {
       setItems(data);
     }
   }, [data]);
-
+  console.log(isScrollLast);
   // Hàm xử lí khi người dùng loại 1 sản phẩm khỏi giỏ hàng và fetch lên firestore để update
   const handleRemoveItem = async (product) => {
     if (user) {
@@ -48,6 +54,7 @@ const Cart = () => {
         // setUser(user);
         // Lấy ra những items đã add carts khác id với sản phẩm người dùng bấm remove
         const updateItems = items.filter((f) => f.id !== product.id);
+        handleRefetchCarts();
         // Set state lại những sản phẩm đã lọc qua
         setItems(updateItems);
         // Update lên firestore của người dùng
@@ -111,9 +118,10 @@ const Cart = () => {
   // Hàm xử lí user đã chọn những sản phẩm và bấm check out
   const handleCheckOut = () => {
     if (productChecked.length === 0) {
-      toast.warn("Please choose your product want to check out");
+      setCanBuy(true);
     } else {
       const ids = productChecked.map((product) => product.id).join(",");
+      setCanBuy(false);
       navigate(`/checkout/state=/${ids}`, {
         state: {
           products: productChecked,
@@ -122,6 +130,16 @@ const Cart = () => {
       });
     }
   };
+  useEffect(() => {
+    if (canBuy) {
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.overflow = "auto";
+    }
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [canBuy]);
   if (isError) {
     return <Error />;
   }
@@ -132,6 +150,21 @@ const Cart = () => {
         <SkeletonCart />
       ) : (
         <>
+          {canBuy && (
+            <div className="overlay">
+              <div className="bg-white rounded p-5 flex flex-col lg:h-[250px] lg:w-[450px] justify-between">
+                <span className="lg:text-[17px] text-black font-normal mt-5">
+                  You haven't selected any products yet.
+                </span>
+                <button
+                  className="lg:text-[16px] bg-[#db4444] text-white rounded w-full  py-2 px-14  ml-auto"
+                  onClick={() => setCanBuy(false)}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
           <div className="px-[20px]">
             <div className="flex items-center gap-2 py-[80px]">
               <span className="text-[14px] font-normal opacity-40 leading-[21px]">
@@ -288,7 +321,8 @@ const Cart = () => {
             <div
               className={`lg:pl-[152px] lg:pr-[135px] pl-[20px] pr-[20px]  ${
                 isScrollLast ? "checkout hidden" : "checkout"
-              } ${isScrollFooter ? "checkout hidden" : ""}`}
+              } ${isScrollFooter ? "checkout hidden" : ""}
+              ${canBuy ? "lg:pl-[135px]" : ""} `}
             >
               <div className="bg-white w-full h-full flex items-center justify-between lg:px-[40px] lg:py-[24px] rounded shadow-add py-5 px-4 ">
                 <div className="flex items-center gap-2">

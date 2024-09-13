@@ -4,12 +4,13 @@ import { useContext, useEffect, useState } from "react";
 import { getDocs, collection, where, query } from "firebase/firestore";
 import { db } from "../firebase";
 import { Loading } from "../components/Loading";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Error } from "./Error";
 import { UserContext } from "../Context/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOrdersCancel } from "../FetchAPI/FetchAPI";
+import SkeletonOrder from "../components/SkekletonOrder";
 const OrdersCancel = () => {
   const navigate = useNavigate();
 
@@ -22,6 +23,8 @@ const OrdersCancel = () => {
   } = useQuery({
     queryKey: ["orders cancel", user?.userId],
     queryFn: () => fetchOrdersCancel(user),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -113,11 +116,14 @@ const OrdersCancel = () => {
                             (product) => {
                               return (
                                 <>
-                                  <div className="flex items-center gap-4 pt-5 ">
+                                  <Link
+                                    to={`/dp/${product.name}/${product.productId}`}
+                                    className="flex items-center gap-4 pt-5 w-fit"
+                                  >
                                     <LazyLoadImage
                                       effect="blur"
                                       src={product.image}
-                                      alt=""
+                                      alt="product image"
                                       className="size-[70px] object-contain"
                                     />
                                     <div className="flex flex-col justify-between">
@@ -137,7 +143,7 @@ const OrdersCancel = () => {
                                         ${product.price}
                                       </span>
                                     </div>
-                                  </div>
+                                  </Link>
                                 </>
                               );
                             }
@@ -151,7 +157,11 @@ const OrdersCancel = () => {
                     </div>
                   )
                 ) : (
-                  <Loading css={"py-[52.5px]"} />
+                  <div className="flex flex-col gap-6">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <SkeletonOrder key={index} />
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

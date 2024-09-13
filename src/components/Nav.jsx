@@ -181,8 +181,19 @@ const Nav = ({ hidden }) => {
                     className="flex items-center gap-2"
                   >
                     <UserIcon className="size-[30px]" />
-                    <span className="text-[14px] font-normal leading-[21px] group-hover:font-medium ">
-                      View my profile
+                    <span className="text-[14px] font-normal leading-[21px] ">
+                      My Account
+                    </span>
+                  </Link>
+                </li>
+                <li className="group">
+                  <Link
+                    to="/orders/purchase/status=all"
+                    className="flex items-center gap-2 group"
+                  >
+                    <TagIcon className="size-[30px]" />
+                    <span className="text-[14px] font-normal leading-[21px] ">
+                      My Orders
                     </span>
                   </Link>
                 </li>
@@ -192,21 +203,10 @@ const Nav = ({ hidden }) => {
                     onClick={handleLogOut}
                   >
                     <ArrowLeftStartOnRectangleIcon className="size-[30px]" />
-                    <span className="text-[14px] font-normal leading-[21px] group-hover:font-medium ">
+                    <span className="text-[14px] font-normal leading-[21px] ">
                       Log out
                     </span>
                   </button>
-                </li>
-                <li className="group">
-                  <Link
-                    to="/orders/purchase/status=all"
-                    className="flex items-center gap-2 group"
-                  >
-                    <TagIcon className="size-[30px]" />
-                    <span className="text-[14px] font-normal leading-[21px] group-hover:font-medium ">
-                      My Orders
-                    </span>
-                  </Link>
                 </li>
               </ul>
             </button>

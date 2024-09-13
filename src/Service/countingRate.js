@@ -27,7 +27,6 @@ const countingRate = (reivewsData) => {
       default:
     }
   });
-  console.log(countRate);
 
   return countRate;
 };
