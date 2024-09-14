@@ -8,11 +8,9 @@ import UserIconNone from "../Assets/UserIcon/360_F_795951406_h17eywwIo36DU2L8jXt
 import Truck from "../Assets/ProductDetail/icon-delivery.svg";
 import Return from "../Assets/ProductDetail/Icon-return.svg";
 import { useState, useEffect, useContext, useMemo, useCallback } from "react";
-import { Loading } from "../components/Loading";
 import { Error } from "./Error";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import { useCart } from "react-use-cart";
 import {
   collection,
   doc,
@@ -23,11 +21,10 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
-import { fetchProductById } from "../FetchAPI/FetchAPI";
-import { useQuery } from "@tanstack/react-query";
+import { fetchProductById, postReviewByProductId } from "../FetchAPI/FetchAPI";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { db } from "../firebase";
 import { v4 as uuid } from "uuid";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../Context/UserContext";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
@@ -35,12 +32,16 @@ import { ChevronRightIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import ProductDetailSkeleton from "../components/SkeletonProductDetail";
 import countingRate from "../Service/countingRate";
+import { CartContext } from "../Context/CartContext";
+import { fetchReviewsByProductId } from "../FetchAPI/FetchAPI";
 import { useQueryClient } from "@tanstack/react-query";
 const ProductDetail = () => {
+  const queryClient = useQueryClient();
   const [active, setActive] = useState("");
   // State đếm số lượng sản phẩm khi user increase hoặc decrease
   const [count, setCount] = useState(1);
-  const queryClient = useQueryClient();
+  const { addToCart, addSuccess, isLogIn, setIsLogIn } =
+    useContext(CartContext);
   // Slide image của sản phẩm
   const [currentIndex, setCurrentIndex] = useState(0);
   // Loading
@@ -48,13 +49,10 @@ const ProductDetail = () => {
   // State để popup yêu cầu login
   const [isLogInToBuy, setIsLogInToBuy] = useState(false);
   const [isLogInToRate, setIsLogInToRate] = useState(false);
-  const [isLogInToAddCart, setIsLogInToAddCart] = useState(false);
   // State cho Reviews
   const [isReview, setIsReview] = useState(false);
   const [starReview, setStarReview] = useState(0);
-  const [userReview, setUserReview] = useState(null);
-  const [sendReview, setSendReview] = useState(false);
-  const [reviewsData, setReviewsData] = useState([]);
+  const [comment, setComment] = useState(null);
   // State percent of star
   const [fiveStar, setFiveStar] = useState(0);
   const [fourStar, setFourStar] = useState(0);
@@ -66,10 +64,6 @@ const ProductDetail = () => {
   // User Context
   const { user, currentUser } = useContext(UserContext);
   const navigate = useNavigate();
-  // Cart
-  const { addItem } = useCart();
-  // Popup
-  const [addSuccess, setAddSuccess] = useState(false);
   // Dùng react query để fetch api
   const { data, isLoading, isError } = useQuery({
     queryKey: [`product ${productId}`],
@@ -77,10 +71,12 @@ const ProductDetail = () => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
-  // Hàm refecth lại data của carts khi thêm 1 sản phẩm mới vào cart
-  const handleRefetchCarts = () => {
-    queryClient.invalidateQueries("carts");
-  };
+  const { data: reviewsData, isLoading: isLoadingReviews } = useQuery({
+    queryKey: ["reviews", productId],
+    queryFn: () => fetchReviewsByProductId(productId),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -90,41 +86,12 @@ const ProductDetail = () => {
       return Math.round(data.newPrice * count * 100) / 100;
     }
   }, [count, data]);
-
   // Set state màu đã chọn cho product
   // useEffect(() => {
   //   if (data) {
   //     setActive(data.colours1);
   //   }
   // }, [data]);
-  // Hàm xử lí thêm vào carts
-  const handleAddToCart = async (data) => {
-    try {
-      if (currentUser) {
-        addItem(data);
-
-        const cartRef = doc(db, `Carts`, currentUser.uid, "Product", data.id);
-        const cartProduct = await getDoc(cartRef);
-        if (cartProduct.exists()) {
-          await updateDoc(cartRef, {
-            quantity: cartProduct.data().quantity + count,
-          });
-        } else {
-          await setDoc(cartRef, data);
-        }
-
-        setAddSuccess(true);
-        handleRefetchCarts();
-        setTimeout(() => {
-          setAddSuccess(false);
-        }, 1500);
-      } else {
-        setIsLogInToAddCart(true);
-      }
-    } catch (e) {
-      toast.error("Error cann't add to cart!");
-    }
-  };
   // Hàm render số sao đánh giá
   const renderStars = (rating, size) => {
     const stars = [];
@@ -149,7 +116,6 @@ const ProductDetail = () => {
     }
     return stars;
   };
-
   // Hàm xử lí buy now của user
   const handleBuyNow = (product, count, colorActive, totalPriceQuantity) => {
     if (user) {
@@ -171,7 +137,6 @@ const ProductDetail = () => {
     }
   };
   // Hàm xử lí slide ảnh dp
-
   const prevSlide = () => {
     setCurrentIndex((curr) => (curr === 0 ? data.img.length - 1 : curr - 1));
   };
@@ -186,73 +151,46 @@ const ProductDetail = () => {
       setIsLogInToRate(true);
     }
   };
-  // Hàm xử lí gửi review của user
-  const handleSendReview = async (productId) => {
-    if (currentUser) {
-      const date = new Date();
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-
-      const currentDay = `${day}-${month}-${year} ${hours}:${minutes}`;
-      const ref = doc(db, "Reviews", uuid());
-      const review = {
-        productID: productId,
-        userID: user.userId,
-        userName: user.name,
-        userEmail: user.email,
-        userPhone: user.phone || "",
-        userAddress: user.address || "",
-        rate: starReview,
-        userReview: userReview,
-        createdAt: currentDay,
-      };
+  // Mutation xử lí reviews
+  const postReviewMutation = useMutation({
+    mutationFn: () =>
+      postReviewByProductId(productId, user, starReview, comment),
+    onSuccess: () => {
+      queryClient.invalidateQueries("reviews", productId);
       setIsReview(false);
-
-      if (ref) {
-        await setDoc(ref, review);
-        setSendReview(true);
-        setStarReview(0);
-      } else {
-        console.log("Error ref!");
-      }
-    } else {
-      navigate("/sign-up");
-    }
+      setStarReview(0);
+    },
+  });
+  // Hàm xử lí gửi review của user
+  const postReview = () => {
+    postReviewMutation.mutate();
   };
-  // Hàm lấy ra những reviews về sản phẩm
-  const showReviews = useCallback(async () => {
-    if (data) {
-      const reviewsQuery = query(
-        collection(db, "Reviews"),
-        where("productID", "==", `${data.id}`)
-      );
-      const reviewsSnap = await getDocs(reviewsQuery);
-      const reviewsData = reviewsSnap.docs.map((doc) => doc.data());
-      setReviewsData(reviewsData);
-    }
-  }, [data]);
-  useEffect(() => {
-    showReviews();
-  }, [data, showReviews, sendReview]);
+
   // Hàm tính tổng số rate của từng user cho sản phẩm
   const totalRate = useMemo(() => {
-    const total = reviewsData.reduce((result, reviewsData) => {
-      return result + reviewsData.rate;
-    }, 0);
+    let total;
+    if (reviewsData) {
+      total = reviewsData.reduce((result, reviewsData) => {
+        return result + reviewsData.rate;
+      }, 0);
+    }
     return total;
   }, [reviewsData]);
   // Tổng số rate trung bình của sản phẩm
   const totalAvgRate = useMemo(() => {
-    return totalRate / reviewsData.length;
+    if (reviewsData) {
+      return totalRate / reviewsData.length;
+    }
   }, [totalRate]);
 
   // Chỉ tính lại logic khi có thêm dữ liệu reviews thay đổi
   const percentRate = useMemo(() => {
-    const count = countingRate(reviewsData);
-    const totalReviews = reviewsData.length;
+    let totalReviews;
+    let count;
+    if (reviewsData) {
+      count = countingRate(reviewsData);
+      totalReviews = reviewsData.length;
+    }
     // Trả về object
     return {
       five:
@@ -294,7 +232,7 @@ const ProductDetail = () => {
       <Nav />
       {addSuccess && (
         <div className="overlay-notifi">
-          <div className="lg:w-[300px] lg:p-5 bg-black flex flex-col items-center justify-center gap-4">
+          <div className="lg:w-[300px] lg:p-5 bg-black flex flex-col items-center justify-center gap-4 rounded">
             <div className="flex items-center justify-center bg-green-500 p-3 rounded-full">
               <CheckIcon className="text-white size-7" />
             </div>
@@ -304,7 +242,7 @@ const ProductDetail = () => {
           </div>
         </div>
       )}
-      {isLoading ? (
+      {isLoading || isLoadingReviews ? (
         <ProductDetailSkeleton />
       ) : (
         <>
@@ -333,7 +271,7 @@ const ProductDetail = () => {
                       type="text"
                       className="rounded-lg border-2 overflow-hidden border-gray-300 w-full h-[200px] p-3 text-start resize-none text-[15px] mt-4"
                       placeholder="Please share your thoughts about the product..."
-                      onChange={(e) => setUserReview(e.target.value)}
+                      onChange={(e) => setComment(e.target.value)}
                     />
                   </div>
                 </div>
@@ -341,7 +279,7 @@ const ProductDetail = () => {
                   <button
                     className="px-4 py-3 bg-blue-500 rounded-md flex items-center justify-center text-white font-medium text-[17px] outline-none w-full"
                     onClick={() => {
-                      handleSendReview(data.id);
+                      postReview();
                     }}
                   >
                     Send review
@@ -352,57 +290,57 @@ const ProductDetail = () => {
           )}
           {isLogInToRate && (
             <div className="overlay">
-              <div className=" w-[550px] bg-white rounded-xl p-7 flex flex-col justify-between relative">
+              <div className=" w-[550px] bg-white rounded-lg p-7 flex flex-col justify-between relative">
                 <XMarkIcon
                   className="size-[30px] absolute right-[15px] top-[15px] hover:cursor-pointer"
                   onClick={() => setIsLogInToRate(false)}
                 />
                 <div className="">
-                  <h3 className="text-[30px] font-medium text-center ">
+                  <h3 className="lg:text-[25px] font-medium text-center ">
                     You need to Log In
                   </h3>
-                  <p className="py-7 text-[20px] font-normal text-center">
+                  <p className="py-7 lg:text-[18px] font-normal text-center">
                     If you want to rate this product you need to log in your
                     account
                   </p>
                 </div>
-                <div className="flex items-center justify-end gap-4">
+                <div className="flex items-center justify-end mt-10">
                   <button
                     className="px-4 py-3 bg-blue-500 rounded-md flex items-center justify-center text-white font-medium text-[17px] outline-none w-full"
                     onClick={() => {
                       navigate("/log-in");
                     }}
                   >
-                    Move to Log In
+                    Log In
                   </button>
                 </div>
               </div>
             </div>
           )}
-          {isLogInToAddCart && (
+          {isLogIn && (
             <div className="overlay">
-              <div className=" w-[550px] bg-white rounded-xl p-7 flex flex-col justify-between relative">
+              <div className=" w-[550px] bg-white rounded-lg p-7 flex flex-col justify-between relative">
                 <XMarkIcon
                   className="size-[30px] absolute right-[15px] top-[15px] hover:cursor-pointer"
-                  onClick={() => setIsLogInToAddCart(false)}
+                  onClick={() => setIsLogIn(false)}
                 />
                 <div className="">
-                  <h3 className="text-[30px] font-medium text-center ">
+                  <h3 className="lg:text-[25px] font-medium text-center ">
                     You need to Log In
                   </h3>
-                  <p className="py-7 text-[20px] font-normal text-center">
+                  <p className="py-7 lg:text-[18px] font-normal text-center">
                     If you wanna add this product in your cart you need to log
                     in your account
                   </p>
                 </div>
-                <div className="flex items-center justify-end gap-4">
+                <div className="flex items-center justify-end mt-10">
                   <button
                     className="px-4 py-3 bg-blue-500 rounded-md flex items-center justify-center text-white font-medium text-[17px] outline-none w-full"
                     onClick={() => {
                       navigate("/log-in");
                     }}
                   >
-                    Move to Log In
+                    Log In
                   </button>
                 </div>
               </div>
@@ -410,28 +348,28 @@ const ProductDetail = () => {
           )}
           {isLogInToBuy && (
             <div className="overlay">
-              <div className=" w-[550px] bg-white rounded-xl p-7 flex flex-col justify-between relative">
+              <div className=" w-[550px] bg-white rounded-lg p-7 flex flex-col justify-between relative">
                 <XMarkIcon
                   className="size-[30px] absolute right-[15px] top-[15px] hover:cursor-pointer"
                   onClick={() => setIsLogInToBuy(false)}
                 />
                 <div className="">
-                  <h3 className="text-[30px] font-medium text-center ">
+                  <h3 className="lg:text-[25px] font-medium text-center ">
                     You need to Log In
                   </h3>
-                  <p className="py-7 text-[20px] font-normal text-center">
+                  <p className="py-7 lg:text-[18px] font-normal text-center">
                     If you wanna order this product in your cart you need to log
                     in your account
                   </p>
                 </div>
-                <div className="flex items-center justify-end gap-4">
+                <div className="flex items-center justify-end mt-10">
                   <button
                     className="px-4 py-3 bg-blue-500 rounded-md flex items-center justify-center text-white font-medium text-[17px] outline-none w-full"
                     onClick={() => {
                       navigate("/log-in");
                     }}
                   >
-                    Move to Log In
+                    Log In
                   </button>
                 </div>
               </div>
@@ -839,41 +777,45 @@ const ProductDetail = () => {
                       className="flex items-center justify-center border-2 border-black rounded-full group  w-full py-[10px] text-[16px] font-medium leading-[24px] hover:bg-black transition-all duration-500"
                       onClick={() => {
                         if (data.cate === "laptop") {
-                          handleAddToCart({
-                            id: data.id,
-                            name: data.name,
-                            img: data.img,
-                            price: data.newPrice,
-                            brand: data.brand,
-                            color: "",
-                            infomation: {
-                              ...data.infomation,
+                          addToCart(
+                            {
+                              id: data.id,
+                              name: data.name,
+                              img: data.img,
+                              price: data.newPrice,
+                              brand: data.brand,
+                              color: "",
+                              infomation: {
+                                ...data.infomation,
+                              },
+                              sales: data.sales,
+                              quantity: count,
+                              cate: data.cate,
+                              isSale: data.isSale || false,
                             },
-                            sales: data.sales,
-                            quantity: count,
-                            cate: data.cate,
-                            isSale: data.isSale || false,
-                          });
+                            count
+                          );
                         }
                         if (data.cate === "phone") {
-                          handleAddToCart({
-                            id: data.id,
-                            name: data.name,
-                            img: data.img,
-                            price: data.newPrice,
-                            brand: data.brand,
-                            color: "",
+                          addToCart(
+                            {
+                              id: data.id,
+                              name: data.name,
+                              img: data.img,
+                              price: data.newPrice,
+                              brand: data.brand,
+                              color: "",
 
-                            infomation: {
-                              ...data.infomation,
+                              infomation: {
+                                ...data.infomation,
+                              },
+                              sales: data.sales,
+                              quantity: count,
+                              cate: data.cate,
+                              isSale: data.isSale || false,
                             },
-
-                            sales: data.sales,
-
-                            quantity: count,
-                            cate: data.cate,
-                            isSale: data.isSale || false,
-                          });
+                            count
+                          );
                         }
                       }}
                     >
@@ -1051,7 +993,7 @@ const ProductDetail = () => {
 
                 <div className="grid grid-cols-2 gap-4 py-7">
                   <button
-                    className={`flex items-center justify-center py-3 border-2 font-medium border-black rounded-full transition-all duration-500 hover:bg-black hover:text-white ${
+                    className={`flex items-center justify-center py-3 border-2 font-medium border-black rounded-lg transition-all duration-500 hover:bg-black hover:text-white ${
                       reviewsData.length === 0 ? "hidden" : "flex"
                     }`}
                     onClick={() =>
@@ -1065,7 +1007,7 @@ const ProductDetail = () => {
                     View more reviews
                   </button>
                   <button
-                    className="flex items-center justify-center font-medium py-3 text-white bg-blue-500 transition-all duration-500 hover:opacity-85 rounded-full"
+                    className="flex items-center justify-center font-medium py-3 text-white bg-blue-500 transition-all duration-500 hover:opacity-85 rounded-lg"
                     onClick={() => handleCheckUserIsLogInToReview()}
                   >
                     Write your review

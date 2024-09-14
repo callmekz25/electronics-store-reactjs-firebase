@@ -6,11 +6,12 @@ import {
   query,
   where,
   deleteDoc,
+  setDoc,
   updateDoc,
   limit,
   orderBy,
 } from "firebase/firestore";
-
+import { v4 as uuid } from "uuid";
 import { db } from "../firebase";
 import { Error } from "../Pages/Error";
 
@@ -144,22 +145,40 @@ export const fetchAllUser = async (user) => {
     }
   }
 };
-export const fetchReviewsByProductId = async (data) => {
-  if (data) {
+export const fetchReviewsByProductId = async (productId) => {
+  if (productId) {
     const reviewsQuery = await query(
       collection(db, "Reviews"),
-      where("productID", "==", data.id)
+      where("productID", "==", productId)
     );
     const reviewsSnap = await getDocs(reviewsQuery);
     const reviewsData = reviewsSnap.docs.map((doc) => doc.data());
-    if (reviewsData) {
-      return reviewsData;
-    } else {
-      return [];
-    }
+    return reviewsData;
   } else {
     return [];
   }
+};
+export const postReviewByProductId = async (productId, user, star, comment) => {
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const currentDay = `${day}-${month}-${year} ${hours}:${minutes}`;
+  const ref = doc(db, "Reviews", uuid());
+  const review = {
+    productID: productId,
+    userID: user.userId,
+    userName: user.name,
+    userEmail: user.email,
+    userPhone: user.phone || "",
+    userAddress: user.address || "",
+    rate: star,
+    userReview: comment,
+    createdAt: currentDay,
+  };
+  await setDoc(ref, review);
 };
 export const fetchCartsByUser = async (user) => {
   if (user) {
@@ -168,7 +187,6 @@ export const fetchCartsByUser = async (user) => {
         collection(db, `Carts`, user.userId, "Product")
       );
       const carts = querySnapshot.docs.map((doc) => doc.data());
-
       return carts;
     } else {
       return [];

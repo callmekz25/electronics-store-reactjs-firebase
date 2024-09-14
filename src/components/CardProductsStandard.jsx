@@ -8,7 +8,7 @@ import { fetchReviewsByProductId } from "../FetchAPI/FetchAPI";
 const CardProductsStandard = ({ data, index, animation = true }) => {
   const { data: reviewsData, isLoading } = useQuery({
     queryKey: ["reviews", data?.id],
-    queryFn: () => fetchReviewsByProductId(data),
+    queryFn: () => fetchReviewsByProductId(data.id),
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
@@ -64,7 +64,7 @@ const CardProductsStandard = ({ data, index, animation = true }) => {
                 alt="ImageProduct"
                 effect="blur"
                 sizes="(max-width: 600px) 200px, 400px"
-                className="lg:size-[230px] size-[200px] object-contain lg:pt-[41px] pt-[50px] "
+                className="lg:size-[230px] size-[200px] object-contain lg:pt-[41px] pt-[50px]"
               />
             </div>
             {data.sales ? (
@@ -96,8 +96,7 @@ const CardProductsStandard = ({ data, index, animation = true }) => {
                 {renderStars(totalAvgRate)}
               </div>
               <span
-                className={`text-[14px]  font-semibold leading-[21px] opacity-50 
-                            }`}
+                className={`text-[14px]  font-semibold leading-[21px] opacity-50}`}
               >
                 ({isLoading ? "0" : reviewsData.length})
               </span>

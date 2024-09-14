@@ -13,12 +13,9 @@ import { memo } from "react";
 import { useState, useEffect, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
 import { UserContext } from "../Context/UserContext";
-import { useQuery } from "@tanstack/react-query";
-import { fetchCartsByUser } from "../FetchAPI/FetchAPI";
 import { toast } from "react-toastify";
-
+import { CartContext } from "../Context/CartContext";
 const Nav = ({ hidden }) => {
   const location = useLocation();
   const [activeItem, setActiveItem] = useState("");
@@ -27,12 +24,7 @@ const Nav = ({ hidden }) => {
   const [isActiveMenu, setIsActiveMenu] = useState(false);
   // Context lấy ra thông tin user sau khi đăng nhập
   const { user, loading } = useContext(UserContext);
-  const { data, isLoading } = useQuery({
-    queryKey: ["carts", user?.userId],
-    queryFn: () => fetchCartsByUser(user),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  const { cartItems, isLoading } = useContext(CartContext);
 
   // Chuyển trang nav
   useEffect(() => {
@@ -157,16 +149,18 @@ const Nav = ({ hidden }) => {
 
                 <div
                   className={`absolute top-[-10px] right-[-10px] bg-black rounded-full size-[20px] flex items-center justify-center text-white text-[14px] ${
-                    !isLoading && data && !loading && user ? "flex" : "hidden"
+                    !isLoading && cartItems && !loading && user
+                      ? "flex"
+                      : "hidden"
                   } ${hidden}`}
                 >
-                  {!data ? 0 : data.length}
+                  {!cartItems ? 0 : cartItems.length}
                 </div>
               </div>
             </>
 
-            <button
-              className={`flex items-center justify-center relative profile ${hidden}`}
+            <div
+              className={`flex items-center justify-center relative hover:cursor-pointer profile ${hidden}`}
               onClick={() => handleProfile()}
             >
               <UserIcon className="size-[27px]" />
@@ -209,7 +203,7 @@ const Nav = ({ hidden }) => {
                   </button>
                 </li>
               </ul>
-            </button>
+            </div>
             <div
               className="flex flex-col items-center justify-center gap-2 lg:hidden hover:cursor-pointer transition-all duration-300 z-[1000]"
               onClick={() => setIsActiveMenu(!isActiveMenu)}

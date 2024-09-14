@@ -3,102 +3,34 @@ import Footer from "../components/Footer";
 import { useState, useEffect, useContext, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useCart } from "react-use-cart";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { ToastContainer, toast } from "react-toastify";
-import { UserContext } from "../Context/UserContext";
 import { Error } from "./Error";
 import { PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import SkeletonCart from "../components/SkeletonCart";
 import useMobile from "../Hooks/useMobile";
-import ScrollTrigger from "react-scroll-trigger";
-// Firestore & auth từ firebase
-import { doc, deleteDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
-import { useQuery } from "@tanstack/react-query";
-import { fetchCartsByUser } from "../FetchAPI/FetchAPI";
-import { useQueryClient } from "@tanstack/react-query";
+import { CartContext } from "../Context/CartContext";
+import { Waypoint } from "react-waypoint";
 const Cart = () => {
-  const queryClient = useQueryClient();
-  const { user, loading } = useContext(UserContext);
+  // Sử dụng context api để xử lí
+  const {
+    removeToCart,
+    updateMinus,
+    updatePlus,
+    cartItems,
+    isLoading,
+    isError,
+  } = useContext(CartContext);
+  // State để check scroll ẩn hiện thanh thanh toán khi sản phầm trong giỏ hàng quá nhìu
   const [isScrollLast, setIsScrollLast] = useState(false);
   const [isScrollFooter, setIsScrollFooter] = useState(false);
   // State lấy những products user checked
   const [productChecked, setProductChecked] = useState([]);
   // Popup cần chọn sản phẩm để buy
   const [canBuy, setCanBuy] = useState(false);
-  // Sử dụng thư viện thứ 3 react use cart
-  const { isEmpty, setItems, items, updateItemQuantity } = useCart();
+
   const isMobile = useMobile();
   const navigate = useNavigate();
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["carts", user?.userId],
-    queryFn: () => fetchCartsByUser(user),
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  });
-  const handleRefetchCarts = () => {
-    queryClient.invalidateQueries("carts");
-  };
 
-  useEffect(() => {
-    if (data) {
-      setItems(data);
-    }
-  }, [data]);
-  console.log(isScrollLast);
-  // Hàm xử lí khi người dùng loại 1 sản phẩm khỏi giỏ hàng và fetch lên firestore để update
-  const handleRemoveItem = async (product) => {
-    if (user) {
-      if (user.role === "user") {
-        // setUser(user);
-        // Lấy ra những items đã add carts khác id với sản phẩm người dùng bấm remove
-        const updateItems = items.filter((f) => f.id !== product.id);
-        handleRefetchCarts();
-        // Set state lại những sản phẩm đã lọc qua
-        setItems(updateItems);
-        // Update lên firestore của người dùng
-        // Xóa document trong Firestore
-        const cartRef = doc(db, `Carts`, user.userId, "Product", product.id);
-        // Xóa document tương ứng với productId bị remove
-        await deleteDoc(cartRef);
-        if (deleteDoc) {
-          toast.success(`Remove ${product.name} successfully `, {
-            position: "top-center",
-            autoClose: 1500,
-          });
-        }
-      }
-    }
-  };
-  const handleUpdateQuantityPlus = async (product, e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (user) {
-      if (user.role === "user") {
-        const quantity = product.quantity + 1;
-        const cartRef = doc(db, `Carts`, user.userId, "Product", product.id);
-
-        await updateDoc(cartRef, {
-          quantity: quantity,
-        });
-      }
-    }
-  };
-  const handleUpdateQuantityMinus = async (product, e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (user) {
-      if (user.role === "user") {
-        const quantity = product.quantity - 1;
-        const cartRef = doc(db, `Carts`, user.userId, "Product", product.id);
-
-        await updateDoc(cartRef, {
-          quantity: quantity,
-        });
-      }
-    }
-  };
   // Hàm lấy ra những sản phẩm người dùng selected
   const handleSelectedProducts = (product) => {
     setProductChecked((prev) =>
@@ -130,6 +62,7 @@ const Cart = () => {
       });
     }
   };
+  // Ẩn thanh scroll
   useEffect(() => {
     if (canBuy) {
       document.documentElement.style.overflow = "hidden";
@@ -146,7 +79,7 @@ const Cart = () => {
   return (
     <div className="lg:px-[135px]">
       <Nav />
-      {loading || isLoading ? (
+      {isLoading ? (
         <SkeletonCart />
       ) : (
         <>
@@ -191,14 +124,14 @@ const Cart = () => {
                 <span className="">Actions</span>
               </div>
             </div>
-            {!items ? (
+            {!cartItems ? (
               <div className="flex items-center justify-center py-[100px]">
                 <span className="text-[20px] font-normal leading-[24px] text-[#999999]">
                   Your cart is empty
                 </span>
               </div>
             ) : (
-              items.map((product) => {
+              cartItems.map((product) => {
                 return (
                   <div
                     className="lg:flex lg:items-center lg:gap-[20px] lg:px-[40px] lg:py-[24px] rounded shadow-cart p-3 grid grid-cols-3 gap-4 bg-white"
@@ -246,13 +179,9 @@ const Cart = () => {
                               className="flex items-center justify-center hover:cursor-pointer text-[16px]"
                               onClick={(e) => {
                                 if (product.quantity > 1) {
-                                  updateItemQuantity(
-                                    product.id,
-                                    product.quantity - 1
-                                  );
-                                  handleUpdateQuantityMinus(product, e);
+                                  updateMinus(product, e);
                                 } else {
-                                  handleRemoveItem(product);
+                                  removeToCart(product);
                                 }
                               }}
                             >
@@ -264,11 +193,7 @@ const Cart = () => {
                             <div
                               className="flex items-center justify-center hover:cursor-pointer text-[16px]"
                               onClick={(e) => {
-                                updateItemQuantity(
-                                  product.id,
-                                  product.quantity + 1
-                                );
-                                handleUpdateQuantityPlus(product, e);
+                                updatePlus(product, e);
                               }}
                             >
                               <PlusIcon className="size-[20px]" />
@@ -286,7 +211,7 @@ const Cart = () => {
                       <div className="lg:block hidden">
                         <button
                           className=" w-fit"
-                          onClick={() => handleRemoveItem(product)}
+                          onClick={() => removeToCart(product)}
                         >
                           <TrashIcon className="size-[25px] text-red-500 " />
                         </button>
@@ -296,10 +221,9 @@ const Cart = () => {
                 );
               })
             )}
-
-            <ScrollTrigger
+            <Waypoint
               onEnter={() => setIsScrollLast(true)}
-              onExit={() => setIsScrollLast(false)}
+              onLeave={() => setIsScrollLast(false)}
             >
               <div
                 className={`flex items-center  justify-between lg:px-[40px] lg:py-[24px] rounded shadow-add py-5 px-4  gap-4 w-full bg-white transition-all duration-300 `}
@@ -317,7 +241,7 @@ const Cart = () => {
                   Buy
                 </button>
               </div>
-            </ScrollTrigger>
+            </Waypoint>
             <div
               className={`lg:pl-[152px] lg:pr-[135px] pl-[20px] pr-[20px]  ${
                 isScrollLast ? "checkout hidden" : "checkout"
@@ -362,13 +286,14 @@ const Cart = () => {
           </div>
         </>
       )}
-      <ScrollTrigger
+      <Waypoint
         onEnter={() => setIsScrollFooter(true)}
-        onExit={() => setIsScrollFooter(false)}
+        onLeave={() => setIsScrollFooter(false)}
       >
-        <Footer />
-      </ScrollTrigger>
-      <ToastContainer />
+        <div>
+          <Footer />
+        </div>
+      </Waypoint>
     </div>
   );
 };

@@ -281,7 +281,7 @@ const Profile = () => {
                         <input
                           type="text"
                           id="name"
-                          className=" rounded px-4 py-[13px] bg-[#F5F5F5] w-full outline-none"
+                          className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full outline-none"
                           onChange={takeInfo}
                           value={info.name}
                           onInput={(e) => {
@@ -297,7 +297,7 @@ const Profile = () => {
                         <input
                           type="text"
                           id="phone"
-                          className=" rounded px-4 py-[13px] bg-[#F5F5F5] w-full outline-none"
+                          className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full outline-none"
                           placeholder="(84+)"
                           onChange={takeInfo}
                           value={info.phone}
@@ -314,7 +314,7 @@ const Profile = () => {
                         <input
                           type="text"
                           id="accEmail"
-                          className=" rounded px-4 py-[13px] bg-[#F5F5F5] w-full outline-none"
+                          className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full outline-none"
                           value={user.email}
                           disabled
                         />
@@ -335,7 +335,7 @@ const Profile = () => {
                         <input
                           type="text"
                           id="address"
-                          className=" rounded px-4 py-[13px] bg-[#F5F5F5] w-full outline-none"
+                          className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full outline-none"
                           placeholder="Kingston, 5236, United State"
                           onChange={takeInfo}
                           value={info.address}
@@ -358,7 +358,7 @@ const Profile = () => {
                           Cancel
                         </button>
                         <button
-                          className="px-[48px] py-4 bg-[#DB4444] rounded text-white text-[16px] font-medium leading-[24px]"
+                          className="px-10 py-3 bg-[#DB4444] rounded text-white lg:text-[16px] font-medium leading-[24px]"
                           onClick={handleEditProfile}
                           disabled={cancel ? false : true}
                         >
@@ -381,7 +381,7 @@ const Profile = () => {
                         <input
                           type="text"
                           id=""
-                          className=" rounded px-4 py-[13px] bg-[#F5F5F5] w-full"
+                          className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full"
                           value={user.email}
                           disabled
                         />
@@ -392,7 +392,7 @@ const Profile = () => {
                           type="text"
                           id="newEmail"
                           value={newEmail}
-                          className={`rounded px-4 py-[13px] bg-[#F5F5F5] w-full outline-none ${
+                          className={`rounded px-4 py-[13px] bg-[#eae8e8] w-full outline-none ${
                             erorrEmail
                               ? "border-2 border-[#fc3939] bg-[#fff9f9]"
                               : ""
@@ -417,7 +417,7 @@ const Profile = () => {
                           type={`${showPass ? "text" : "password"}`}
                           id="password"
                           value={passEmail}
-                          className={`rounded px-4 py-[13px] bg-[#F5F5F5] w-full outline-none ${
+                          className={`rounded px-4 py-[13px] bg-[#eae8e8] w-full outline-none ${
                             errorPass
                               ? "border-2 border-[#fc3939] bg-[#fff9f9]"
                               : ""
@@ -541,7 +541,7 @@ const Profile = () => {
                         <input
                           type="text"
                           id="name"
-                          className=" rounded px-4 py-[13px] bg-[#F5F5F5] w-full"
+                          className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full"
                           onChange={(e) => setPassword(e.target.value)}
                           value={password}
                           onInput={(e) => {
@@ -557,7 +557,7 @@ const Profile = () => {
                         <input
                           type="password"
                           id="phone"
-                          className=" rounded px-4 py-[13px] bg-[#F5F5F5] w-full"
+                          className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full"
                           onChange={(e) => setNewPassword(e.target.value)}
                           value={newPassword}
                           onInput={(e) => {
@@ -573,7 +573,7 @@ const Profile = () => {
                         <input
                           type="password"
                           id="accEmail"
-                          className=" rounded px-4 py-[13px] bg-[#F5F5F5] w-full"
+                          className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full"
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           value={confirmPassword}
                         />

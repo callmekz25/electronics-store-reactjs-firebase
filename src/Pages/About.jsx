@@ -7,43 +7,12 @@ import Group from "../Assets/About/Group.svg";
 import Sale from "../Assets/About/Icon-Sale.svg";
 import Shopping from "../Assets/About/Icon-Shopping bag.svg";
 import Money from "../Assets/About/Money.svg";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
-import "boxicons";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { ToastContainer } from "react-toastify";
-import ship from "../Assets/Featured/icon-delivery.svg";
-import service from "../Assets/Featured/Icon-Customer service.svg";
-import tick from "../Assets/Featured/shield-tick.svg";
-import ScrollTrigger from "react-scroll-trigger";
 import Featured from "../components/Featured";
+import { Waypoint } from "react-waypoint";
 const About = () => {
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 3,
-  };
   const [onViewPort, setOnViewPort] = useState(false);
-  const [infoBoss, setInfoBoss] = useState([]);
-
-  // useEffect(() => {
-  //     window.scrollTo(0, 0);
-  //     get(child(dbRef, `infoCEO`))
-  //         .then((snapshot) => {
-  //             if (snapshot.exists()) {
-  //                 const data = snapshot.val();
-  //                 setInfoBoss(data);
-  //             } else {
-  //                 console.log("No data available");
-  //             }
-  //         })
-  //         .catch((error) => {
-  //             console.error(error);
-  //         });
-  // }, [dbRef]);
 
   return (
     <div className="lg:px-[135px]">
@@ -94,9 +63,9 @@ const About = () => {
         </div>
       </div>
       <div className="lg:px-[135px] px-[20px] grid lg:grid-cols-4 grid-cols-2 lg:gap-[34px] gap-x-5 gap-y-10 pb-[30px]">
-        <ScrollTrigger
+        <Waypoint
           onEnter={() => setOnViewPort(true)}
-          onExit={() => setOnViewPort(true)}
+          onLeave={() => setOnViewPort(true)}
         >
           <div className="flex flex-col items-center justify-center gap-[24px] border-2  border-[gray-500] rounded lg:py-[30px] py-4 px-3 w-full h-full">
             <div className="size-[80px] rounded-full bg-[#c1c1c1] flex items-center justify-center">
@@ -126,8 +95,8 @@ const About = () => {
               </span>
             </div>
           </div>
-        </ScrollTrigger>
-        <ScrollTrigger>
+        </Waypoint>
+        <Waypoint>
           <div className="flex flex-col items-center justify-center gap-[24px] shadow-md rounded bg-[#db4444] text-white lg:py-[30px] py-4 px-3 w-full h-full">
             <div className="size-[80px] rounded-full bg-[#e67c7c] flex items-center justify-center">
               <div className="size-[60px] rounded-full bg-[#ffffff] flex items-center justify-center">
@@ -156,13 +125,13 @@ const About = () => {
               </span>
             </div>
           </div>
-        </ScrollTrigger>
-        <ScrollTrigger>
+        </Waypoint>
+        <Waypoint>
           <div className="flex flex-col items-center justify-center gap-[24px] border-2  border-[gray-500] rounded lg:py-[30px] py-4 px-3 w-full h-full">
             <div className="size-[80px] rounded-full bg-[#c1c1c1] flex items-center justify-center">
               <div className="size-[60px] rounded-full bg-black flex items-center justify-center">
                 <LazyLoadImage
-                  effect="blurr"
+                  effect="blur"
                   src={Shopping}
                   alt=""
                   className="size-[40px] "
@@ -186,8 +155,8 @@ const About = () => {
               </span>
             </div>
           </div>
-        </ScrollTrigger>
-        <ScrollTrigger>
+        </Waypoint>
+        <Waypoint>
           <div className="flex flex-col items-center justify-center gap-[24px] border-2  border-[gray-500] rounded lg:py-[30px] py-4 px-3 w-full h-full">
             <div className="size-[80px] rounded-full bg-[#c1c1c1] flex items-center justify-center">
               <div className="size-[60px] rounded-full bg-black flex items-center justify-center">
@@ -216,59 +185,7 @@ const About = () => {
               </span>
             </div>
           </div>
-        </ScrollTrigger>
-      </div>
-      <div className=" pb-[190px]">
-        <Slider {...settings}>
-          {infoBoss.map((user, index) => (
-            <div
-              key={index}
-              className="flex flex-col gap-[32px]"
-            >
-              <div className="bg-[#f5f5f5] flex justify-center pt-[39px]">
-                <LazyLoadImage
-                  src={user.img}
-                  alt="user"
-                  effect="blur"
-                  className="w-[300px] h-[500px]"
-                />
-              </div>
-              <div className="flex flex-col gap-4 pt-[32px]">
-                <div className="flex flex-col">
-                  <span className="text-[32px] font-medium leading-[30px] tracking-[1.28px]">
-                    {user.name}
-                  </span>
-                  <span className="text-[16px] font-normal leading-[24px] mt-2">
-                    Managing Director
-                  </span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <a href={`${user.fb}`}>
-                    <box-icon
-                      type="logo"
-                      name="facebook"
-                      size="24px"
-                    ></box-icon>
-                  </a>
-                  <a href={`${user.ig}`}>
-                    <box-icon
-                      name="instagram"
-                      type="logo"
-                      size="24px"
-                    ></box-icon>
-                  </a>
-                  <a href="#">
-                    <box-icon
-                      type="logo"
-                      name="twitter"
-                      size="24px"
-                    ></box-icon>
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </Slider>
+        </Waypoint>
       </div>
       <Featured />
       <Footer />

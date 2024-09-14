@@ -5,138 +5,87 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo, useContext } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import UserIconNone from "../Assets/UserIcon/360_F_795951406_h17eywwIo36DU2L8jXtsUcEXqPeScBUq-removebg-preview.webp";
-import {
-  query,
-  collection,
-  where,
-  getDocs,
-  setDoc,
-  doc,
-} from "firebase/firestore";
-import { db } from "../firebase";
-import { v4 as uuid } from "uuid";
 import { StarIcon as StarIconFilled } from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Loading } from "../components/Loading";
 import { UserContext } from "../Context/UserContext";
 import { Error } from "./Error";
-import { ToastContainer, toast } from "react-toastify";
 
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  fetchReviewsByProductId,
+  postReviewByProductId,
+} from "../FetchAPI/FetchAPI";
+import countingRate from "../Service/countingRate";
 const PageReviews = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const location = useLocation();
-  const [loadingChange, setLoadingChange] = useState(true);
-  const { productFind, loading } = location.state || {};
+  const { productFind } = location.state || {};
   // Context user
   const { user } = useContext(UserContext);
   // State filter rate
   const [filterRate, setFilterRate] = useState(0);
   const [filteredReviewsData, setFilteredReviewsData] = useState(null);
-  // Reviewsa
+  // Reviews
+  const [isLogInToRate, setIsLogInToRate] = useState(false);
   const [isReview, setIsReview] = useState(false);
   const [starReview, setStarReview] = useState(0);
-  const [userReview, setUserReview] = useState(null);
-  const [sendReview, setSendReview] = useState(false);
-  const [reviewsData, setReviewsData] = useState([]);
+  const [comment, setComment] = useState(null);
+  // State percent of star
+  const [fiveStar, setFiveStar] = useState(0);
+  const [fourStar, setFourStar] = useState(0);
+  const [threeStar, setThreeStar] = useState(0);
+  const [twoStar, setTwoStar] = useState(0);
+  const [oneStar, setOneStar] = useState(0);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  // Hàm xử lí gửi review của user
-  const handleSendReview = useCallback(
-    async (productId) => {
-      try {
-        if (user) {
-          if (starReview !== 0) {
-            const date = new Date();
-            const day = date.getDate();
-            const month = date.getMonth() + 1;
-            const year = date.getFullYear();
-            const hours = date.getHours();
-            const minutes = date.getMinutes();
-            const currentDay = `${day}-${month}-${year} ${hours}:${minutes}`;
-            const ref = doc(db, "Reviews", uuid());
-            const review = {
-              productID: productId,
-              userID: user.userId,
-              userName: user.name,
-              userEmail: user.email,
-              userPhone: user.phone || "",
-              userAddress: user.address || "",
-              rate: starReview,
-              userReview: userReview,
-              createdAt: currentDay,
-            };
-
-            if (ref) {
-              await setDoc(ref, review);
-              if (setDoc) {
-                setSendReview(true);
-                setStarReview(0);
-                setIsReview(false);
-              }
-            }
-          } else {
-            toast.warn("Please rate star's product!", {
-              position: "top-center",
-              autoClose: 1500,
-            });
-          }
-        } else {
-          navigate("/sign-up");
-        }
-      } catch (e) {
-        return <Error />;
-      }
+  const {
+    data: reviewsData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["reviews", productFind.id],
+    queryFn: () => fetchReviewsByProductId(productFind.id),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+  // Mutation xử lí reviews
+  const postReviewMutation = useMutation({
+    mutationFn: () =>
+      postReviewByProductId(productFind.id, user, starReview, comment),
+    onSuccess: () => {
+      queryClient.invalidateQueries("reviews", productFind.id);
+      setIsReview(false);
+      setStarReview(0);
     },
-    [user, starReview]
-  );
+  });
+  // Hàm xử lí gửi review của user
+  const postReview = () => {
+    if (user) {
+      postReviewMutation.mutate();
+    } else {
+      setIsReview(true);
+    }
+  };
 
-  // const handleSendReview = useCallback() async (productId) => {
-  //     try {
-  //         if (user) {
-  //             if (starReview !== 0) {
-  //                 const date = new Date();
-  //                 const day = date.getDate();
-  //                 const month = date.getMonth() + 1;
-  //                 const year = date.getFullYear();
-  //                 const hours = date.getHours();
-  //                 const minutes = date.getMinutes();
-  //                 const currentDay = `${day}-${month}-${year} ${hours}:${minutes}`;
-  //                 const ref = doc(db, "Reviews", uuid());
-  //                 const review = {
-  //                     productID: productId,
-  //                     userID: user.userId,
-  //                     userName: user.name,
-  //                     userEmail: user.email,
-  //                     userPhone: user.phone || "",
-  //                     userAddress: user.address || "",
-  //                     rate: starReview,
-  //                     userReview: userReview,
-  //                     createdAt: currentDay,
-  //                 };
-
-  //                 if (ref) {
-  //                     await setDoc(ref, review);
-  //                     if (setDoc) {
-  //                         setSendReview(true);
-  //                         setStarReview(0);
-  //                         setIsReview(false);
-  //                     }
-  //                 }
-  //             } else {
-  //                 toast.warn("Please rate star's product!", {
-  //                     position: "top-center",
-  //                     autoClose: 1500,
-  //                 });
-  //             }
-  //         } else {
-  //             navigate("/sign-up");
-  //         }
-  //     } catch (e) {
-  //         return <Error />;
-  //     }
-  // };
+  // Hàm tính tổng số rate của từng user cho sản phẩm
+  const totalRate = useMemo(() => {
+    let total;
+    if (reviewsData) {
+      total = reviewsData.reduce((result, reviewsData) => {
+        return result + reviewsData.rate;
+      }, 0);
+    }
+    return total;
+  }, [reviewsData]);
+  // Tổng số rate trung bình của sản phẩm
+  const totalAvgRate = useMemo(() => {
+    if (reviewsData) {
+      return totalRate / reviewsData.length;
+    }
+  }, [totalRate]);
 
   // Hàm render số sao đánh giá
   const renderStars = (rating, size) => {
@@ -162,27 +111,47 @@ const PageReviews = () => {
     }
     return stars;
   };
-  // Hàm lấy ra reviews của product
-  useEffect(() => {
-    const showReviews = async () => {
-      try {
-        if (productFind) {
-          const reviewsQuery = query(
-            collection(db, "Reviews"),
-            where("productID", "==", `${productFind.id}`)
-          );
-          const reviewsSnap = await getDocs(reviewsQuery);
-          const reviewsData = reviewsSnap.docs.map((doc) => doc.data());
-          setReviewsData(reviewsData);
-        }
-      } catch (e) {
-        return <Error />;
-      } finally {
-        setLoadingChange(false);
-      }
+  // Chỉ tính lại logic khi có thêm dữ liệu reviews thay đổi
+  const percentRate = useMemo(() => {
+    let totalReviews;
+    let count;
+    if (reviewsData) {
+      count = countingRate(reviewsData);
+      totalReviews = reviewsData.length;
+    }
+    // Trả về object
+    return {
+      five:
+        totalReviews > 0
+          ? Math.round((count.five / totalReviews) * 100 * 100) / 100
+          : 0,
+      four:
+        totalReviews > 0
+          ? Math.round((count.four / totalReviews) * 100 * 100) / 100
+          : 0,
+      three:
+        totalReviews > 0
+          ? Math.round((count.three / totalReviews) * 100 * 100) / 100
+          : 0,
+      two:
+        totalReviews > 0
+          ? Math.round((count.two / totalReviews) * 100 * 100) / 100
+          : 0,
+      one:
+        totalReviews > 0
+          ? Math.round((count.one / totalReviews) * 100 * 100) / 100
+          : 0,
     };
-    showReviews();
-  }, [productFind, sendReview]);
+  }, [reviewsData]);
+  // Dùng sideEffect để render lại UI khi đã tính lại logic
+  useEffect(() => {
+    setFiveStar(percentRate.five);
+    setFourStar(percentRate.four);
+    setThreeStar(percentRate.three);
+    setTwoStar(percentRate.two);
+    setOneStar(percentRate.one);
+  }, [percentRate]);
+
   // Filter reviews theo rate user chọn
   useEffect(() => {
     if (reviewsData) {
@@ -210,26 +179,46 @@ const PageReviews = () => {
     }
   }, [filterRate, reviewsData]);
 
-  // Hàm tính tổng số rate của từng user cho sản phẩm
-  const totalRate = useMemo(() => {
-    const total = reviewsData.reduce((result, reviewsData) => {
-      return result + reviewsData.rate;
-    }, 0);
-    return total;
-  }, [reviewsData]);
-  // Tổng số rate trung bình của sản phẩm
-  const totalAvgRate = useMemo(() => {
-    return totalRate / reviewsData.length;
-  }, [totalRate]);
-  if (loading || loadingChange) {
+  if (isLoading) {
     return <Loading />;
+  }
+  if (isError) {
+    return <Error />;
   }
   return (
     <div className="lg:px-[135px] px-[20px]">
       <Nav />
+      {isLogInToRate && (
+        <div className="overlay">
+          <div className=" w-[550px] bg-white rounded-lg p-7 flex flex-col justify-between relative">
+            <XMarkIcon
+              className="size-[30px] absolute right-[15px] top-[15px] hover:cursor-pointer"
+              onClick={() => setIsLogInToRate(false)}
+            />
+            <div className="">
+              <h3 className="lg:text-[25px] font-medium text-center ">
+                You need to Log In
+              </h3>
+              <p className="py-7 lg:text-[18px] font-normal text-center">
+                If you want to rate this product you need to log in your account
+              </p>
+            </div>
+            <div className="flex items-center justify-end mt-10">
+              <button
+                className="px-4 py-3 bg-blue-500 rounded-md flex items-center justify-center text-white font-medium text-[17px] outline-none w-full"
+                onClick={() => {
+                  navigate("/log-in");
+                }}
+              >
+                Log In
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {isReview && (
         <div className="overlay">
-          <div className="popup w-[650px] h-[620px] bg-white rounded-xl p-7 flex flex-col justify-between relative">
+          <div className=" w-[650px] h-[620px] bg-white rounded-lg p-7 flex flex-col justify-between relative">
             <XMarkIcon
               className="size-[30px] absolute right-[15px] top-[15px] hover:cursor-pointer"
               onClick={() => setIsReview(false)}
@@ -254,16 +243,14 @@ const PageReviews = () => {
                   type="text"
                   className="rounded-lg border-2 overflow-hidden border-gray-300 w-full h-[200px] p-3 text-start resize-none text-[15px] mt-4"
                   placeholder="Please share your thoughts about the product..."
-                  onChange={(e) => setUserReview(e.target.value)}
+                  onChange={(e) => setComment(e.target.value)}
                 />
               </div>
             </div>
             <div className="flex items-center justify-end gap-4">
               <button
                 className="px-4 py-3 bg-blue-500 rounded-md flex items-center justify-center text-white font-medium text-[17px] outline-none w-full"
-                onClick={() => {
-                  handleSendReview(productFind.id);
-                }}
+                onClick={postReview}
               >
                 Send review
               </button>
@@ -271,7 +258,7 @@ const PageReviews = () => {
           </div>
         </div>
       )}
-      <div className="">
+      <>
         <div className="flex items-center gap-2 py-[80px]">
           <span className="text-[14px] font-normal opacity-40 leading-[21px]">
             Home
@@ -330,9 +317,12 @@ const PageReviews = () => {
                     <StarIconFilled className="w-4 h-4 text-yellow-500" />
                   </span>
                   <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                    <div className=" absolute h-full rounded-full bg-yellow-500 w-[100px] top-0 left-0"></div>
+                    <div
+                      className=" absolute h-full rounded-full bg-yellow-500  top-0 left-0"
+                      style={{ width: `${fiveStar}%` }}
+                    ></div>
                   </div>
-                  <span>46.5%</span>
+                  <span>{fiveStar}%</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span>4</span>
@@ -340,9 +330,12 @@ const PageReviews = () => {
                     <StarIconFilled className="w-4 h-4 text-yellow-500" />
                   </span>
                   <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                    <div className=" absolute h-full rounded-full bg-yellow-500 w-[100px] top-0 left-0"></div>
+                    <div
+                      className=" absolute h-full rounded-full bg-yellow-500 top-0 left-0"
+                      style={{ width: `${fourStar}%` }}
+                    ></div>
                   </div>
-                  <span>46.5%</span>
+                  <span>{fourStar}%</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span>3</span>
@@ -350,9 +343,12 @@ const PageReviews = () => {
                     <StarIconFilled className="w-4 h-4 text-yellow-500" />
                   </span>
                   <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                    <div className=" absolute h-full rounded-full bg-yellow-500 w-[100px] top-0 left-0"></div>
+                    <div
+                      className=" absolute h-full rounded-full bg-yellow-500  top-0 left-0"
+                      style={{ width: `${threeStar}%` }}
+                    ></div>
                   </div>
-                  <span>46.5%</span>
+                  <span>{threeStar}%</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span>2</span>
@@ -360,9 +356,12 @@ const PageReviews = () => {
                     <StarIconFilled className="w-4 h-4 text-yellow-500" />
                   </span>
                   <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                    <div className=" absolute h-full rounded-full bg-yellow-500 w-[100px] top-0 left-0"></div>
+                    <div
+                      className=" absolute h-full rounded-full bg-yellow-500 top-0 left-0"
+                      style={{ width: `${twoStar}%` }}
+                    ></div>
                   </div>
-                  <span>46.5%</span>
+                  <span>{twoStar}%</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span>1</span>
@@ -370,14 +369,19 @@ const PageReviews = () => {
                     <StarIconFilled className="w-4 h-4 text-yellow-500" />
                   </span>
                   <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                    <div className=" absolute h-full rounded-full bg-yellow-500 w-[100px] top-0 left-0"></div>
+                    <div
+                      className=" absolute h-full rounded-full bg-yellow-500  top-0 left-0"
+                      style={{ width: `${oneStar}%` }}
+                    ></div>
                   </div>
-                  <span>46.5%</span>
+                  <span>{oneStar}%</span>
                 </div>
                 <div className="flex items-center justify-center pt-4">
                   <button
                     className="flex items-center justify-center px-10 py-3 text-white bg-blue-500 rounded-lg"
-                    onClick={() => setIsReview(true)}
+                    onClick={() =>
+                      user ? setIsReview(true) : setIsLogInToRate(true)
+                    }
                   >
                     Write review
                   </button>
@@ -510,9 +514,8 @@ const PageReviews = () => {
             </div>
           </div>
         </div>
-      </div>
+      </>
       <Footer />
-      <ToastContainer />
     </div>
   );
 };

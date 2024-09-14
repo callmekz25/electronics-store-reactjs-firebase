@@ -24,7 +24,7 @@ const Phones = () => {
 
   // State để set mức min max giá tiền
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(0);
   const [priceRange, setPriceRange] = useState(0);
   // Popup cho filter ở mobile
   const [isFilter, setIsFilter] = useState(false);
