@@ -402,7 +402,7 @@ const ProductDetail = () => {
                     {data.img.map((img, index) => {
                       return (
                         <div
-                          className="flex items-center justify-center flex-shrink-0 w-full h-full transition-all duration-300 ease-in-out"
+                          className="flex items-center justify-center flex-shrink-0 w-full h-full transition-all duration-500 ease-in-out"
                           key={index}
                           style={{
                             transform: `translateX(-${currentIndex * 100}%)`,
