@@ -185,7 +185,7 @@ const Checkout = () => {
                     type="text"
                     id="bname"
                     value={info.name}
-                    className={`py-3 px-3 bg-[#F5F5F5] rounded outline-none ${
+                    className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
                       errorName ? "border-[#fc3939] border-2 bg-[#fff9f9]" : ""
                     }`}
                     onChange={(e) =>
@@ -214,7 +214,7 @@ const Checkout = () => {
                     type="text"
                     id="bemail"
                     value={info.email}
-                    className={`py-3 px-3 bg-[#F5F5F5] rounded outline-none ${
+                    className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
                       errorEmail ? "border-[#fc3939] border-2 bg-[#fff9f9]" : ""
                     }`}
                     onChange={(e) =>
@@ -243,7 +243,7 @@ const Checkout = () => {
                     type="text"
                     id="bphone"
                     value={info.phone}
-                    className={`py-3 px-3 bg-[#F5F5F5] rounded outline-none ${
+                    className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
                       errorPhone ? "border-[#fc3939] border-2 bg-[#fff9f9]" : ""
                     }`}
                     onChange={(e) =>
@@ -272,7 +272,7 @@ const Checkout = () => {
                     type="text"
                     id="baddress"
                     value={info.address}
-                    className={`py-3 px-3 bg-[#F5F5F5] rounded outline-none ${
+                    className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
                       errorAddress
                         ? "border-[#fc3939] border-2 bg-[#fff9f9]"
                         : ""

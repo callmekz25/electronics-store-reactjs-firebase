@@ -77,9 +77,6 @@ const OrderDetails = () => {
         });
         setLoadding(false);
         navigate("/orders/purchase/status=canceled");
-        console.log("Cancel success!");
-      } else {
-        console.log("No found data!");
       }
       if (allOrdersRef) {
         // Update trạng thái orders nếu bị cancel
@@ -87,11 +84,7 @@ const OrderDetails = () => {
           deletedAt: currDay,
           status: "Cancel",
         });
-      } else {
-        console.log("Cann't find ref to all orders");
       }
-    } else {
-      console.log("Not found user!");
     }
   };
   if (loading) {
@@ -104,9 +97,9 @@ const OrderDetails = () => {
         <>
           {isCancel && (
             <div className="overlay">
-              <div className="popup w-[500px] h-[250px] bg-white rounded-lg p-7 flex flex-col justify-between">
+              <div className=" w-[500px]  bg-white rounded-lg p-7 flex flex-col justify-between">
                 <div className="">
-                  <h3 className="text-[25px] font-medium text-red-500">
+                  <h3 className="lg:text-[27px] font-normal text-red-500">
                     Are you sure want to cancel order?
                   </h3>
                   <p className="text-[17px] text-gray-400 font-normal mt-5">
@@ -114,12 +107,12 @@ const OrderDetails = () => {
                     will be cancel.
                   </p>
                 </div>
-                <div className="flex items-center justify-end gap-4">
+                <div className="flex items-center justify-end gap-4 mt-20">
                   <button
                     className="px-4 py-2 bg-red-500 rounded flex items-center justify-center text-white font-medium text-[15px] outline-none"
                     onClick={() => handleCancelOrder(orders)}
                   >
-                    Yes, cancel
+                    Cancel
                   </button>
                   <button
                     className="px-8 py-2 bg-[#e0e0e3] rounded flex items-center justify-center text-gray-400 font-medium text-[15px] outline-none"

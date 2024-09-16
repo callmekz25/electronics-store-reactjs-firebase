@@ -226,20 +226,26 @@ const Cart = () => {
               onLeave={() => setIsScrollLast(false)}
             >
               <div
-                className={`flex items-center  justify-between lg:px-[40px] lg:py-[24px] rounded shadow-add py-5 px-4  gap-4 w-full bg-white transition-all duration-300 `}
+                className={`flex lg:flex-row flex-col lg:items-center  justify-between lg:px-[40px] lg:py-[24px] rounded shadow-add py-5 px-4  gap-4 w-full bg-white transition-all duration-300 `}
               >
                 <div className="flex items-center gap-2">
-                  <span>Total to pay ({productChecked.length} products):</span>
-                  <span className="lg:text-[20px] text-[#db4444]">{`$${
+                  <span className="lg:text-[20px] text-[18px]">
+                    Total to pay
+                  </span>
+                  <span className="lg:text-[20px] text-[18px] font-medium text-[#db4444]">{`$${
                     Math.round(totalPriceProductsSelected * 100) / 100
                   }`}</span>
                 </div>
-                <button
-                  className="bg-[#db4444] px-14 py-3 text-white font-medium text-[16px] leading-[24px]  w-fit rounded"
-                  onClick={handleCheckOut}
-                >
-                  Buy
-                </button>
+                <div className="flex items-center justify-end">
+                  <button
+                    className="bg-[#db4444] lg:px-14 px-10 py-3 text-white font-medium text-[16px] leading-[24px] w-[140px] lg:lg:w-fit rounded"
+                    onClick={handleCheckOut}
+                  >
+                    {productChecked.length > 0
+                      ? `Buy (${productChecked.length})`
+                      : "Buy"}
+                  </button>
+                </div>
               </div>
             </Waypoint>
             <div
@@ -248,19 +254,25 @@ const Cart = () => {
               } ${isScrollFooter ? "checkout hidden" : ""}
               ${canBuy ? "lg:pl-[135px]" : ""} `}
             >
-              <div className="bg-white w-full h-full flex items-center justify-between lg:px-[40px] lg:py-[24px] rounded shadow-add py-5 px-4 ">
+              <div className="bg-white w-full h-full flex lg:flex-row flex-col lg:items-center justify-between lg:px-[40px] lg:py-[24px] rounded shadow-add py-5 px-4 ">
                 <div className="flex items-center gap-2">
-                  <span>Total to pay ({productChecked.length} products):</span>
-                  <span className="lg:text-[20px] text-[#db4444]">{`$${
+                  <span className="lg:text-[20px] text-[18px]">
+                    Total to pay
+                  </span>
+                  <span className="lg:text-[20px] text-[18px] font-medium text-[#db4444]">{`$${
                     Math.round(totalPriceProductsSelected * 100) / 100
                   }`}</span>
                 </div>
-                <button
-                  className="bg-[#db4444] px-14 py-3 text-white font-medium text-[16px] leading-[24px]  w-fit rounded"
-                  onClick={handleCheckOut}
-                >
-                  Buy
-                </button>
+                <div className="flex items-center justify-end">
+                  <button
+                    className="bg-[#db4444] lg:px-14 px-10 py-3 text-white font-medium text-[16px] leading-[24px] w-[140px] rounded lg:w-fit"
+                    onClick={handleCheckOut}
+                  >
+                    {productChecked.length > 0
+                      ? `Buy (${productChecked.length})`
+                      : "Buy"}
+                  </button>
+                </div>
               </div>
             </div>
 

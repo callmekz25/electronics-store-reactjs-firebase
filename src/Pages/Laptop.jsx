@@ -21,7 +21,7 @@ const Laptops = () => {
   const [selectedStorage, setSelectedStorage] = useState([]);
   // State để set mức min max giá tiền
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState();
+  const [maxPrice, setMaxPrice] = useState(0);
   // State để lưu các type khi seleted vào 1 mảng
   const [selectedType, setSelectedType] = useState([]);
   //  State để lưu các inch khi selected vào 1 mảng
@@ -113,13 +113,29 @@ const Laptops = () => {
           );
         }
         // Lọc sản phẩm theo giá tiền
-        if (minPrice || maxPrice) {
+        if (minPrice && maxPrice) {
           // Xử lí khi chọn option thì cho page hiện tại là 1
           setCurrentPage(1);
           filtered = filtered.filter(
             (product) =>
               Number(product.newPrice) >= minPrice &&
               Number(product.newPrice) <= maxPrice
+          );
+          window.scrollTo(0, 0);
+        }
+        if (minPrice) {
+          // Xử lí khi chọn option thì cho page hiện tại là 1
+          setCurrentPage(1);
+          filtered = filtered.filter(
+            (product) => Number(product.newPrice) >= minPrice
+          );
+          window.scrollTo(0, 0);
+        }
+        if (maxPrice) {
+          // Xử lí khi chọn option thì cho page hiện tại là 1
+          setCurrentPage(1);
+          filtered = filtered.filter(
+            (product) => Number(product.newPrice) <= maxPrice
           );
           window.scrollTo(0, 0);
         }
@@ -1103,7 +1119,7 @@ const Laptops = () => {
                     </div>
                     <div className="flex items-center gap-2 ">
                       <label
-                        htmlFor="minPrice"
+                        htmlFor="maxPrice"
                         className="text-[15px] font-medium  leading-[24px]"
                       >
                         Max

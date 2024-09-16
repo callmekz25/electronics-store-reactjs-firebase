@@ -4,6 +4,29 @@ html {
   padding: 0;
   box-sizing: border-box;
 }
+.countdown-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #db4444; /* Màu nền giống với hình */
+  color: white; /* Màu chữ */
+  font-size: 24px; /* Kích thước chữ */
+  padding: 5px 0px; /* Khoảng cách trong */
+  position: relative;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+.countdown-timer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -22px; /* Vị trí lệch trái để tạo hiệu ứng */
+  width: 0;
+  height: 100%;
+  transform: rotate(180deg);
+  border-top: 40px solid #db4444; /* Tạo phần xiên */
+  border-right: 23px solid transparent; /* Tạo hiệu ứng xiên góc */
+}
 
 body {
   font-family: "Poppins", sans-serif;

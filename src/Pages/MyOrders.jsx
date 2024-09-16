@@ -83,151 +83,172 @@ const MyOrders = () => {
                 {!isLoading ? (
                   data ? (
                     data.length > 0 ? (
-                      data.map((product) => {
-                        // Thông tin chung của đơn hàng user order
-                        return (
-                          <div className="relative p-6 border-2 border-gray-300 rounded-xl">
-                            <div className="flex items-center gap-3 text-[13px] font-medium">
-                              <div
-                                className={`px-4 py-1   rounded-full flex items-center gap-2 ${
-                                  product.status === "Shipping"
-                                    ? "bg-[#fff2e5]"
-                                    : ""
-                                } ${
-                                  product.status === "Cancel"
-                                    ? "bg-[#ffe8e5]"
-                                    : ""
-                                } ${
-                                  product.status === "Confirm"
-                                    ? "bg-[#fce5ff]"
-                                    : ""
-                                } ${
-                                  product.status === "Pending"
-                                    ? "bg-[#fce5ff]"
-                                    : ""
-                                } ${
-                                  product.status === "Completed"
-                                    ? "bg-[#d0fbd4]"
-                                    : ""
-                                }
-                                                        `}
-                              >
+                      data
+                        .sort(
+                          (a, b) =>
+                            new Date(
+                              b.createdAt.split(" ")[0].split("/").reverse() +
+                                " " +
+                                b.createdAt.split(" ")[1]
+                            ) -
+                            new Date(
+                              a.createdAt
+                                .split(" ")[0]
+                                .split("/")
+                                .reverse()
+                                .join("-") +
+                                " " +
+                                a.createdAt.split(" ")[1]
+                            )
+                        )
+                        .map((product) => {
+                          // Thông tin chung của đơn hàng user order
+                          return (
+                            <div
+                              className="relative p-6 border-2 border-gray-300 rounded-xl"
+                              key={product.id}
+                            >
+                              <div className="flex items-center gap-3 text-[13px] font-medium">
                                 <div
-                                  className={`rounded-full size-[13px] ${
+                                  className={`px-4 py-1   rounded-full flex items-center gap-2 ${
                                     product.status === "Shipping"
-                                      ? "bg-[#e08228]"
+                                      ? "bg-[#fff2e5]"
                                       : ""
                                   } ${
                                     product.status === "Cancel"
-                                      ? "bg-[#de491c]"
-                                      : ""
-                                  }  ${
-                                    product.status === "Confirm"
-                                      ? "bg-[#9a1cde]"
-                                      : ""
-                                  } ${
-                                    product.status === "Pending"
-                                      ? "bg-[#9a1cde]"
-                                      : ""
-                                  } ${
-                                    product.status === "Completed"
-                                      ? "bg-[#1cde49]"
-                                      : ""
-                                  }`}
-                                ></div>
-                                <span
-                                  className={`text-[12px] font-semibold  ${
-                                    product.status === "Shipping"
-                                      ? "text-[#e08228]"
-                                      : ""
-                                  } ${
-                                    product.status === "Cancel"
-                                      ? "text-[#e04728]"
+                                      ? "bg-[#ffe8e5]"
                                       : ""
                                   } ${
                                     product.status === "Confirm"
-                                      ? "text-[#bb28e0]"
+                                      ? "bg-[#fce5ff]"
                                       : ""
                                   } ${
                                     product.status === "Pending"
-                                      ? "text-[#bb28e0]"
+                                      ? "bg-[#fce5ff]"
                                       : ""
                                   } ${
                                     product.status === "Completed"
-                                      ? "text-[#59e028]"
+                                      ? "bg-[#d0fbd4]"
                                       : ""
-                                  }`}
+                                  }
+                                                        `}
                                 >
-                                  {product.status.toString().toLowerCase() ===
-                                  "confirm"
-                                    ? "Pending"
-                                    : product.status}
+                                  <div
+                                    className={`rounded-full size-[13px] ${
+                                      product.status === "Shipping"
+                                        ? "bg-[#e08228]"
+                                        : ""
+                                    } ${
+                                      product.status === "Cancel"
+                                        ? "bg-[#de491c]"
+                                        : ""
+                                    }  ${
+                                      product.status === "Confirm"
+                                        ? "bg-[#9a1cde]"
+                                        : ""
+                                    } ${
+                                      product.status === "Pending"
+                                        ? "bg-[#9a1cde]"
+                                        : ""
+                                    } ${
+                                      product.status === "Completed"
+                                        ? "bg-[#1cde49]"
+                                        : ""
+                                    }`}
+                                  ></div>
+                                  <span
+                                    className={`text-[12px] font-semibold  ${
+                                      product.status === "Shipping"
+                                        ? "text-[#e08228]"
+                                        : ""
+                                    } ${
+                                      product.status === "Cancel"
+                                        ? "text-[#e04728]"
+                                        : ""
+                                    } ${
+                                      product.status === "Confirm"
+                                        ? "text-[#bb28e0]"
+                                        : ""
+                                    } ${
+                                      product.status === "Pending"
+                                        ? "text-[#bb28e0]"
+                                        : ""
+                                    } ${
+                                      product.status === "Completed"
+                                        ? "text-[#59e028]"
+                                        : ""
+                                    }`}
+                                  >
+                                    {product.status.toString().toLowerCase() ===
+                                    "confirm"
+                                      ? "Pending"
+                                      : product.status}
+                                  </span>
+                                </div>
+                                <span className="text-gray-400">|</span>
+                                <span className="text-gray-400">
+                                  {product.createdAt}
                                 </span>
                               </div>
-                              <span className="text-gray-400">|</span>
-                              <span className="text-gray-400">
-                                {product.createdAt}
-                              </span>
-                            </div>
-                            <div className="pt-4 flex items-center gap-2 text-[15px] font-semibold px-1 text-[#801415]">
-                              <span>Order ID:</span>
-                              <span>{product.orderId}</span>
-                            </div>
-                            {product.products.map(
-                              // Đây là những sản phẩm trong chi tiết đơn hàng user đặt
-                              (product) => {
-                                return (
-                                  <>
-                                    <div className="flex items-center gap-4 pt-3">
-                                      <LazyLoadImage
-                                        src={product.image}
-                                        alt={product.name}
-                                        width={70}
-                                        effect="blur"
-                                        height={70}
-                                        style={{
-                                          objectFit: "contain",
-                                        }}
-                                      />
-                                      <div className="flex flex-col justify-between">
-                                        <span className="text-[18px] leading-[24px] font-medium">
-                                          {product.name}
-                                        </span>
-                                        <div className="flex items-center gap-2 text-[14px]">
-                                          <span>Type:</span>
-                                          <span className="text-[15px] leading-[24px]font-normal">
-                                            {product.color}
+                              <div className="pt-4 flex items-center gap-2 text-[15px] font-semibold px-1 text-[#801415]">
+                                <span>Order ID:</span>
+                                <span>{product.orderId}</span>
+                              </div>
+                              {product.products.map(
+                                // Đây là những sản phẩm trong chi tiết đơn hàng user đặt
+                                (product) => {
+                                  return (
+                                    <>
+                                      <div className="flex items-center gap-4 pt-3">
+                                        <LazyLoadImage
+                                          src={product.image}
+                                          alt={product.name}
+                                          width={70}
+                                          effect="blur"
+                                          height={70}
+                                          style={{
+                                            objectFit: "contain",
+                                          }}
+                                        />
+                                        <div className="flex flex-col justify-between">
+                                          <span className="text-[18px] leading-[24px] font-medium">
+                                            {product.name}
                                           </span>
-                                          <span className="text-[15px] leading-[24px]font-normal">
-                                            x{product.quantity}
+                                          <div className="flex items-center gap-2 text-[14px]">
+                                            <span>Type:</span>
+                                            <span className="text-[15px] leading-[24px]font-normal">
+                                              {product.color}
+                                            </span>
+                                            <span className="text-[15px] leading-[24px]font-normal">
+                                              x{product.quantity}
+                                            </span>
+                                          </div>
+                                          <span className="font-semibold">
+                                            ${product.price}
                                           </span>
                                         </div>
-                                        <span className="font-semibold">
-                                          ${product.price}
-                                        </span>
                                       </div>
-                                    </div>
-                                  </>
-                                );
-                              }
-                            )}
-                            <div
-                              className="absolute top-[50%] right-[50px] translate-y-[-50%] size-[60px] rounded-full flex items-center justify-center hover:cursor-pointer"
-                              onClick={() =>
-                                // Xử lí chuyển trang sang order details gồm id đơn hàng, tổng giá tiền đơn hàng, những sản phẩm đã đặt
-                                navigate(`/order-detail/${product.orderId}`, {
-                                  state: {
-                                    orders: product,
-                                    total: product.total,
-                                  },
-                                })
-                              }
-                            >
-                              <ChevronRightIcon className="size-[27px]" />
+                                    </>
+                                  );
+                                }
+                              )}
+                              <div
+                                className="absolute top-[50%] right-[50px] translate-y-[-50%] size-[60px] rounded-full flex items-center justify-center hover:cursor-pointer"
+                                onClick={() =>
+                                  // Xử lí chuyển trang sang order details gồm id đơn hàng, tổng giá tiền đơn hàng, những sản phẩm đã đặt
+                                  navigate(`/order-detail/${product.orderId}`, {
+                                    state: {
+                                      orders: product,
+                                      total: product.total,
+                                    },
+                                  })
+                                }
+                              >
+                                <ChevronRightIcon className="size-[27px]" />
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })
+                          );
+                        })
                     ) : (
                       <div className="text-[17px] text-center py-16 font-normal text-gray-400">
                         You have no orders

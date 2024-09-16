@@ -91,66 +91,84 @@ const OrdersCancel = () => {
               <div className="flex flex-col gap-8">
                 {!isLoading ? (
                   ordersCancel.length > 0 ? (
-                    ordersCancel.map((product) => {
-                      // Thông tin chung của đơn hàng user order
-                      return (
-                        <div className="relative p-6 border-2 border-gray-300 rounded-xl">
-                          <div className="flex items-center gap-3 text-[13px] font-medium">
-                            <div className="px-4 py-1  bg-[#ffe9e5] rounded-full flex items-center gap-2">
-                              <div className="bg-[#e03728] rounded-full size-[13px]"></div>
-                              <span className="text-[12px] font-semibold text-[#e03e28]">
-                                {product.status}
+                    ordersCancel
+                      .sort(
+                        (a, b) =>
+                          new Date(
+                            b.createdAt.split(" ")[0].split("/").reverse() +
+                              " " +
+                              b.createdAt.split(" ")[1]
+                          ) -
+                          new Date(
+                            a.createdAt
+                              .split(" ")[0]
+                              .split("/")
+                              .reverse()
+                              .join("-") +
+                              " " +
+                              a.createdAt.split(" ")[1]
+                          )
+                      )
+                      .map((product) => {
+                        // Thông tin chung của đơn hàng user order
+                        return (
+                          <div className="relative p-6 border-2 border-gray-300 rounded-xl">
+                            <div className="flex items-center gap-3 text-[13px] font-medium">
+                              <div className="px-4 py-1  bg-[#ffe9e5] rounded-full flex items-center gap-2">
+                                <div className="bg-[#e03728] rounded-full size-[13px]"></div>
+                                <span className="text-[12px] font-semibold text-[#e03e28]">
+                                  {product.status}
+                                </span>
+                              </div>
+                              <span className="text-gray-400">|</span>
+                              <span className="text-gray-400">
+                                {product.cancelAt}
                               </span>
                             </div>
-                            <span className="text-gray-400">|</span>
-                            <span className="text-gray-400">
-                              {product.cancelAt}
-                            </span>
-                          </div>
-                          <div className="pt-4 flex items-center gap-2 text-[15px] font-semibold px-1 text-[#801415]">
-                            <span>Order ID:</span>
-                            <span>{product.orderId}</span>
-                          </div>
-                          {product.products.map(
-                            // Đây là những sản phẩm trong chi tiết đơn hàng user đặt
-                            (product) => {
-                              return (
-                                <>
-                                  <Link
-                                    to={`/dp/${product.name}/${product.productId}`}
-                                    className="flex items-center gap-4 pt-5 w-fit"
-                                  >
-                                    <LazyLoadImage
-                                      effect="blur"
-                                      src={product.image}
-                                      alt="product image"
-                                      className="size-[70px] object-contain"
-                                    />
-                                    <div className="flex flex-col justify-between">
-                                      <span className="text-[18px] leading-[24px] font-medium">
-                                        {product.name}
-                                      </span>
-                                      <div className="flex items-center gap-2 text-[14px]">
-                                        <span>Type:</span>
-                                        <span className="text-[15px] leading-[24px]font-normal">
-                                          {product.color}
+                            <div className="pt-4 flex items-center gap-2 text-[15px] font-semibold px-1 text-[#801415]">
+                              <span>Order ID:</span>
+                              <span>{product.orderId}</span>
+                            </div>
+                            {product.products.map(
+                              // Đây là những sản phẩm trong chi tiết đơn hàng user đặt
+                              (product) => {
+                                return (
+                                  <>
+                                    <Link
+                                      to={`/dp/${product.name}/${product.productId}`}
+                                      className="flex items-center gap-4 pt-5 w-fit"
+                                    >
+                                      <LazyLoadImage
+                                        effect="blur"
+                                        src={product.image}
+                                        alt="product image"
+                                        className="size-[70px] object-contain"
+                                      />
+                                      <div className="flex flex-col justify-between">
+                                        <span className="text-[18px] leading-[24px] font-medium">
+                                          {product.name}
                                         </span>
-                                        <span className="text-[15px] leading-[24px]font-normal">
-                                          x{product.quantity}
+                                        <div className="flex items-center gap-2 text-[14px]">
+                                          <span>Type:</span>
+                                          <span className="text-[15px] leading-[24px]font-normal">
+                                            {product.color}
+                                          </span>
+                                          <span className="text-[15px] leading-[24px]font-normal">
+                                            x{product.quantity}
+                                          </span>
+                                        </div>
+                                        <span className="font-semibold">
+                                          ${product.price}
                                         </span>
                                       </div>
-                                      <span className="font-semibold">
-                                        ${product.price}
-                                      </span>
-                                    </div>
-                                  </Link>
-                                </>
-                              );
-                            }
-                          )}
-                        </div>
-                      );
-                    })
+                                    </Link>
+                                  </>
+                                );
+                              }
+                            )}
+                          </div>
+                        );
+                      })
                   ) : (
                     <div className="text-[17px] text-center py-16 font-normal text-gray-400">
                       You have no orders canceled

@@ -22,6 +22,7 @@ export const ListProductsSales = ({ products }) => {
               path={`${getProductPath(product.cate)}`}
               data={product}
               index={index}
+              animation={false}
             />
           );
         })}
