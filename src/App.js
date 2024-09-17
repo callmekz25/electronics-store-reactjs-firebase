@@ -1,7 +1,6 @@
 import "./App.css";
 import React, { useEffect } from "react";
 import "react-loading-skeleton/dist/skeleton.css";
-
 // Animation Lib
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -17,6 +16,7 @@ function App() {
       once: true,
     });
   }, []);
+
   return <RouteApp />;
 }
 

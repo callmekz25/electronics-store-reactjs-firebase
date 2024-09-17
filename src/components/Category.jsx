@@ -27,7 +27,7 @@ export const Category = () => {
           Browse By Category
         </h1>
       </div>
-      <div className="pt-[60px] grid lg:grid-cols-5 grid-cols-2 lg:gap-[30px] gap-[20px]">
+      <div className="pt-[60px] grid lg:grid-cols-4 grid-cols-2 lg:gap-[30px] gap-[20px]">
         <Link to="/phones">
           <BoxCategory
             name="Phones"
@@ -57,13 +57,13 @@ export const Category = () => {
             delay="250"
           />
         </Link>
-        <Link>
+        {/* <Link>
           <BoxCategory
             name="Gaming"
             img={Gaming}
             delay="300"
           />
-        </Link>
+        </Link> */}
       </div>
     </div>
   );
