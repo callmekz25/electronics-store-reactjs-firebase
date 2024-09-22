@@ -218,17 +218,16 @@ const Checkout = () => {
     queryClient.refetchQueries(["orders", user?.userId]);
     navigate("/orders/purchase/status=all");
   };
-  const handleCheck = () => {
+  const validateInfo = () => {
     let hasErrors = false;
-    // Kiểm tra trực tiếp giá trị của 'info' object
     if (!info.name) {
-      setErrorName("Name can't be empty!");
+      setErrorName("Name cann't empty!");
       hasErrors = true;
     } else {
       setErrorName("");
     }
     if (!info.email) {
-      setErrorEmail("Email can't be empty!");
+      setErrorEmail("Email cann't empty!");
       hasErrors = true;
     } else if (!/\S+@\S+\.\S+/.test(info.email)) {
       setErrorEmail("Email is invalid!");
@@ -236,15 +235,14 @@ const Checkout = () => {
     } else {
       setErrorEmail("");
     }
-
     if (!info.address) {
-      setErrorAddress("Address can't be empty!");
+      setErrorAddress("Address cann't empty!");
       hasErrors = true;
     } else {
       setErrorAddress("");
     }
     if (!info.phone) {
-      setErrorPhone("Phone number can't be empty!");
+      setErrorPhone("Phone number cann't empty!");
       hasErrors = true;
     } else if (!info.phone.match(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g)) {
       setErrorPhone("Phone number is invalid!");
@@ -252,7 +250,6 @@ const Checkout = () => {
     } else {
       setErrorPhone("");
     }
-    return hasErrors;
   };
 
   // Tạo order của paypal có giá tiền bằng tổng tiền thanh toán
@@ -514,14 +511,7 @@ const Checkout = () => {
                     )}
                     {optionPay === "pp" && (
                       <PayPalButtons
-                        onClick={(data, actions) => {
-                          let hasErrors = handleCheck();
-                          console.log(hasErrors);
-                          if (hasErrors) {
-                            return actions.reject();
-                          }
-                          return actions.resolve();
-                        }}
+                        disabled={false}
                         createOrder={createOrder}
                         onApprove={() =>
                           handleOrderByPaypal(products, info, total, "pp")

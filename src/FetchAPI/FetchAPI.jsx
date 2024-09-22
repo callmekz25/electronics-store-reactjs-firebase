@@ -65,7 +65,7 @@ export const fetchProductsIsSaleLimit = async () => {
   try {
     const queryProducts = await query(
       collection(db, "All-products"),
-      where("isSale", "==", "true"),
+      where("isSale", "==", true),
       limit(4)
     );
 
@@ -84,7 +84,7 @@ export const fetchProductsIsSale = async () => {
   try {
     const queryProducts = await query(
       collection(db, "All-products"),
-      where("isSale", "==", "true")
+      where("isSale", "==", true)
     );
     const querySnap = await getDocs(queryProducts);
     const productsData = querySnap.docs.map((doc) => doc.data());

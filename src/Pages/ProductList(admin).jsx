@@ -25,24 +25,45 @@ import { Error } from "./Error";
 import { UserContext } from "../Context/UserContext";
 const ProductsList = () => {
   // State update thông tin của product
-  const [name, setName] = useState(null);
-  const [frontCamera, setFrontCamera] = useState(null);
-  const [behindCamera, setBehindCamera] = useState(null);
-  const [connector, setConnector] = useState(null);
-  const [isSale, setIsSale] = useState(null);
-  const [sales, setSales] = useState(null);
-  const [newPrice, setNewPrice] = useState(null);
-  const [oldPrice, setOldPrice] = useState(null);
-  const [pin, setPin] = useState(null);
-  const [cpu, setCpu] = useState(null);
-  const [card, setCard] = useState(null);
-  const [resolution, setResolution] = useState(null);
-  const [weight, setWeight] = useState(null);
-  const [inch, setInch] = useState(null);
-  const [ram, setRam] = useState(null);
-  const [hardDrive, setHardDrive] = useState(null);
-  const [hz, setHz] = useState(null);
-  const [type, setType] = useState(null);
+  const [name, setName] = useState("");
+  const [brand, setBrand] = useState("");
+  const [oldPrice, setOldPrice] = useState("");
+  const [newPrice, setNewPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [sales, setSales] = useState("");
+  const [isSale, setIsSale] = useState("");
+  const [color1, setColor1] = useState(null);
+  const [color2, setColor2] = useState(null);
+  const [color3, setColor3] = useState(null);
+  const [color4, setColor4] = useState(null);
+  const [color5, setColor5] = useState(null);
+  const [infomation, setInfomation] = useState({
+    resolution: "",
+    card: "",
+    connector: "",
+    cpu: "",
+    hardDrive: "",
+    hz: "",
+    inch: "",
+    pin: "",
+    ram: "",
+    type: "",
+    weight: "",
+  });
+  const [infomationPhone, setInfomationPhone] = useState({
+    resolution: "",
+    behindCamera: "",
+    connector: "",
+    cpu: "",
+    hardDrive: "",
+    hz: "",
+    inch: "",
+    pin: "",
+    ram: "",
+    frontCamera: "",
+    weight: "",
+  });
+
   const [isEdit, setIsEdit] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [productWantDelete, setProductWantDelete] = useState(null);
@@ -68,7 +89,20 @@ const ProductsList = () => {
       setAllProducts(products);
     }
   }, [products]);
-
+  const handleInfomation = (e) => {
+    const { name, value } = e.target;
+    setInfomation((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleInfomationPhone = (e) => {
+    const { name, value } = e.target;
+    setInfomationPhone((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   // Xử lí xóa product khỏi database
   const handleDeleteProduct = async (productId) => {
     try {
@@ -114,17 +148,18 @@ const ProductsList = () => {
     setImgPreview(files);
   };
 
-  const handleUpdateProduct = async (productId) => {
+  const handleUpdateProduct = async (product) => {
     const date = new Date();
     const day = date.getDate();
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
-    const currentDay = `${day}.${month}.${year}`;
-    if (imgPreview.length === 0) {
-      console.log("Image null!");
-    } else {
+    let hour = date.getHours();
+    let minute = date.getMinutes();
+    const currentDay = `${day}/${month}/${year} ${hour}:${minute}`;
+    const urls = [];
+    if (imgPreview.length > 0) {
       // Lấy ra ref của storage lưu folder images
-      const imageListRef = sRef(storage, `images/image ${productId}`);
+      const imageListRef = sRef(storage, `images/image ${product.id}`);
       const listImages = await listAll(imageListRef);
       // Lặp qua và xóa ảnh
       const deleteListImages = listImages.items.map((item) =>
@@ -132,12 +167,12 @@ const ProductsList = () => {
       );
       // Đợi tất cả ảnh được xóa
       await Promise.all(deleteListImages);
-      const urls = [];
+
       // Update ảnh mới lên folder cũ vừa xóa các ảnh trên
       for (let i = 0; i < imgPreview.length; i++) {
         const imageRef = sRef(
           storage,
-          `images/image ${productId}/${imgPreview[i].name + uuid()}`
+          `images/image ${product.id}/${imgPreview[i].name + uuid()}`
         );
         await uploadBytes(imageRef, imgPreview[i]).then(() => {
           console.log("Update images success!");
@@ -146,52 +181,63 @@ const ProductsList = () => {
         const url = await getDownloadURL(imageRef);
         urls.push(url);
       }
-
-      if (urls.length > 0) {
-        const docRef = doc(db, "All-products", productId);
-        const productDataUpdate = {
-          //   name: name,
-          img: urls,
-          createdAt: currentDay,
-          //   infomation: {
-          //     // frontCamera: frontCamera,
-          //     // behindCamera: behindCamera,
-          //     // connector: connector,
-          //     // pin: pin,
-          //     // cpu: cpu,
-          //     // inch: inch,
-          //     // resolution: resolution,
-          //     // weight: weight,
-          //     // ram: ram,
-          //     // hardDrive: hardDrive,
-          //     // hz: hz,
-          //     resolution: resolution,
-          //     card: card,
-          //     connector: connector,
-          //     cpu: cpu,
-          //     hardDrive: hardDrive,
-          //     hz: hz,
-          //     inch: inch,
-          //     pin: pin,
-          //     ram: ram,
-          //     type: type,
-          //     weight: weight,
-          //   },
-        };
-        await updateDoc(docRef, productDataUpdate);
-        for (let i = 0; i < imgPreview.length; i++) {
-          URL.revokeObjectURL(imgPreview[i].preview);
-        }
-        if (updateDoc) {
-          toast.success("Update successfully!", {
-            position: "top-center",
-            autoClose: 1500,
-          });
-        }
-      }
+    }
+    let info = {};
+    if (product.cate === "laptop") {
+      info = {
+        type: infomation.type,
+        resolution: infomation.resolution,
+        inch: infomation.inch,
+        connector: infomation.connector,
+        ram: infomation.ram,
+        hardDrive: infomation.hardDrive,
+        cpu: infomation.cpu,
+        pin: infomation.pin,
+        hz: infomation.hz,
+        card: infomation.card,
+        weight: infomation.weight,
+      };
+    } else if (product.cate === "phone") {
+      info = {
+        behindCamera:
+          infomationPhone.behindCamera || product.infomation.behindCamera,
+        frontCamera:
+          infomationPhone.frontCamera || product.infomation.frontCamera,
+        resolution: infomationPhone.resolution || product.infomation.resolution,
+        inch: infomationPhone.inch || product.infomation.inch,
+        connector: infomationPhone.connector || product.infomation.connector,
+        ram: infomationPhone.ram || product.infomation.ram,
+        hardDrive: infomationPhone.hardDrive || product.infomation.hardDrive,
+        cpu: infomationPhone.cpu || product.infomation.cpu,
+        pin: infomationPhone.pin || product.infomation.pin,
+        hz: infomationPhone.hz || product.infomation.hz,
+        weight: infomationPhone.weight || product.infomation.weight,
+      };
+    }
+    const docRef = doc(db, "All-products", product.id);
+    const productDataUpdate = {
+      name: name || product.name,
+      img: urls || product.img,
+      createdAt: currentDay || product.createdAt,
+      brand: brand || product.brand,
+      oldPrice: oldPrice || product.oldPrice,
+      newPrice: newPrice || product.newPrice,
+      colors: [color1, color2, color3, color4, color5],
+      sales: sales || product.sales,
+      isSale: isSale || product.isSale,
+      infomation: info,
+    };
+    await updateDoc(docRef, productDataUpdate);
+    for (let i = 0; i < imgPreview.length; i++) {
+      URL.revokeObjectURL(imgPreview[i].preview);
+    }
+    if (updateDoc) {
+      toast.success("Update successfully!", {
+        position: "top-center",
+        autoClose: 1500,
+      });
     }
   };
-  console.log(imgPreview);
 
   if (isLoading || loading) {
     return <Loading />;
@@ -199,6 +245,7 @@ const ProductsList = () => {
   if (isError) {
     return <Error />;
   }
+
   return (
     <div className="grid grid-cols-6">
       {/* Delete product popup */}
@@ -248,7 +295,10 @@ const ProductsList = () => {
               <span>Product ID:</span>
               <span>{productEdit.id}</span>
             </div>
-            <div className="grid grid-cols-3 gap-[30px] py-[30px]">
+            <div
+              className="flex flex-col gap-[30px] py-[30px] font-medium
+            "
+            >
               <div className="flex flex-col gap-2 col-span-3">
                 <input
                   type="file"
@@ -272,212 +322,274 @@ const ProductsList = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pname">Name</label>
-                <input
-                  type="text"
-                  id="pname"
-                  value={name}
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              {/* <div className="flex flex-col gap-2">
-                <label htmlFor="pcate">Front Camera</label>
-                <input
-                  type="text"
-                  id="pcate"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setFrontCamera(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pbrand">Behind Camera</label>
-                <input
-                  type="text"
-                  id="pbrand"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setBehindCamera(e.target.value)}
-                />
-              </div> */}
-              {/* <div className="flex flex-col gap-2">
-                <label htmlFor="pcolor">Colors</label>
-                <input
-                  type="text"
-                  id="pcolor"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setColors(e.target.value)}
-                />
-              </div> */}
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pOldPrice">Old Price</label>
-                <input
-                  type="number"
-                  id="pOldPrice"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onCanPlay={(e) => setOldPrice(e.target.value)}
-                  value={oldPrice}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pNewPrice">New Price</label>
-                <input
-                  type="number"
-                  id="pNewPrice"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setNewPrice(e.target.value)}
-                  value={newPrice}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="psales">Sales</label>
-                <input
-                  type="text"
-                  id="psales"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setSales(e.target.value)}
-                  value={sales}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pissale">Is Sale</label>
-                <input
-                  type="text"
-                  id="pissale"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setIsSale(e.target.value)}
-                  value={isSale}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="ptype">Type</label>
-                <input
-                  type="text"
-                  id="ptype"
-                  name="type"
-                  onChange={(e) => setType(e.target.value)}
-                  value={type}
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pres">Resolution</label>
-                <input
-                  type="text"
-                  id="pres"
-                  name="resolution"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  value={resolution}
-                  onChange={(e) => setResolution(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pinch">Inch</label>
-                <input
-                  type="number"
-                  id="pinch"
-                  name="inch"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  value={inch}
-                  onChange={(e) => setInch(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pconnector">Connector</label>
-                <input
-                  type="text"
-                  id="pconnector"
-                  name="connector"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  value={connector}
-                  onChange={(e) => setConnector(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pram">Ram</label>
-                <input
-                  type="number"
-                  id="pram"
-                  name="ram"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  value={ram}
-                  onChange={(e) => setRam(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="phd">Hard Drive</label>
-                <input
-                  type="number"
-                  id="hpd"
-                  name="hardDrive"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  value={hardDrive}
-                  onChange={(e) => setHardDrive(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pcpu">CPU</label>
-                <input
-                  type="text"
-                  id="pcpu"
-                  name="cpu"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setCpu(e.target.value)}
-                  value={cpu}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="ppin">Pin</label>
-                <input
-                  type="text"
-                  id="ppin"
-                  name="pin"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setPin(e.target.value)}
-                  value={pin}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="phz">Hz</label>
-                <input
-                  type="number"
-                  id="phz"
-                  name="hz"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setHz(e.target.value)}
-                  value={hz}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pcard">Card</label>
-                <input
-                  type="text"
-                  id="pcard"
-                  name="card"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setCard(e.target.value)}
-                  value={card}
-                />
-              </div>
+              {productEdit.cate === "phone" && (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pName">Name</label>
+                    <input
+                      type="text"
+                      id="pName"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pbrand">Brand</label>
+                    <input
+                      type="text"
+                      id="pbrand"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={(e) => setBrand(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor1">Color 1</label>
+                      <input
+                        type="color"
+                        id="pcolor1"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor1(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor2">Color 2</label>
+                      <input
+                        type="color"
+                        id="pcolor2"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor2(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor3">Color 3</label>
+                      <input
+                        type="color"
+                        id="pcolor3"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor3(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor4">Color 4</label>
+                      <input
+                        type="color"
+                        id="pcolor4"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor4(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor5">Color 5</label>
+                      <input
+                        type="color"
+                        id="pcolor5"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor5(e.target.value)}
+                      />
+                    </div>
+                  </div>
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="pweight">Weight</label>
-                <input
-                  type="number"
-                  id="pweight"
-                  name="weight"
-                  className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
-                  onChange={(e) => setWeight(e.target.value)}
-                  value={weight}
-                />
-              </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pOldPrice">Old Price</label>
+                    <input
+                      type="number"
+                      id="pOldPrice"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={(e) => setOldPrice(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pNewPrice">New Price</label>
+                    <input
+                      type="number"
+                      id="pNewPrice"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={(e) => setNewPrice(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="psales">Sales</label>
+                    <input
+                      type="text"
+                      id="psales"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={(e) => setSales(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pissale">Is Sale</label>
+                    <div className="flex items-center gap-2">
+                      <span>Not sale</span>
+                      <input
+                        type="radio"
+                        id="pissale"
+                        name="sale"
+                        className="outline-none  size-4 hover:cursor-pointer"
+                        onChange={() => setIsSale(false)}
+                      />
+                      <span>Sale</span>
+                      <input
+                        type="radio"
+                        id="pissale"
+                        name="sale"
+                        className="outline-none size-4 hover:cursor-pointer"
+                        onChange={() => setIsSale(true)}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pFc">Front Camera</label>
+                    <input
+                      type="text"
+                      name="frontCamera"
+                      id="pFc"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={handleInfomationPhone}
+                      value={infomationPhone.frontCamera}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pBc">Behind Camera</label>
+                    <input
+                      type="text"
+                      name="behindCamera"
+                      id="pBc"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={handleInfomationPhone}
+                      value={infomationPhone.behindCamera}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pres">Resolution</label>
+                    <select
+                      name="resolution"
+                      id="pres"
+                      onChange={handleInfomationPhone}
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                    >
+                      <option value=""></option>
+                      <option value="QQVGA">QQVGA</option>
+                      <option value="QVGA">QVGA</option>
+                      <option value="QXGA+">QXGA+</option>
+                      <option value="Full HD+">Full HD+</option>
+                      <option value="1.5K">1.5K</option>
+                      <option value="1.5K+">1.5K+</option>
+                      <option value="2K+">2K+</option>
+                      <option value="Retina">Retina(iPhone)</option>
+                      <option value="Super Retina XDR">Super Retina XDR</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pinch">Inch</label>
+                    <input
+                      type="text"
+                      name="inch"
+                      id="pinch"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={handleInfomationPhone}
+                      value={infomationPhone.inch}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="lconnector">Connector</label>
+                    <input
+                      type="text"
+                      id="lconnector"
+                      name="connector"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      value={infomationPhone.connector}
+                      onChange={handleInfomationPhone}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pram">Ram</label>
+                    <select
+                      name="ram"
+                      id="pram"
+                      onChange={handleInfomationPhone}
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                    >
+                      <option value=""></option>
+                      <option value="3">3GB</option>
+                      <option value="4">4GB</option>
+                      <option value="6">6GB</option>
+                      <option value="8">8GB</option>
+                      <option value="16">12GB</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="phd">Hard Drive</label>
+                    <select
+                      name="hardDrive"
+                      id="phd"
+                      onChange={handleInfomationPhone}
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                    >
+                      <option value=""></option>
+                      <option value="64">64GB</option>
+                      <option value="128">128GB</option>
+                      <option value="256">256GB</option>
+                      <option value="512">512GB</option>
+                      <option value="1">1TB</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pcpu">CPU</label>
+                    <input
+                      type="text"
+                      id="pcpu"
+                      name="cpu"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      value={infomationPhone.cpu}
+                      onChange={handleInfomationPhone}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="ppin">Pin</label>
+                    <input
+                      type="text"
+                      id="ppin"
+                      name="pin"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      value={infomationPhone.pin}
+                      onChange={handleInfomationPhone}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="phz">Hz</label>
+                    <select
+                      name="hz"
+                      id="phz"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      onChange={handleInfomationPhone}
+                    >
+                      <option value=""></option>
+                      <option value="60">60Hz</option>
+                      <option value="90">90Hz</option>
+                      <option value="120">120Hz</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="pweight">Weight</label>
+                    <input
+                      type="number"
+                      id="pweight"
+                      name="weight"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      value={infomationPhone.weight}
+                      onChange={handleInfomationPhone}
+                    />
+                  </div>
+                </>
+              )}
             </div>
             <div className="flex items-center justify-end gap-4">
               <button
                 className="px-4 py-2 bg-red-500 rounded flex items-center justify-center text-white font-medium text-[15px] outline-none"
                 onClick={() => {
                   setIsEdit(false);
-                  handleUpdateProduct(productEdit.id);
+                  handleUpdateProduct(productEdit);
                 }}
               >
                 Update
@@ -524,7 +636,7 @@ const ProductsList = () => {
               <tbody>
                 {allProducts
                   ? allProducts.map((product) => {
-                      if (product.cate === "laptop") {
+                      if (product.cate === "phone") {
                         return (
                           <tr className="text-[14px] border-b-2 border-[#f5f5f5] font-medium">
                             <td className="px-5 py-5">
