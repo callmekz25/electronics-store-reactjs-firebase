@@ -87,7 +87,11 @@ const MyOrders = () => {
                         .sort(
                           (a, b) =>
                             new Date(
-                              b.createdAt.split(" ")[0].split("/").reverse() +
+                              b.createdAt
+                                .split(" ")[0]
+                                .split("/")
+                                .reverse()
+                                .join("-") +
                                 " " +
                                 b.createdAt.split(" ")[1]
                             ) -

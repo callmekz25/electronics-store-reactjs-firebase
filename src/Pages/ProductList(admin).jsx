@@ -1,5 +1,5 @@
 import SideBar from "../components/SideBar";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   deleteObject,
   listAll,
@@ -7,8 +7,13 @@ import {
   getDownloadURL,
   uploadBytes,
 } from "firebase/storage";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
-import { TrashIcon } from "@heroicons/react/24/outline";
+import {
+  PencilSquareIcon,
+  TrashIcon,
+  AdjustmentsHorizontalIcon,
+  XMarkIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 import { collection, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { deleteDoc, doc } from "firebase/firestore";
@@ -29,14 +34,13 @@ const ProductsList = () => {
   const [brand, setBrand] = useState("");
   const [oldPrice, setOldPrice] = useState("");
   const [newPrice, setNewPrice] = useState("");
-  const [category, setCategory] = useState("");
   const [sales, setSales] = useState("");
   const [isSale, setIsSale] = useState("");
-  const [color1, setColor1] = useState(null);
-  const [color2, setColor2] = useState(null);
-  const [color3, setColor3] = useState(null);
-  const [color4, setColor4] = useState(null);
-  const [color5, setColor5] = useState(null);
+  const [color1, setColor1] = useState("");
+  const [color2, setColor2] = useState("");
+  const [color3, setColor3] = useState("");
+  const [color4, setColor4] = useState("");
+  const [color5, setColor5] = useState("");
   const [infomation, setInfomation] = useState({
     resolution: "",
     card: "",
@@ -63,14 +67,22 @@ const ProductsList = () => {
     frontCamera: "",
     weight: "",
   });
-
+  const [searchValue, setSearchValue] = useState("");
+  const [activeFilter, setActiveFilter] = useState(false);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [filterByBrand, setFilterByBrand] = useState("");
+  const [filterByCategory, setFilterByCategory] = useState("");
+  const [filterByPrice, setFilterByPrice] = useState("");
+  const [filterBySales, setFilterBySales] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-  const [productWantDelete, setProductWantDelete] = useState(null);
-  const [productEdit, setProductEdit] = useState(null);
+  const [productWantDelete, setProductWantDelete] = useState("");
+  const [productEdit, setProductEdit] = useState("");
   const [allProducts, setAllProducts] = useState([]);
   const [imgPreview, setImgPreview] = useState([]);
   const { user, loading } = useContext(UserContext);
+  const filterRef = useRef("");
   const {
     data: products,
     isLoading,
@@ -238,6 +250,129 @@ const ProductsList = () => {
       });
     }
   };
+  const handleDiscardUpdate = () => {
+    setIsEdit(false);
+    setProductEdit(null);
+    setImgPreview([]);
+    setName("");
+    setBrand("");
+    setSales("");
+    setColor1(null);
+    setColor2(null);
+    setColor3(null);
+    setColor4(null);
+    setColor5(null);
+    setIsSale("");
+    setInfomation({
+      resolution: "",
+      card: "",
+      connector: "",
+      cpu: "",
+      hardDrive: "",
+      hz: "",
+      inch: "",
+      pin: "",
+      ram: "",
+      type: "",
+      weight: "",
+    });
+    setInfomationPhone({
+      resolution: "",
+      behindCamera: "",
+      connector: "",
+      cpu: "",
+      hardDrive: "",
+      hz: "",
+      inch: "",
+      pin: "",
+      ram: "",
+      frontCamera: "",
+      weight: "",
+    });
+  };
+  // Khi bấm ngoài phần tử button filter thì ẩn
+  const handleClickOutOfButtonFilter = (e) => {
+    if (filterRef.current && !filterRef.current.contains(e.target)) {
+      setActiveFilter(false);
+    }
+  };
+
+  // Khi click ngoài popup filter thì tắt
+  useEffect(() => {
+    // Lắng nghe sự kiện khi nhấn chuột
+    document.addEventListener("mousedown", handleClickOutOfButtonFilter);
+    return () => {
+      // Xóa sự kiện khi component unmount
+      document.removeEventListener("mousedown", handleClickOutOfButtonFilter);
+    };
+  }, []);
+  // Search product name
+  const activeSearch = (e) => {
+    applyFilter(e);
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      applyFilter(e);
+    }
+  };
+
+  // Filter list products
+  const applyFilter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    let filtered = products;
+    if (searchValue) {
+      filtered = filtered.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          product.id.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+    if (fromDate && toDate) {
+      filtered = filtered.filter(
+        (product) =>
+          new Date(product.createdAt.split("/").reverse()) >=
+            new Date(fromDate) &&
+          new Date(product.createdAt.split("/").reverse()) <= new Date(toDate)
+      );
+    }
+    if (filterByCategory) {
+      filtered = filtered.filter(
+        (product) => product.cate === filterByCategory
+      );
+    }
+    if (filterByPrice) {
+      const price = filterByPrice.split("-");
+      const minPrice = Number(price[0]);
+      const maxPrice = Number(price[1]);
+      filtered = filtered.filter(
+        (product) =>
+          product.newPrice >= minPrice && product.newPrice <= maxPrice
+      );
+    }
+    if (filterByBrand) {
+      filtered = filtered.filter((product) => product.brand === filterByBrand);
+    }
+    if (filterBySales) {
+      filtered = filtered.filter((product) => product.isSale === filterBySales);
+    }
+    setActiveFilter(false);
+    setAllProducts(filtered);
+  };
+
+  // Reset all filter list products
+  const handleResetFilter = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setActiveFilter(false);
+    setFilterByBrand("");
+    setFilterByCategory("");
+    setFilterByPrice(null);
+    setFilterBySales(null);
+    setFromDate(null);
+    setToDate(null);
+    setAllProducts(products);
+  };
 
   if (isLoading || loading) {
     return <Loading />;
@@ -251,19 +386,19 @@ const ProductsList = () => {
       {/* Delete product popup */}
       {isDelete && (
         <div className="overlay">
-          <div className=" w-[500px] h-[300px] bg-white rounded-lg p-7 flex flex-col justify-between">
+          <div className=" w-[500px] bg-white rounded-md p-5 flex flex-col justify-between">
             <div className="">
-              <h3 className="text-[25px] font-medium text-red-500">
-                Are you sure want to cancel order?
+              <h3 className="text-[25px] font-normal text-red-500">
+                Are you sure want to delete product?
               </h3>
-              <p className="text-[17px] text-gray-400 font-normal mt-5">
-                If you confirm this action cannot be undone and your orders will
-                be cancel.
+              <p className="text-[17px] text-gray-400 font-normal mt-10">
+                If you confirm this action cannot be undone and this procut will
+                be delete.
               </p>
             </div>
-            <div className="flex items-center justify-end gap-4">
+            <div className="flex items-center justify-end gap-4 mt-10">
               <button
-                className="px-4 py-2 bg-red-500 rounded flex items-center justify-center text-white font-medium text-[15px] outline-none"
+                className="px-4 py-2 bg-red-500 border-2 border-red-500 rounded flex items-center justify-center text-white font-normal text-[15px] outline-none"
                 onClick={() => {
                   setIsDelete(false);
                   handleDeleteProduct(productWantDelete.id);
@@ -272,13 +407,13 @@ const ProductsList = () => {
                 Yes, cancel
               </button>
               <button
-                className="px-8 py-2 bg-[#e0e0e3] rounded flex items-center justify-center text-gray-400 font-medium text-[15px] outline-none"
+                className="px-8 py-2 border-2  rounded flex items-center justify-center text-gray-400 font-normal text-[15px] outline-none"
                 onClick={() => {
                   setIsDelete(false);
                   setProductWantDelete(null);
                 }}
               >
-                No
+                Discard
               </button>
             </div>
           </div>
@@ -287,10 +422,8 @@ const ProductsList = () => {
       {/* Edit product popup*/}
       {isEdit && (
         <div className="overlay">
-          <div className=" bg-white rounded-lg p-7 h-[500px] overflow-auto">
-            <h3 className="text-[25px] font-medium text-red-500">
-              Edit Product
-            </h3>
+          <div className=" bg-white rounded-md p-7 max-h-[650px] overflow-auto text-[#48505e] scrollbar-hide">
+            <h3 className="text-[20px] font-medium ">Update product</h3>
             <div className="flex items-center gap-2 py-2">
               <span>Product ID:</span>
               <span>{productEdit.id}</span>
@@ -305,12 +438,12 @@ const ProductsList = () => {
                   multiple="multiple"
                   onChange={(e) => handlePreviewImg(e)}
                 />
-                <div className="h-[250px] w-[400px] border-2 border-gray-300 p-5 rounded">
-                  <div className="flex items-center gap-4">
+                <div className="w-[400px] border border-gray-300 p-2 rounded">
+                  <div className="flex items-center gap-3 flex-wrap">
                     {imgPreview &&
                       Array.from(imgPreview).map((img) => {
                         return (
-                          <div className="size-[80px] flex items-center bg-[#f5f5f5] justify-center p-3 rounded-md">
+                          <div className="size-[60px] flex items-center bg-[#f5f5f5] justify-center p-3 rounded-md">
                             <img
                               src={img.preview}
                               alt=""
@@ -324,22 +457,24 @@ const ProductsList = () => {
               </div>
               {productEdit.cate === "phone" && (
                 <>
-                  <div className="flex flex-col gap-2">
-                    <label htmlFor="pName">Name</label>
+                  <div className="flex items-center justify-between ">
+                    <label htmlFor="pName">Product Name</label>
                     <input
                       type="text"
                       id="pName"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-[#d0d5dd] rounded-md px-3 py-2 font-normal w-[60%]"
                       onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter product name"
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pbrand">Brand</label>
                     <input
                       type="text"
                       id="pbrand"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                       onChange={(e) => setBrand(e.target.value)}
+                      placeholder="Enter product brand"
                     />
                   </div>
                   <div className="flex items-center gap-4">
@@ -390,34 +525,37 @@ const ProductsList = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pOldPrice">Old Price</label>
                     <input
                       type="number"
                       id="pOldPrice"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                       onChange={(e) => setOldPrice(e.target.value)}
+                      placeholder="Enter product old price"
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pNewPrice">New Price</label>
                     <input
                       type="number"
                       id="pNewPrice"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                       onChange={(e) => setNewPrice(e.target.value)}
+                      placeholder="Enter product new price"
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="psales">Sales</label>
                     <input
                       type="text"
                       id="psales"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter sales product"
                       onChange={(e) => setSales(e.target.value)}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pissale">Is Sale</label>
                     <div className="flex items-center gap-2">
                       <span>Not sale</span>
@@ -438,40 +576,43 @@ const ProductsList = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pFc">Front Camera</label>
                     <input
                       type="text"
                       name="frontCamera"
                       id="pFc"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                       onChange={handleInfomationPhone}
+                      placeholder="Enter front camera"
                       value={infomationPhone.frontCamera}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pBc">Behind Camera</label>
                     <input
                       type="text"
                       name="behindCamera"
                       id="pBc"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                       onChange={handleInfomationPhone}
+                      placeholder="Enter behind camera"
                       value={infomationPhone.behindCamera}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pres">Resolution</label>
                     <select
                       name="resolution"
                       id="pres"
                       onChange={handleInfomationPhone}
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                     >
-                      <option value=""></option>
+                      <option value="">Enter product resolution</option>
                       <option value="QQVGA">QQVGA</option>
                       <option value="QVGA">QVGA</option>
                       <option value="QXGA+">QXGA+</option>
+                      <option value="HD+">HD+</option>
                       <option value="Full HD+">Full HD+</option>
                       <option value="1.5K">1.5K</option>
                       <option value="1.5K+">1.5K+</option>
@@ -480,37 +621,39 @@ const ProductsList = () => {
                       <option value="Super Retina XDR">Super Retina XDR</option>
                     </select>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pinch">Inch</label>
                     <input
                       type="text"
                       name="inch"
                       id="pinch"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter product inch"
                       onChange={handleInfomationPhone}
                       value={infomationPhone.inch}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="lconnector">Connector</label>
                     <input
                       type="text"
                       id="lconnector"
                       name="connector"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter product connector"
                       value={infomationPhone.connector}
                       onChange={handleInfomationPhone}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pram">Ram</label>
                     <select
                       name="ram"
                       id="pram"
                       onChange={handleInfomationPhone}
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                     >
-                      <option value=""></option>
+                      <option value="">Enter product RAM</option>
                       <option value="3">3GB</option>
                       <option value="4">4GB</option>
                       <option value="6">6GB</option>
@@ -518,15 +661,15 @@ const ProductsList = () => {
                       <option value="16">12GB</option>
                     </select>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="phd">Hard Drive</label>
                     <select
                       name="hardDrive"
                       id="phd"
                       onChange={handleInfomationPhone}
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                     >
-                      <option value=""></option>
+                      <option value="">Enter product storage</option>
                       <option value="64">64GB</option>
                       <option value="128">128GB</option>
                       <option value="256">256GB</option>
@@ -534,49 +677,52 @@ const ProductsList = () => {
                       <option value="1">1TB</option>
                     </select>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pcpu">CPU</label>
                     <input
                       type="text"
                       id="pcpu"
                       name="cpu"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter product cpu"
                       value={infomationPhone.cpu}
                       onChange={handleInfomationPhone}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="ppin">Pin</label>
                     <input
                       type="text"
                       id="ppin"
                       name="pin"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter product pin"
                       value={infomationPhone.pin}
                       onChange={handleInfomationPhone}
                     />
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="phz">Hz</label>
                     <select
                       name="hz"
                       id="phz"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                       onChange={handleInfomationPhone}
                     >
-                      <option value=""></option>
+                      <option value="">Enter product hz</option>
                       <option value="60">60Hz</option>
                       <option value="90">90Hz</option>
                       <option value="120">120Hz</option>
                     </select>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
                     <label htmlFor="pweight">Weight</label>
                     <input
                       type="number"
                       id="pweight"
                       name="weight"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter product weight"
                       value={infomationPhone.weight}
                       onChange={handleInfomationPhone}
                     />
@@ -586,48 +732,313 @@ const ProductsList = () => {
             </div>
             <div className="flex items-center justify-end gap-4">
               <button
-                className="px-4 py-2 bg-red-500 rounded flex items-center justify-center text-white font-medium text-[15px] outline-none"
+                className="px-8 py-2 border-2  rounded flex items-center justify-center text-gray-400 font-normal text-[15px] outline-none"
+                onClick={() => handleDiscardUpdate()}
+              >
+                Discard
+              </button>
+              <button
+                className="px-4 py-2 bg-[#1366d9] rounded flex items-center justify-center border-2 border-[#1366d9] text-white font-normal text-[15px] outline-none"
                 onClick={() => {
                   setIsEdit(false);
                   handleUpdateProduct(productEdit);
                 }}
               >
-                Update
-              </button>
-              <button
-                className="px-8 py-2 bg-[#e0e0e3] rounded flex items-center justify-center text-gray-400 font-medium text-[15px] outline-none"
-                onClick={() => {
-                  setIsEdit(false);
-                  setProductEdit(null);
-                }}
-              >
-                Cancel
+                Update Product
               </button>
             </div>
           </div>
         </div>
       )}
       <SideBar isActive={"products"} />
-      <div className={`bg-[#ffffff]   px-3 py-5 col-span-5`}>
-        <h2 className="text-[25px] font-semibold">Products</h2>
+      <div className={`bg-[#f0f1f3]  px-[50px] py-5 col-span-5`}>
+        <div className="bg-[#ffffff] rounded-lg px-6 py-5 flex flex-col gap-5">
+          <h3 className="text-[22px] font-medium">Overall</h3>
+          <div className="grid grid-cols-4">
+            <div className="flex flex-col justify-between font-medium">
+              <span className="text-[#2278f0]">Categories</span>
+              <span>14</span>
+            </div>
+
+            <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
+              <span className=" text-[#e59f4c]">Total Products</span>
+              <div className="flex items-center justify-between">
+                <span>14</span>
+                <span>$20039</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
+              <span className=" text-[#9472c5]">Total Selling</span>
+              <div className="flex items-center justify-between">
+                <span>14</span>
+                <span>$20039</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
+              <span className="">Total Products</span>
+              <span>14</span>
+            </div>
+          </div>
+        </div>
         <div className=" py-[50px]">
-          <div className="bg-[#ffffff] rounded-xl py-5 px-3 w-full">
+          <div className="bg-[#ffffff] rounded-lg py-5 px-3 w-full">
+            <div className="flex items-center px-5 justify-between">
+              <h2 className="text-[20px] font-medium">Products</h2>
+              <div className="flex items-center gap-4">
+                {/* Search */}
+                <div className="relative">
+                  <MagnifyingGlassIcon
+                    className="absolute size-5 left-2 top-[50%] translate-y-[-50%] text-[#9ca3af] hover:cursor-pointer"
+                    onClick={(e) => activeSearch(e)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    className="border-2 rounded-lg px-8 py-[6px] outline-[#0047ff] w-full text-[14px]"
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    value={searchValue}
+                    onKeyDown={(e) => handleKeyDown(e)}
+                  />
+                </div>
+                {/* Filter */}
+                <div className="flex items-center">
+                  <div className="relative">
+                    <button
+                      className={`flex items-center gap-3 rounded-lg border-2  px-4 py-[6px] ${
+                        activeFilter ? "border-[#0047ff]" : "border-gray-300"
+                      }`}
+                      onClick={() => setActiveFilter(true)}
+                    >
+                      <AdjustmentsHorizontalIcon className="size-5" />
+                      <span className="text-[15px] font-normal text-gray-500">
+                        Filters
+                      </span>
+                    </button>
+                    {activeFilter && (
+                      <div
+                        className="bg-[#ffff] rounded-xl shadow-popup  w-[400px] overflow-hidden  absolute top-[110%] right-0  border border-gray-200"
+                        ref={filterRef}
+                      >
+                        <div className="flex items-center justify-between border-b-2 border-gray-100 py-2 px-3 bg-[#f9f9f9]">
+                          <span className="font-medium">Filter</span>
+                          <XMarkIcon
+                            className="size-6 hover:cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setActiveFilter(false);
+                            }}
+                          />
+                        </div>
+                        <div className="px-3 py-4 flex flex-col gap-5 text-[15px] font-normal">
+                          <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                              <label
+                                htmlFor=""
+                                className="text-[#b2b2bd]"
+                              >
+                                Select Date
+                              </label>
+                              <span className="text-[#2754f9] font-medium">
+                                Clear
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="flex flex-col gap-1">
+                                <label
+                                  htmlFor="from"
+                                  className="font-medium"
+                                >
+                                  From:
+                                </label>
+                                <input
+                                  type="date"
+                                  name="fromDate"
+                                  id="from"
+                                  onChange={(e) => setFromDate(e.target.value)}
+                                  value={fromDate}
+                                  className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                                />
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <label
+                                  htmlFor="to"
+                                  className="font-medium"
+                                >
+                                  To:
+                                </label>
+                                <input
+                                  type="date"
+                                  name="toDate"
+                                  id="to"
+                                  onChange={(e) => setToDate(e.target.value)}
+                                  value={toDate}
+                                  className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                              <label
+                                htmlFor="category"
+                                className="text-[#b2b2bd]"
+                              >
+                                Category
+                              </label>
+                              <span className="text-[#2754f9] font-medium">
+                                Clear
+                              </span>
+                            </div>
+                            <select
+                              name="category"
+                              id="category"
+                              className="border-2 rounded-md px-2 py-[6px] outline-none w-full "
+                              value={filterByCategory}
+                              onChange={(e) =>
+                                setFilterByCategory(e.target.value)
+                              }
+                            >
+                              <option value=""></option>
+                              <option value="phone">Phone</option>
+                              <option value="laptop">Laptop</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                              <label
+                                htmlFor="brand"
+                                className="text-[#b2b2bd]"
+                              >
+                                Brand
+                              </label>
+                              <span className="text-[#2754f9] font-medium">
+                                Clear
+                              </span>
+                            </div>
+                            <select
+                              name="brand"
+                              id="brand"
+                              className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                              onChange={(e) => setFilterByBrand(e.target.value)}
+                              value={filterByBrand}
+                            >
+                              <option value=""></option>
+                              <option value="iphone">iphone</option>
+                              <option value="samsung">samsung</option>
+                              <option value="vivo">vivo</option>
+                              <option value="xiaomi">xiaomi</option>
+                              <option value="oppo">oppo</option>
+                              <option value="acer">acer</option>
+                              <option value="asus">asus</option>
+                              <option value="dell">dell</option>
+                              <option value="lenovo">lenovo</option>
+                              <option value="macbook">macbook</option>
+                              <option value="hp">hp</option>
+                              <option value="msi">msi</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                              <label
+                                htmlFor="price"
+                                className="text-[#b2b2bd]"
+                              >
+                                Price
+                              </label>
+                              <span className="text-[#2754f9] font-medium">
+                                Clear
+                              </span>
+                            </div>
+                            <select
+                              name="price"
+                              id="price"
+                              className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                              onChange={(e) => setFilterByPrice(e.target.value)}
+                              value={filterByPrice}
+                            >
+                              <option value=""></option>
+                              <option value="0-50">$0 - $50</option>
+                              <option value="50-100">$50 - $100</option>
+                              <option value="100-200">$100 - $200</option>
+                              <option value="200-500">$200 - $500</option>
+                              <option value="500-1000">$500 - $1000</option>
+                              <option value="1000-1500">$1000 - $1500</option>
+                              <option value="1500-2000">$1500 - $2000</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                              <label
+                                htmlFor=""
+                                className="text-[#b2b2bd]"
+                              >
+                                Sales
+                              </label>
+                              <span className="text-[#2754f9] font-medium">
+                                Clear
+                              </span>
+                            </div>
+                            <div className="flex items-center  gap-4 w-full">
+                              <label htmlFor="sales">Sales</label>
+                              <input
+                                type="radio"
+                                name="sales"
+                                id="sales"
+                                className="size-4"
+                                onChange={() => setFilterBySales(true)}
+                              />
+                              <label htmlFor="notSales">No Sales</label>
+                              <input
+                                type="radio"
+                                name="sales"
+                                id="notSales"
+                                className="size-4"
+                                onChange={() => setFilterBySales(false)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 justify-between border-t-2 border-gray-100 px-3 py-6 font-normal">
+                          <button
+                            onClick={(e) => {
+                              handleResetFilter(e);
+                            }}
+                            className="py-[6px] px-4 border-2 border-gray-300 rounded-md"
+                          >
+                            Reset
+                          </button>
+                          <button
+                            onClick={(e) => applyFilter(e)}
+                            className="bg-[#0047ff] border-2 border-[#0047ff] rounded-md px-5 py-[6px] text-[15px]  text-white"
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
             <table
               className="w-full"
               style={{ padding: "20px" }}
             >
-              <thead className="bg-[#f5f5f5]">
-                <tr className="text-[15px] font-semibold">
+              <thead className="text-[#667085]">
+                <tr className="text-[15px] font-medium">
                   <td className="px-5 py-3 rounded-tl-lg rounded-bl-lg">
                     Image
                   </td>
-                  <td className="px-5 py-3">ID</td>
+                  <td className="px-5 py-3">Product ID</td>
                   <td className="px-5 py-3">Product Name</td>
                   <td className="px-5 py-3">Category</td>
                   <td className="px-5 py-3">Brand</td>
                   <td className="px-5 py-3">Sales</td>
-                  <td className="px-5 py-3">Old Price</td>
-                  <td className="px-5 py-3">New Price</td>
+                  <td className="px-5 py-3">Date</td>
+                  <td className="px-5 py-3">Buying Price</td>
                   <td className="px-5 py-3 rounded-tr-lg rounded-br-lg">
                     Actions
                   </td>
@@ -635,22 +1046,51 @@ const ProductsList = () => {
               </thead>
               <tbody>
                 {allProducts
-                  ? allProducts.map((product) => {
-                      if (product.cate === "phone") {
+                  ? allProducts
+                      .sort(
+                        (a, b) =>
+                          new Date(
+                            b.createdAt
+                              ? b.createdAt
+                                  .split(" ")[0]
+                                  .split("/")
+                                  .reverse()
+                                  .join("-")
+                              : ""
+                          ) -
+                          new Date(
+                            a.createdAt
+                              ? a.createdAt
+                                  .split(" ")[0]
+                                  .split("/")
+                                  .reverse()
+                                  .join("-")
+                              : ""
+                          )
+                      )
+                      .map((product) => {
                         return (
-                          <tr className="text-[14px] border-b-2 border-[#f5f5f5] font-medium">
+                          <tr
+                            className="text-[14px] border-b-2 border-[#f5f5f5] font-medium"
+                            key={product.id}
+                          >
                             <td className="px-5 py-5">
                               {product.cate === "laptop"
                                 ? product.img.map((img, index) => {
                                     return (
-                                      <LazyLoadImage
-                                        src={img}
-                                        alt=""
-                                        effect="blur"
+                                      <div
                                         className={`${
                                           index + 1 > 1 ? "hidden" : "block"
-                                        } size-[40px] object-contain`}
-                                      />
+                                        } `}
+                                        key={index}
+                                      >
+                                        <LazyLoadImage
+                                          src={img}
+                                          alt=""
+                                          effect="blur"
+                                          className={` size-[40px] object-contain`}
+                                        />
+                                      </div>
                                     );
                                   })
                                 : ""}
@@ -672,7 +1112,9 @@ const ProductsList = () => {
                               {product.sales}
                             </td>
                             <td className="px-5 py-5 text-gray-500">
-                              {product.oldPrice ? `$${product.oldPrice}` : null}
+                              {product.createdAt
+                                ? product.createdAt.split(" ")[0]
+                                : ""}
                             </td>
                             <td className="px-5 py-5">${product.newPrice}</td>
                             <td className="px-5 py-5 flex items-center gap-3">
@@ -693,8 +1135,7 @@ const ProductsList = () => {
                             </td>
                           </tr>
                         );
-                      }
-                    })
+                      })
                   : "Customers is empty"}
               </tbody>
             </table>

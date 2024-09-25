@@ -37,29 +37,31 @@ const OrdersList = () => {
   } = useQuery({
     queryKey: ["orders"],
     queryFn: () => fetchAllOrders(user),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
-  useEffect(() => {
-    let date = new Date();
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-    let currentDate = `${day}.${month}.${year}`;
-    if (orders) {
-      setTotalOrders(orders.length);
-      orders.map((order) => {
-        if (order.status === "Cancel") {
-          setTotalCancel((prev) => prev + 1);
-        }
-        if (order.status === "Shipping") {
-          setTotalShipping((prev) => prev + 1);
-        }
-        if (order.date === currentDate) {
-          setTotalOrdersToday((prev) => prev + 1);
-        }
-      });
-    }
-  }, [orders]);
+  // useEffect(() => {
+  //   let date = new Date();
+  //   let day = date.getDate();
+  //   let month = date.getMonth() + 1;
+  //   let year = date.getFullYear();
+  //   let currentDate = `${day}/${month}/${year}`;
+  //   if (orders) {
+  //     setTotalOrders(orders.length);
+  //     orders.map((order) => {
+  //       if (order.status === "Cancel") {
+  //         setTotalCancel((prev) => prev + 1);
+  //       }
+  //       if (order.status === "Shipping") {
+  //         setTotalShipping((prev) => prev + 1);
+  //       }
+  //       if (order.date === currentDate) {
+  //         setTotalOrdersToday((prev) => prev + 1);
+  //       }
+  //     });
+  //   }
+  // }, [orders]);
   // Hàm up database số lần product được mua và completed
   const handleBestSelling = async (product) => {
     for (const p of product) {
@@ -70,7 +72,6 @@ const OrdersList = () => {
           await updateDoc(bestSellingRef, {
             quantitySold: increment(1),
           });
-          console.log("update!");
         } catch (e) {
           toast.error("Fail to update database!", {
             position: "top-center",
@@ -141,7 +142,7 @@ const OrdersList = () => {
       {/* Delete product popup */}
       {isUpdateStatus && (
         <div className="overlay">
-          <div className="popup w-[500px] h-[300px] bg-white rounded-lg p-7 flex flex-col justify-between relative">
+          <div className=" w-[500px] h-[300px] bg-white rounded-lg p-7 flex flex-col justify-between relative">
             <XMarkIcon
               className="absolute right-2 size-[28px] top-2 hover:cursor-pointer"
               onClick={() => setIsUpdateStatus(false)}
@@ -183,62 +184,66 @@ const OrdersList = () => {
         </div>
       )}
       <SideBar isActive={"orders"} />
-      <div className={`bg-[#ffffff]   px-3 py-5 col-span-5`}>
-        <h2 className="text-[25px] font-semibold">Orders</h2>
+      <div className={`bg-[#f0f1f3]   px-[50px] py-5 col-span-5`}>
         <div className="py-7">
-          <div className="bg-[#ffffff] rounded-xl grid grid-cols-8">
-            <div className="flex items-center justify-center gap-2 border-r-2 border-gray-300 place-items-center col-span-1">
-              <CalendarDaysIcon className="size-[20px]" />
-              <span className="text-[16px] font-medium">Today</span>
-            </div>
-            <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 place-items-center py-3">
-              <div className="flex flex-col">
-                <span className="text-[15px] text-gray-400">Total orders</span>
-                <span className="font-semibold text-[20px]">
-                  {totalOrdersToday || 0}
-                </span>
+          <div className="bg-[#ffffff] rounded-lg py-5 px-6">
+            <h2 className="font-medium text-[20px]">Overall Orders</h2>
+            <div className="grid grid-cols-5">
+              <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300  py-3">
+                <div className="flex flex-col gap-4 font-medium">
+                  <span className="text-[15px] text-[#2278f0]">
+                    Total orders
+                  </span>
+                  <span className=" text-[20px]">{totalOrdersToday || 0}</span>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 place-items-center col-span-2">
-              <div className="flex flex-col">
-                <span className="text-[15px] text-gray-400">
-                  Ordered items over time
-                </span>
-                <span className="font-semibold text-[20px]">{totalOrders}</span>
+              <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300  px-10">
+                <div className="flex flex-col gap-4 font-medium">
+                  <span className="text-[15px] text-[#e19133]">
+                    Total Received
+                  </span>
+                  <span className=" text-[20px] ">{totalOrders || 0}</span>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 place-items-center">
-              <div className="flex flex-col">
-                <span className="text-[15px] text-gray-400">Returns</span>
-                <span className="font-semibold text-[20px]">20</span>
+              <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 px-10">
+                <div className="flex flex-col gap-4 font-medium">
+                  <span className="text-[15px] text-[#8e65cb]">
+                    Total Returned
+                  </span>
+                  <span className="font-semibold text-[20px]">20</span>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 place-items-center col-span-2">
-              <div className="flex flex-col">
-                <span className="text-[15px] text-gray-400">
-                  Shipping orders over time
-                </span>
-                <span className="font-semibold text-[20px]">
-                  {totalShipping}
-                </span>
+              <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 px-10 ">
+                <div className="flex flex-col gap-4 font-medium">
+                  <span className="text-[15px] text-[#30c07d] ">
+                    On the way
+                  </span>
+                  <span className="font-semibold text-[20px]">
+                    {totalShipping || 0}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 place-items-center ">
-              <div className="flex flex-col">
-                <span className="text-[15px] text-gray-400">Cancel</span>
-                <span className="font-semibold text-[20px]">{totalCancel}</span>
+              <div className="flex flex-col justify-center gap-2  px-10">
+                <div className="flex flex-col gap-4 font-medium">
+                  <span className="text-[15px] text-[#f36960] ">
+                    Total Cancelled
+                  </span>
+                  <span className="font-semibold text-[20px]">
+                    {totalCancel || 0}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
         <div className=" py-[50px]">
-          <div className=" border border-[#9c9ea7] rounded-xl py-5 px-3 w-full">
+          <div className=" bg-[#ffffff] rounded-lg py-5 px-3 w-full">
             <table
               className="w-full"
               style={{ padding: "20px" }}
             >
-              <thead className="bg-[#f5f5f5]">
-                <tr className="text-[15px] font-semibold">
+              <thead className="text-[#667085]">
+                <tr className="text-[15px] font-medium">
                   <td className="py-3 rounded-tl-lg rounded-bl-lg px-5">
                     Order ID
                   </td>
@@ -246,7 +251,7 @@ const OrdersList = () => {
                   <td className="py-3 px-5">Phone</td>
                   <td className="py-3 px-5">Address</td>
                   <td className="py-3 px-5">Date</td>
-                  <td className="py-3 px-5">Items</td>
+                  <td className="py-3 px-5">Products</td>
                   <td className="py-3 px-5">Status</td>
 
                   <td className="py-3 rounded-tr-lg rounded-br-lg px-5">
@@ -273,25 +278,25 @@ const OrdersList = () => {
                           <td className="px-5 py-5">{order.products.length}</td>
                           <td className="py-5 px-5">
                             <span
-                              className={`px-3 py-1 flex items-center justify-center text-[13px] font-semibold   rounded w-full ${
+                              className={` text-[13px] font-semibold ${
                                 order.status === "Shipping"
-                                  ? "bg-[#ffeddd] text-[#f99b43]"
+                                  ? "text-[#f99b43]"
                                   : ""
                               } ${
                                 order.status === "Cancel"
-                                  ? "bg-[#fcd7d4] text-[#f14c3c]"
+                                  ? " text-[#f14c3c]"
                                   : ""
                               } ${
                                 order.status === "Completed"
-                                  ? "bg-[#ccf0d2] text-[#19bd3c]"
+                                  ? " text-[#12b76a]"
                                   : ""
                               } ${
                                 order.status === "Pending"
-                                  ? "bg-[#ecccf0] text-[#aa19bd]"
+                                  ? " text-[#aa19bd]"
                                   : ""
                               } ${
                                 order.status === "Confirm"
-                                  ? "bg-[#ecccf0] text-[#aa19bd]"
+                                  ? " text-[#1366d9]"
                                   : ""
                               }`}
                             >

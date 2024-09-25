@@ -11,20 +11,9 @@ import { useState, useEffect, useContext, useMemo, useCallback } from "react";
 import { Error } from "./Error";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import {
-  collection,
-  doc,
-  query,
-  setDoc,
-  getDocs,
-  where,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
+
 import { fetchProductById, postReviewByProductId } from "../FetchAPI/FetchAPI";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { db } from "../firebase";
-import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../Context/UserContext";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
@@ -396,7 +385,7 @@ const ProductDetail = () => {
             <div className="pt-[80px] grid grid-cols-3 gap-[40px] ">
               <div className="col-span-2 flex flex-col justify-between">
                 <div
-                  className={`bg-[#f6f5f8] rounded-2xl h-[65%] flex items-center justify-center relative overflow-hidden `}
+                  className={`bg-[#f6f5f8] rounded-2xl row-span-1 flex items-center justify-center relative overflow-hidden p-8 `}
                 >
                   <div className="flex items-center w-full h-full row-span-2 overflow-hidden">
                     {data.img.map((img, index) => {
@@ -411,7 +400,7 @@ const ProductDetail = () => {
                           <img
                             src={img}
                             alt="ImageProduct"
-                            className="object-contain size-[500px]"
+                            className="object-contain size-[450px]"
                             effect="blur"
                           />
                         </div>
@@ -436,7 +425,7 @@ const ProductDetail = () => {
                     <ChevronRightIcon className="size-[40px]" />
                   </button>
                 </div>
-                <div className="border border-black mt-14 rounded-2xl">
+                <div className="border border-black mt-14 rounded-2xl  h-fit">
                   <div className="flex items-center gap-4 px-4 py-[24px] ">
                     <LazyLoadImage
                       effect="blur"
@@ -553,7 +542,9 @@ const ProductDetail = () => {
                         <span className="text-[18px] font-medium leading-[24px]">
                           Weight:
                         </span>
-                        <span className="text-[16px] font-normal">{`${data.infomation.weight}kg`}</span>
+                        <span className="text-[16px] font-normal">
+                          {`${data.infomation.weight}kg`}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -631,125 +622,14 @@ const ProductDetail = () => {
                         <span className="text-[18px] font-medium leading-[24px]">
                           Weight:
                         </span>
-                        <span className="text-[16px] font-normal">{`${data.infomation.weight}kg`}</span>
+                        <span className="text-[16px] font-normal">{`${data.infomation.weight}g`}</span>
                       </div>
                     </div>
                   </div>
                 ) : (
                   ""
                 )}
-                <div className="h-[1px] my-[24px] bg-black opacity-20"></div>
-                {data.cate === "laptop" ? (
-                  <div
-                    className={`flex-col  gap-4 pb-5 ${
-                      data.infomation.colors ? "flex" : "hidden"
-                    }`}
-                  >
-                    <span className="text-[17px] font-normal leading-[24px] text-[#545557]">
-                      Available Colors
-                    </span>
-                    <div className="flex items-center gap-2">
-                      {data.infomation.colors
-                        ? data.infomation.colors.map((color) => {
-                            return (
-                              <button
-                                className={`border ${
-                                  color ? "block" : "hidden"
-                                } border-black rounded-full size-5 color-${color} ${
-                                  active === color ? "scale-125" : ""
-                                }`}
-                                onClick={() => setActive(data.colours1)}
-                              ></button>
-                            );
-                          })
-                        : ""}
-                      <button
-                        className={`border ${
-                          data.colours1 ? "block" : "hidden"
-                        } border-black rounded-full size-5 color-${
-                          data.colours1
-                        } ${active === data.colours1 ? "scale-125" : ""}`}
-                        onClick={() => setActive(data.colours1)}
-                      ></button>
-                      <button
-                        className={`border ${
-                          data.colours2 ? "block" : "hidden"
-                        }   border-black rounded-full size-5 color-${
-                          data.colours2
-                        } ${active === data.colours2 ? "scale-125" : ""} `}
-                        onClick={() => setActive(data.colours2)}
-                      ></button>
-                    </div>
-                  </div>
-                ) : (
-                  ""
-                )}
-                {data.cate === "phone" ? (
-                  <div
-                    className={`flex-col  gap-4 pb-5 ${
-                      data.colours1 ? "flex" : "hidden"
-                    }`}
-                  >
-                    <span className="text-[17px] font-normal leading-[24px] text-[#545557]">
-                      Available Colors
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        className={`border ${
-                          data.colours1 ? "block" : "hidden"
-                        } border-black rounded-full size-5 color-${
-                          data.colours1
-                        } ${active === data.colours1 ? "scale-125" : ""}`}
-                        onClick={() => setActive(data.colours1)}
-                      ></button>
-                      <button
-                        className={`border ${
-                          data.colours2 ? "block" : "hidden"
-                        }   border-black rounded-full size-5 color-${
-                          data.colours2
-                        } ${active === data.colours2 ? "scale-125" : ""} `}
-                        onClick={() => setActive(data.colours2)}
-                      ></button>
-                      <button
-                        className={`border ${
-                          data.colours3 ? "block" : "hidden"
-                        }   border-black rounded-full size-5 color-${
-                          data.colours3
-                        } ${active === data.colours3 ? "scale-125" : ""} `}
-                        onClick={() => setActive(data.colours3)}
-                      ></button>
-                    </div>
-                  </div>
-                ) : (
-                  ""
-                )}
-                <div
-                  className={`flex-col  gap-4 py-[24px] ${
-                    data.size ? "flex" : "hidden"
-                  }`}
-                >
-                  <span className="text-[17px] font-normal leading-[24px] text-[#545557]">
-                    Available Size:
-                  </span>
-                  <div className="flex items-center gap-4 text-[14px font-medium leading-[21px]">
-                    <div className="size-[32px] border border-black rounded flex items-center justify-center">
-                      XS
-                    </div>
-                    <div className="size-[32px] border border-black rounded flex items-center justify-center">
-                      S
-                    </div>
-                    <div className="size-[32px] border border-black rounded flex items-center justify-center">
-                      M
-                    </div>
-                    <div className="size-[32px] border border-black rounded flex items-center justify-center">
-                      L
-                    </div>
-                    <div className="size-[32px] border border-black rounded flex items-center justify-center">
-                      XL
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 mt-8">
                   <div className="flex items-center border w-fit border-black rounded-full h-[44px]  px-2">
                     <div
                       className="flex items-center justify-center hover:cursor-pointer"

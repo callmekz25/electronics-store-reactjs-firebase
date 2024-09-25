@@ -1,6 +1,10 @@
-import { HomeIcon } from "@heroicons/react/24/solid";
-import { TagIcon } from "@heroicons/react/24/solid";
-import { UsersIcon } from "@heroicons/react/24/solid";
+import {
+  HomeIcon,
+  CubeIcon,
+  TagIcon,
+  UsersIcon,
+} from "@heroicons/react/24/outline";
+
 import { useNavigate } from "react-router-dom";
 const SideBar = ({ isActive }) => {
   const navigate = useNavigate();
@@ -8,13 +12,13 @@ const SideBar = ({ isActive }) => {
   return (
     <>
       <div
-        className={`p-7 flex flex-col bg-[#f8f9fb] text-white gap-10  col-span-1 min-h-[1000px]`}
+        className={`p-7 flex flex-col bg-[#ffffff] text-white gap-10  col-span-1 min-h-[1000px]`}
       >
         <h2 className="text-[30px] font-semibold text-black">Exclusive</h2>
         <ul className="flex flex-col gap-4 text-[#9c9ea7]">
           <li
             className={`p-2  rounded-lg flex items-center gap-4 hover:cursor-pointer ${
-              isActive === "home" ? "text-[#6b30fb]" : ""
+              isActive === "home" ? "text-[#2278f0]" : ""
             }`}
             onClick={() => {
               navigate("/admin");
@@ -22,7 +26,7 @@ const SideBar = ({ isActive }) => {
           >
             <HomeIcon
               className={`size-[20px] ${
-                isActive === "home" ? "text-[#6b30fb]" : ""
+                isActive === "home" ? "text-[#2278f0]" : ""
               }`}
             />
             <span className="text-[15px] leading-[24px] pt-1 font-medium">
@@ -31,7 +35,7 @@ const SideBar = ({ isActive }) => {
           </li>
           <li
             className={`p-2  rounded-lg flex items-center gap-4 hover:cursor-pointer ${
-              isActive === "customers" ? "text-[#6b30fb]" : ""
+              isActive === "customers" ? "text-[#2278f0]" : ""
             }`}
             onClick={() => {
               navigate("/admin/customers");
@@ -39,7 +43,7 @@ const SideBar = ({ isActive }) => {
           >
             <UsersIcon
               className={`size-[20px] ${
-                isActive === "customers" ? "text-[#6b30fb]" : ""
+                isActive === "customers" ? "text-[#2278f0]" : ""
               }`}
             />
             <span className="text-[15px] leading-[24px] pt-1 font-medium">
@@ -48,15 +52,15 @@ const SideBar = ({ isActive }) => {
           </li>
           <li
             className={`p-2  rounded-lg flex items-center gap-4 hover:cursor-pointer ${
-              isActive === "orders" ? "text-[#6b30fb]" : ""
+              isActive === "orders" ? "text-[#2278f0]" : ""
             }`}
             onClick={() => {
               navigate("/admin/orders");
             }}
           >
-            <TagIcon
+            <CubeIcon 
               className={`size-[20px] ${
-                isActive === "orders" ? "text-[#6b30fb]" : ""
+                isActive === "orders" ? "text-[#2278f0]" : ""
               }`}
             />
             <span className="text-[15px] leading-[24px] pt-1 font-medium">
@@ -65,7 +69,7 @@ const SideBar = ({ isActive }) => {
           </li>
           <li
             className={`p-2  rounded-lg flex items-center gap-4 hover:cursor-pointer ${
-              isActive === "products" ? "text-[#6b30fb]" : ""
+              isActive === "products" ? "text-[#2278f0]" : ""
             }`}
             onClick={() => {
               navigate("/admin/products");
@@ -73,7 +77,7 @@ const SideBar = ({ isActive }) => {
           >
             <TagIcon
               className={`size-[20px]  ${
-                isActive === "products" ? "text-[#6b30fb]" : ""
+                isActive === "products" ? "text-[#2278f0]" : ""
               }`}
             />
             <span className="text-[15px] leading-[24px] pt-1 font-medium">

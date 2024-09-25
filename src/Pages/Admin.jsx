@@ -86,7 +86,7 @@ const Admin = () => {
     const day = date.getDate();
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
-    const currentDay = `${day}.${month}.${year}`;
+    const currentDay = `${day}/${month}/${year}`;
     const id = uuid();
     if (imgPreview.length === 0) {
       console.log("Image null!");
