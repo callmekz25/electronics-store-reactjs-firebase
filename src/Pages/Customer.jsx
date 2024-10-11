@@ -55,7 +55,10 @@ const Customers = () => {
                 {customers
                   ? customers.map((customer) => {
                       return (
-                        <tr className="text-[14px] border-b-2 border-[#f5f5f5] font-medium">
+                        <tr
+                          className="text-[14px] border-b-2 border-[#f5f5f5] font-medium"
+                          key={customer.userId}
+                        >
                           <td className="px-5 py-5">{customer.userId}</td>
                           <td className="px-5 py-5">{customer.name}</td>
                           <td className="px-5 py-5">{customer.date}</td>

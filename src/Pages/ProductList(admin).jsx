@@ -21,7 +21,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { Loading } from "../components/Loading";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-
+import { Pagination } from "../components/Pagination";
 import { storage } from "../firebase";
 import { v4 as uuid } from "uuid";
 import { useQuery } from "@tanstack/react-query";
@@ -33,7 +33,6 @@ const ProductsList = () => {
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
   const [oldPrice, setOldPrice] = useState("");
-  const [newPrice, setNewPrice] = useState("");
   const [sales, setSales] = useState("");
   const [isSale, setIsSale] = useState("");
   const [color1, setColor1] = useState("");
@@ -74,7 +73,7 @@ const ProductsList = () => {
   const [filterByBrand, setFilterByBrand] = useState("");
   const [filterByCategory, setFilterByCategory] = useState("");
   const [filterByPrice, setFilterByPrice] = useState("");
-  const [filterBySales, setFilterBySales] = useState("");
+  const [filterBySales, setFilterBySales] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [productWantDelete, setProductWantDelete] = useState("");
@@ -83,6 +82,9 @@ const ProductsList = () => {
   const [imgPreview, setImgPreview] = useState([]);
   const { user, loading } = useContext(UserContext);
   const filterRef = useRef("");
+  // Phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perOfPage, setPerOfPage] = useState(10);
   const {
     data: products,
     isLoading,
@@ -93,9 +95,7 @@ const ProductsList = () => {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+
   useEffect(() => {
     if (products) {
       setAllProducts(products);
@@ -197,17 +197,25 @@ const ProductsList = () => {
     let info = {};
     if (product.cate === "laptop") {
       info = {
-        type: infomation.type,
-        resolution: infomation.resolution,
-        inch: infomation.inch,
-        connector: infomation.connector,
-        ram: infomation.ram,
-        hardDrive: infomation.hardDrive,
-        cpu: infomation.cpu,
-        pin: infomation.pin,
-        hz: infomation.hz,
-        card: infomation.card,
-        weight: infomation.weight,
+        type: infomation.type ? infomation.type : product.infomation.type,
+        resolution: infomation.resolution
+          ? infomation.resolution
+          : product.infomation.resolution,
+        inch: infomation.inch ? infomation.inch : product.infomation.inch,
+        connector: infomation.connector
+          ? infomation.connector
+          : product.infomation.connector,
+        ram: infomation.ram ? infomation.ram : product.infomation.ram,
+        hardDrive: infomation.hardDrive
+          ? infomation.hardDrive
+          : product.infomation.hardDrive,
+        cpu: infomation.cpu ? infomation.cpu : product.infomation.cpu,
+        pin: infomation.pin ? infomation.pin : product.infomation.pin,
+        hz: infomation.hz ? infomation.hz : product.infomation.hz,
+        card: infomation.card ? infomation.card : product.infomation.card,
+        weight: infomation.weight
+          ? infomation.weight
+          : product.infomation.weight,
       };
     } else if (product.cate === "phone") {
       info = {
@@ -229,13 +237,17 @@ const ProductsList = () => {
     const docRef = doc(db, "All-products", product.id);
     const productDataUpdate = {
       name: name || product.name,
-      img: urls || product.img,
+      img: urls.length > 0 ? urls : product.img,
       createdAt: currentDay || product.createdAt,
       brand: brand || product.brand,
       oldPrice: oldPrice || product.oldPrice,
-      newPrice: newPrice || product.newPrice,
+      newPrice: sales
+        ? Math.round(
+            product.oldPrice * (1 - sales.replace("%", "") / 100) * 100
+          ) / 100
+        : "",
       colors: [color1, color2, color3, color4, color5],
-      sales: sales || product.sales,
+      sales: sales,
       isSale: isSale || product.isSale,
       infomation: info,
     };
@@ -373,6 +385,13 @@ const ProductsList = () => {
     setToDate(null);
     setAllProducts(products);
   };
+
+  const lastIndex = currentPage * perOfPage;
+  const firstIndex = lastIndex - perOfPage;
+  let currentList;
+  if (allProducts) {
+    currentList = allProducts.slice(firstIndex, lastIndex);
+  }
 
   if (isLoading || loading) {
     return <Loading />;
@@ -526,23 +545,13 @@ const ProductsList = () => {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <label htmlFor="pOldPrice">Old Price</label>
+                    <label htmlFor="pOldPrice">Price</label>
                     <input
                       type="number"
                       id="pOldPrice"
                       className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
                       onChange={(e) => setOldPrice(e.target.value)}
                       placeholder="Enter product old price"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <label htmlFor="pNewPrice">New Price</label>
-                    <input
-                      type="number"
-                      id="pNewPrice"
-                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
-                      onChange={(e) => setNewPrice(e.target.value)}
-                      placeholder="Enter product new price"
                     />
                   </div>
                   <div className="flex items-center justify-between">
@@ -729,6 +738,283 @@ const ProductsList = () => {
                   </div>
                 </>
               )}
+              {productEdit.cate === "laptop" && (
+                <>
+                  <div className="flex items-center justify-between ">
+                    <label htmlFor="pName">Product Name</label>
+                    <input
+                      type="text"
+                      id="pName"
+                      className="outline-none border-2 border-[#d0d5dd] rounded-md px-3 py-2 font-normal w-[60%]"
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter product name"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="pbrand">Brand</label>
+                    <input
+                      type="text"
+                      id="pbrand"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      onChange={(e) => setBrand(e.target.value)}
+                      placeholder="Enter product brand"
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor1">Color 1</label>
+                      <input
+                        type="color"
+                        id="pcolor1"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor1(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor2">Color 2</label>
+                      <input
+                        type="color"
+                        id="pcolor2"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor2(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor3">Color 3</label>
+                      <input
+                        type="color"
+                        id="pcolor3"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor3(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor4">Color 4</label>
+                      <input
+                        type="color"
+                        id="pcolor4"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor4(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="pcolor5">Color 5</label>
+                      <input
+                        type="color"
+                        id="pcolor5"
+                        className="outline-none border-2 border-gray-300 rounded-md size-14"
+                        onChange={(e) => setColor5(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="pOldPrice">Price</label>
+                    <input
+                      type="number"
+                      id="pOldPrice"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      onChange={(e) => setOldPrice(e.target.value)}
+                      placeholder="Enter product old price"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="psales">Sales</label>
+                    <input
+                      type="text"
+                      id="psales"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter sales product"
+                      onChange={(e) => setSales(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="pissale">Is Sale</label>
+                    <div className="flex items-center gap-2">
+                      <span>Not sale</span>
+                      <input
+                        type="radio"
+                        id="pissale"
+                        name="sale"
+                        className="outline-none  size-4 hover:cursor-pointer"
+                        onChange={() => setIsSale(false)}
+                      />
+                      <span>Sale</span>
+                      <input
+                        type="radio"
+                        id="pissale"
+                        name="sale"
+                        className="outline-none size-4 hover:cursor-pointer"
+                        onChange={() => setIsSale(true)}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="card">Card</label>
+                    <input
+                      type="text"
+                      name="card"
+                      id="card"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      onChange={handleInfomation}
+                      placeholder="Enter front camera"
+                      value={infomation.card}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="connector">Connector</label>
+                    <input
+                      type="text"
+                      name="connector"
+                      id="connector"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      onChange={handleInfomation}
+                      placeholder="Enter behind camera"
+                      value={infomation.connector}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="pres">Resolution</label>
+                    <select
+                      name="resolution"
+                      id="pres"
+                      onChange={handleInfomation}
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                    >
+                      <option value="">Enter product resolution</option>
+                      <option value="Full HD+">Full HD+</option>
+                      <option value="2K">2K</option>
+                      <option value="2.8K">2.8K</option>
+                      <option value="4K">4K</option>
+                      <option value="Retina">Retina</option>
+                      <option value="Liquid Retina">Liquid Retina</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="pinch">Inch</label>
+                    <input
+                      type="text"
+                      name="inch"
+                      id="pinch"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter product inch"
+                      onChange={handleInfomation}
+                      value={infomation.inch}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="cpu">CPU</label>
+                    <select
+                      name="cpu"
+                      id="cpu"
+                      onChange={handleInfomation}
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                    >
+                      <option value="">Enter CPU</option>
+                      <option value="Core i3">Core i3</option>
+                      <option value="Core i5">Core i5</option>
+                      <option value="Core i7">Core i7</option>
+                      <option value="Core i9">Core i9</option>
+                      <option value="Ultra 5">Ultra 5</option>
+                      <option value="Ultra 7">Ultra 7</option>
+                      <option value="Ultra 9">Ultra 9</option>
+                      <option value="Ryzen 5">Ryzen 5</option>
+                      <option value="Ryzen 7">Ryzen 7</option>
+                      <option value="Ryzen 9">Ryzen 9</option>
+                      <option value="Apple M1">Apple M1</option>
+                      <option value="Apple M2">Apple M2</option>
+                      <option value="Apple M3">Apple M3</option>
+                      <option value="Apple M3 Pro">Apple M3 Pro</option>
+                      <option value="Apple M3 Pro Max">Apple M3 Pro Max</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="pram">Ram</label>
+                    <select
+                      name="ram"
+                      id="pram"
+                      onChange={handleInfomation}
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                    >
+                      <option value="">Enter product RAM</option>
+                      <option value="8">8GB</option>
+                      <option value="16">16GB</option>
+                      <option value="32">32GB</option>
+                      <option value="64">64GB</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="phd">Hard Drive</label>
+                    <select
+                      name="hardDrive"
+                      id="phd"
+                      onChange={handleInfomation}
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                    >
+                      <option value="">Enter product storage</option>
+                      <option value="256">256GB</option>
+                      <option value="512">512GB</option>
+                      <option value="1">1TB</option>
+                      <option value="2">2TB</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="ppin">Pin</label>
+                    <input
+                      type="text"
+                      id="ppin"
+                      name="pin"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter product pin"
+                      value={infomation.pin}
+                      onChange={handleInfomation}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="phz">Hz</label>
+                    <select
+                      name="hz"
+                      id="phz"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      onChange={handleInfomation}
+                    >
+                      <option value="">Enter product hz</option>
+                      <option value="60">60Hz</option>
+                      <option value="90">90Hz</option>
+                      <option value="120">120Hz</option>
+                      <option value="144">144Hz</option>
+                      <option value="165">165Hz</option>
+                      <option value="240">240Hz</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="phz">Type</label>
+                    <select
+                      name="type"
+                      id="phz"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      onChange={handleInfomation}
+                    >
+                      <option value="">Enter type</option>
+                      <option value="Office Learn">Office Learn</option>
+                      <option value="Gaming">Gaming</option>
+                      <option value="Thin Light">Thin Light</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="pweight">Weight</label>
+                    <input
+                      type="number"
+                      id="pweight"
+                      name="weight"
+                      className="outline-none border-2 border-gray-300 rounded-md px-3 py-2 font-normal w-[60%]"
+                      placeholder="Enter product weight"
+                      value={infomation.weight}
+                      onChange={handleInfomation}
+                    />
+                  </div>
+                </>
+              )}
             </div>
             <div className="flex items-center justify-end gap-4">
               <button
@@ -795,7 +1081,7 @@ const ProductsList = () => {
                   />
                   <input
                     type="text"
-                    placeholder="Search"
+                    placeholder="Search by ID or name"
                     className="border-2 rounded-lg px-8 py-[6px] outline-[#0047ff] w-full text-[14px]"
                     onChange={(e) => setSearchValue(e.target.value)}
                     value={searchValue}
@@ -841,7 +1127,13 @@ const ProductsList = () => {
                               >
                                 Select Date
                               </label>
-                              <span className="text-[#2754f9] font-medium">
+                              <span
+                                className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                onClick={() => {
+                                  setFromDate("");
+                                  setToDate("");
+                                }}
+                              >
                                 Clear
                               </span>
                             </div>
@@ -888,7 +1180,10 @@ const ProductsList = () => {
                               >
                                 Category
                               </label>
-                              <span className="text-[#2754f9] font-medium">
+                              <span
+                                className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                onClick={() => setFilterByCategory("")}
+                              >
                                 Clear
                               </span>
                             </div>
@@ -914,7 +1209,10 @@ const ProductsList = () => {
                               >
                                 Brand
                               </label>
-                              <span className="text-[#2754f9] font-medium">
+                              <span
+                                className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                onClick={() => setFilterByBrand("")}
+                              >
                                 Clear
                               </span>
                             </div>
@@ -948,7 +1246,10 @@ const ProductsList = () => {
                               >
                                 Price
                               </label>
-                              <span className="text-[#2754f9] font-medium">
+                              <span
+                                className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                onClick={() => setFilterByPrice("")}
+                              >
                                 Clear
                               </span>
                             </div>
@@ -977,7 +1278,10 @@ const ProductsList = () => {
                               >
                                 Sales
                               </label>
-                              <span className="text-[#2754f9] font-medium">
+                              <span
+                                className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                onClick={() => setFilterBySales("")}
+                              >
                                 Clear
                               </span>
                             </div>
@@ -989,6 +1293,7 @@ const ProductsList = () => {
                                 id="sales"
                                 className="size-4"
                                 onChange={() => setFilterBySales(true)}
+                                checked={filterBySales ? true : false}
                               />
                               <label htmlFor="notSales">No Sales</label>
                               <input
@@ -997,6 +1302,7 @@ const ProductsList = () => {
                                 id="notSales"
                                 className="size-4"
                                 onChange={() => setFilterBySales(false)}
+                                checked={filterBySales ? false : true}
                               />
                             </div>
                           </div>
@@ -1045,8 +1351,8 @@ const ProductsList = () => {
                 </tr>
               </thead>
               <tbody>
-                {allProducts
-                  ? allProducts
+                {currentList
+                  ? currentList
                       .sort(
                         (a, b) =>
                           new Date(
@@ -1139,6 +1445,13 @@ const ProductsList = () => {
                   : "Customers is empty"}
               </tbody>
             </table>
+            <Pagination
+              totalPosts={allProducts.length}
+              postsPerPage={perOfPage}
+              // Callback để lấy ra currentPage để tính toán lại index và lấy ra products để render
+              setCurrentPage={setCurrentPage}
+              currentPage={currentPage}
+            />
           </div>
         </div>
       </div>

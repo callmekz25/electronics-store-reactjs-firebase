@@ -213,6 +213,25 @@ export const fetchOrdersByUser = async (user) => {
     return <Error />;
   }
 };
+export const fetchOrdersByOrderId = async (userId, orderId) => {
+  try {
+    if (userId) {
+      const queryOrdersUSer = await query(
+        collection(db, "Orders"),
+        where("userId", "==", userId),
+        where("orderId", "==", orderId)
+      );
+      const querySnap = await getDocs(queryOrdersUSer);
+      const orderUserData = querySnap.docs.map((doc) => doc.data());
+
+      return orderUserData;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    return <Error />;
+  }
+};
 export const fetchOrdersShipping = async (user) => {
   try {
     if (user) {

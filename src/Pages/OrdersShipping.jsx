@@ -1,61 +1,53 @@
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import { memo, useContext, useEffect, useState } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
-import { Loading } from "../components/Loading";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useNavigate } from "react-router-dom";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { UserContext } from "../Context/UserContext";
 import { Error } from "./Error";
 import { useQuery } from "@tanstack/react-query";
-import { fetchOrdersShipping } from "../FetchAPI/FetchAPI";
+import { fetchOrdersByUser } from "../FetchAPI/FetchAPI";
 import SkeletonOrder from "../components/SkekletonOrder";
 const OrdersShipping = () => {
   const navigate = useNavigate();
-
   const { user, loading } = useContext(UserContext);
-
-  // Hàm lấy dữ liệu từ database những order của user đã cancel
-  const {
-    data: ordersShipping,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["orders shipping", user?.userId],
-    queryFn: () => fetchOrdersShipping(user),
+  const [ordersShipping, setOrdersShipping] = useState([]);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["orders", user?.userId],
+    queryFn: () => fetchOrdersByUser(user),
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
-
+  useEffect(() => {
+    if (data) {
+      setOrdersShipping(data.filter((order) => order.status === "Shipping"));
+    }
+  }, [data]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  // Xác thực lấy ra user hiện tại rồi fetch order cancel
+
   if (isError) {
     return <Error />;
   }
   return (
     <div className="lg:px-[135px] px-[20px]">
       <Nav />
-
       <>
+        <div className="flex items-center gap-2 py-[80px]">
+          <span className="text-[14px] font-normal opacity-40 leading-[21px]">
+            Profile
+          </span>
+          <span className="text-[14px] font-normal opacity-40 leading-[21px]">
+            /
+          </span>
+          <span className="text-black text-[14px] font-normal  leading-[21px]">
+            My Orders
+          </span>
+        </div>
         <>
-          <div className="flex items-center gap-2 py-[80px]">
-            <span className="text-[14px] font-normal opacity-40 leading-[21px]">
-              Profile
-            </span>
-            <span className="text-[14px] font-normal opacity-40 leading-[21px]">
-              /
-            </span>
-            <span className="text-black text-[14px] font-normal  leading-[21px]">
-              My Orders
-            </span>
-          </div>
-        </>
-        <div className=" py-[80px]">
-          <div className="grid grid-cols-4">
+          <div className="grid grid-cols-4 pb-36">
             <div className=" col-span-1 flex flex-col gap-[24px]">
               <button className="text-[16px] w-fit font-medium leading-[24px]">
                 My Orders
@@ -70,13 +62,22 @@ const OrdersShipping = () => {
                   All
                 </button>
                 <button
+                  className="flex items-center justify-center px-5 py-1  border-2 border-gray-400 rounded-2xl"
+                  onClick={() => navigate("/orders/purchase/status=pending")}
+                >
+                  Pending
+                </button>
+                <button
                   className="flex items-center justify-center px-5 py-1 text-black border-2 border-black rounded-2xl b"
                   onClick={() => navigate("/orders/purchase/status=shipping")}
                 >
                   Shipping
                 </button>
 
-                <button className="flex items-center justify-center px-5 py-1 border-2 border-gray-400 rounded-2xl">
+                <button
+                  className="flex items-center justify-center px-5 py-1 border-2 border-gray-400 rounded-2xl"
+                  onClick={() => navigate("/orders/purchase/status=completed")}
+                >
                   Completed
                 </button>
 
@@ -91,8 +92,8 @@ const OrdersShipping = () => {
                   Returns
                 </button>
               </div>
-              <div className="flex flex-col gap-8">
-                {!isLoading ? (
+              <div className="flex flex-col gap-8 mt-5">
+                {!isLoading && !loading ? (
                   ordersShipping.length > 0 ? (
                     ordersShipping
                       .sort(
@@ -116,7 +117,7 @@ const OrdersShipping = () => {
                         // Thông tin chung của đơn hàng user order
                         return (
                           <div
-                            className="relative p-6 border-2 border-gray-300 rounded-xl"
+                            className="relative p-6 bg-[#ffff] rounded-xl"
                             key={product.id}
                           >
                             <div className="flex items-center gap-3 text-[13px] font-medium">
@@ -125,63 +126,23 @@ const OrdersShipping = () => {
                                   product.status === "Shipping"
                                     ? "bg-[#fff2e5]"
                                     : ""
-                                } ${
-                                  product.status === "Cancel"
-                                    ? "bg-[#ffe8e5]"
-                                    : ""
-                                } ${
-                                  product.status === "Confirm"
-                                    ? "bg-[#fce5ff]"
-                                    : ""
-                                } ${
-                                  product.status === "Pending"
-                                    ? "bg-[#fce5ff]"
-                                    : ""
-                                }
-                                                        `}
+                                }`}
                               >
                                 <div
                                   className={`rounded-full size-[13px] ${
                                     product.status === "Shipping"
                                       ? "bg-[#e08228]"
                                       : ""
-                                  } ${
-                                    product.status === "Cancel"
-                                      ? "bg-[#de491c]"
-                                      : ""
-                                  }  ${
-                                    product.status === "Confirm"
-                                      ? "bg-[#9a1cde]"
-                                      : ""
-                                  } ${
-                                    product.status === "Pending"
-                                      ? "bg-[#9a1cde]"
-                                      : ""
-                                  }`}
+                                  } `}
                                 ></div>
                                 <span
                                   className={`text-[12px] font-semibold  ${
                                     product.status === "Shipping"
                                       ? "text-[#e08228]"
                                       : ""
-                                  } ${
-                                    product.status === "Cancel"
-                                      ? "text-[#e04728]"
-                                      : ""
-                                  } ${
-                                    product.status === "Confirm"
-                                      ? "text-[#bb28e0]"
-                                      : ""
-                                  } ${
-                                    product.status === "Pending"
-                                      ? "text-[#bb28e0]"
-                                      : ""
                                   }`}
                                 >
-                                  {product.status.toString().toLowerCase() ===
-                                  "confirm"
-                                    ? "Pending"
-                                    : product.status}
+                                  {product.status}
                                 </span>
                               </div>
                               <span className="text-gray-400">|</span>
@@ -263,7 +224,7 @@ const OrdersShipping = () => {
               </div>
             </div>
           </div>
-        </div>
+        </>
       </>
 
       <Footer />

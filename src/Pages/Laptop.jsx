@@ -596,7 +596,7 @@ const Laptops = () => {
     return <Error />;
   }
   return (
-    <div className="lg:px-[135px]">
+    <div className="lg:px-[135px] bg-[#ffff]">
       <Nav />
       <>
         <div className="lg:py-[80px] py-[40px] px-[20px]">

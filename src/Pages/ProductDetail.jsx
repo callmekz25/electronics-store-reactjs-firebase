@@ -388,7 +388,7 @@ const ProductDetail = () => {
                   className={`bg-[#f6f5f8] rounded-2xl row-span-1 flex items-center justify-center relative overflow-hidden p-8 `}
                 >
                   <div className="flex items-center w-full h-full row-span-2 overflow-hidden">
-                    {data.img.map((img, index) => {
+                    {data.img.slice(1).map((img, index) => {
                       return (
                         <div
                           className="flex items-center justify-center flex-shrink-0 w-full h-full transition-all duration-500 ease-in-out"
@@ -418,7 +418,7 @@ const ProductDetail = () => {
                   </button>
                   <button
                     className={`absolute right-[20px] top-[50%] size-[56px] rounded-full bg-gray-300 flex items-center justify-center translate-y-[-50%] hover:cursor-pointer ${
-                      currentIndex === data.img.length - 1 ? "hidden" : ""
+                      currentIndex === data.img.length - 2 ? "hidden" : ""
                     }`}
                     onClick={nextSlide}
                   >
@@ -659,19 +659,8 @@ const ProductDetail = () => {
                         if (data.cate === "laptop") {
                           addToCart(
                             {
-                              id: data.id,
-                              name: data.name,
-                              img: data.img,
-                              price: data.newPrice,
-                              brand: data.brand,
-                              color: "",
-                              infomation: {
-                                ...data.infomation,
-                              },
-                              sales: data.sales,
+                              ...data,
                               quantity: count,
-                              cate: data.cate,
-                              isSale: data.isSale || false,
                             },
                             count
                           );
@@ -679,20 +668,8 @@ const ProductDetail = () => {
                         if (data.cate === "phone") {
                           addToCart(
                             {
-                              id: data.id,
-                              name: data.name,
-                              img: data.img,
-                              price: data.newPrice,
-                              brand: data.brand,
-                              color: "",
-
-                              infomation: {
-                                ...data.infomation,
-                              },
-                              sales: data.sales,
+                              ...data,
                               quantity: count,
-                              cate: data.cate,
-                              isSale: data.isSale || false,
                             },
                             count
                           );

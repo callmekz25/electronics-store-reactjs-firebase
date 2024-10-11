@@ -26,6 +26,8 @@ import OrdersUser from "../Pages/OrderUser(admin)";
 import Customers from "../Pages/Customer";
 import OrdersList from "../Pages/OrderList(admin)";
 import ProductsList from "../Pages/ProductList(admin)";
+import OrdersPending from "../Pages/OrdersPending";
+import OrdersCompleted from "../Pages/OrdersCompleted";
 // Lazy load các component
 // const Home = lazy(() => import("../Pages/Home"));
 // const LogIn = lazy(() => import("../Pages/LogIn"));
@@ -153,8 +155,16 @@ const RouteApp = () => {
             element={<MyOrders />}
           />
           <Route
+            path="/orders/purchase/status=pending"
+            element={<OrdersPending />}
+          />
+          <Route
             path="/orders/purchase/status=shipping"
             element={<OrdersShipping />}
+          />
+          <Route
+            path="/orders/purchase/status=completed"
+            element={<OrdersCompleted />}
           />
           <Route
             path="/orders/purchase/status=canceled"

@@ -296,7 +296,7 @@ const Phones = () => {
     return <Error />;
   }
   return (
-    <div className="lg:px-[135px]">
+    <div className="lg:px-[135px] bg-[#ffff]">
       <Nav />
       <div className="px-[20px]">
         <div className=" lg:py-[80px] py-[40px]">

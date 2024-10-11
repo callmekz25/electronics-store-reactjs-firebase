@@ -8,26 +8,27 @@ import { useQuery } from "@tanstack/react-query";
 // Icon
 
 import {
-  CalendarDaysIcon,
-  EyeIcon,
-  PencilIcon,
+  ListBulletIcon,
+  PencilSquareIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { Loading } from "../components/Loading";
 import { toast, ToastContainer } from "react-toastify";
 import { fetchAllOrders } from "../FetchAPI/FetchAPI";
-
 import { Error } from "./Error";
 import { UserContext } from "../Context/UserContext";
+import { Pagination } from "../components/Pagination";
 const OrdersList = () => {
   const [totalOrders, setTotalOrders] = useState(null);
   const [totalCancel, setTotalCancel] = useState(null);
   const [totalShipping, setTotalShipping] = useState(null);
   const [totalOrdersToday, setTotalOrdersToday] = useState(null);
-
   const [isUpdateStatus, setIsUpdateStatus] = useState(false);
   const [status, setStatus] = useState(null);
   const [orderUpdate, setOrderUpdate] = useState(null);
+  // Phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perOfPage, setPerOfPage] = useState(10);
   const navigate = useNavigate();
   const { user, loading } = useContext(UserContext);
   const {
@@ -93,7 +94,7 @@ const OrdersList = () => {
 
     const orderRef = doc(db, "Orders", data.orderId);
     const allOrderRef = doc(db, "AllOrders", data.orderId);
-    if (status.toString().toLowerCase() === "confirm") {
+    if (status.toString().toLowerCase() === "confirmed") {
       await updateDoc(orderRef, {
         updateConfirmedAt: currDay,
         status: status,
@@ -115,11 +116,11 @@ const OrdersList = () => {
     }
     if (status.toString().toLowerCase() === "completed") {
       await updateDoc(orderRef, {
-        updateCompletedgAt: currDay,
+        updateCompletedAt: currDay,
         status: status,
       });
       await updateDoc(allOrderRef, {
-        updateCompletedgAt: currDay,
+        updateCompletedAt: currDay,
         status: status,
       });
       await handleBestSelling(data.products);
@@ -131,6 +132,12 @@ const OrdersList = () => {
       });
     }
   };
+
+  const lastIndex = currentPage * perOfPage;
+  const firstIndex = lastIndex - perOfPage;
+  const currentList = orders.slice(firstIndex, lastIndex);
+  console.log(currentList);
+
   if (isLoading && loading) {
     return <Loading />;
   }
@@ -155,7 +162,7 @@ const OrdersList = () => {
             <div className="flex items-center justify-between">
               <button
                 className="bg-[#fffadd] text-[15px] font-medium text-[#efe22b] flex items-center justify-center py-1 px-5 rounded-md hover:cursor-pointer hover:scale-110 transition-all duration-300"
-                onClick={() => setStatus("Confirm")}
+                onClick={() => setStatus("Confirmed")}
               >
                 Confirm
               </button>
@@ -244,38 +251,34 @@ const OrdersList = () => {
             >
               <thead className="text-[#667085]">
                 <tr className="text-[15px] font-medium">
-                  <td className="py-3 rounded-tl-lg rounded-bl-lg px-5">
-                    Order ID
-                  </td>
+                  <td className="py-3  px-5">Order ID</td>
                   <td className="py-3 px-5">Customer</td>
-                  <td className="py-3 px-5">Phone</td>
-                  <td className="py-3 px-5">Address</td>
                   <td className="py-3 px-5">Date</td>
-                  <td className="py-3 px-5">Products</td>
+                  <td className="py-3 px-5">Quantity</td>
+                  <td className="py-3 px-5">Revenue</td>
                   <td className="py-3 px-5">Status</td>
-
-                  <td className="py-3 rounded-tr-lg rounded-br-lg px-5">
-                    Actions
-                  </td>
+                  <td className="py-3 px-5">Actions</td>
                 </tr>
               </thead>
               <tbody>
                 {orders
                   ? orders.map((order) => {
                       return (
-                        <tr className="text-[14px] border-b-2 border-[#f5f5f5] font-medium ">
+                        <tr
+                          className="text-[14px] border-b-2 border-[#f5f5f5] font-medium "
+                          key={order.orderId}
+                        >
                           <td className="py-5 px-5 w-[300px]">
                             {order.orderId}
                           </td>
                           <td className="px-5 py-5">{order.name}</td>
-                          <td className="px-5 py-5">{order.phone}</td>
-                          <td className="py-5 px-5 overflow-hidden text-ellipsis max-w-[300px]">
-                            {order.address}
-                          </td>
                           <td className="px-5 py-5">
                             {order.createdAt.split(" ")[0]}
                           </td>
                           <td className="px-5 py-5">{order.products.length}</td>
+                          <td className=" py-5 px-5">
+                            ${Math.round(order.total * 100) / 100}
+                          </td>
                           <td className="py-5 px-5">
                             <span
                               className={` text-[13px] font-semibold ${
@@ -295,7 +298,7 @@ const OrdersList = () => {
                                   ? " text-[#aa19bd]"
                                   : ""
                               } ${
-                                order.status === "Confirm"
+                                order.status === "Confirmed"
                                   ? " text-[#1366d9]"
                                   : ""
                               }`}
@@ -304,15 +307,15 @@ const OrdersList = () => {
                             </span>
                           </td>
                           <td className="px-5 py-8 flex gap-4 items-center">
-                            <PencilIcon
-                              className="size-[20px] text-blue-500 hover:cursor-pointer"
+                            <PencilSquareIcon
+                              className="size-[23px] text-gray-400 hover:cursor-pointer"
                               onClick={() => {
                                 setOrderUpdate(order);
                                 setIsUpdateStatus(true);
                               }}
                             />
-                            <EyeIcon
-                              className="size-[23px] hover:cursor-pointer"
+                            <ListBulletIcon
+                              className="size-[23px] text-gray-400 hover:cursor-pointer"
                               onClick={() => {
                                 navigate(
                                   `/admin/orders/user=/${order.userId}`,

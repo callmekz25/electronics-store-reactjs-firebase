@@ -73,11 +73,13 @@ const Cart = () => {
       document.documentElement.style.overflow = "auto";
     };
   }, [canBuy]);
+  console.log(cartItems);
+
   if (isError) {
     return <Error />;
   }
   return (
-    <div className="lg:px-[135px]">
+    <div className="lg:px-[135px] bg-[#ffff]">
       <Nav />
       {isLoading ? (
         <SkeletonCart />
@@ -111,17 +113,17 @@ const Cart = () => {
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-[40px] text-[16px] font-normal leading-[24px] pb-[50px] px-[20px] lg:px-0  relative">
-            <div className="lg:flex hidden items-center justify-between px-[40px] py-[24px] rounded shadow-cart font-medium gap- bg-white">
-              <div className="flex items-center justify-between gap-4 w-[69%]">
+          <div className=" text-[14 px] font-normal leading-[24px] pb-[50px] px-[20px] lg:px-0  relative">
+            <div className="lg:flex hidden items-center justify-between px-[40px] py-[24px]  font-medium gap- bg-white ">
+              <div className="flex items-center justify-between gap-4 w-[69%] ">
                 <span className="">Products</span>
               </div>
-              <div className="lg:flex lg:w-full lg:justify-between lg:items-center ">
-                <span className="">Types</span>
-                <span className="">Price</span>
-                <span className="">Quantity</span>
-                <span className="">Subtotal</span>
-                <span className="">Actions</span>
+              <div className="lg:flex lg:w-full lg:justify-between lg:items-center">
+                <span className="w-[25%]">Types</span>
+                <span className="w-[25%]">Price</span>
+                <span className="w-[25%]">Quantity</span>
+                <span className="w-[25%]">Subtotal</span>
+                <span className="w-[25%]">Actions</span>
               </div>
             </div>
             {!cartItems ? (
@@ -134,49 +136,52 @@ const Cart = () => {
               cartItems.map((product) => {
                 return (
                   <div
-                    className="lg:flex lg:items-center lg:gap-[20px] lg:px-[40px] lg:py-[24px] rounded shadow-cart p-3 grid grid-cols-3 gap-4 bg-white"
+                    className="lg:flex lg:items-center  lg:px-[20px] lg:py-7 p-3   grid grid-cols-3  bg-white  text-[15px] border-t border-gray-200"
                     key={product.id}
                   >
-                    <div className="flex items-center gap-3 lg:justify-between lg:gap-4 col-span-1 lg:w-[10%]">
-                      <input
-                        type="checkbox"
-                        name="chechbox cart"
-                        id=""
-                        className="lg:size-5 size-8 hover:cursor-pointer"
-                        onChange={() => handleSelectedProducts(product)}
-                      />
-                      <Link
-                        to={`/dp/${product.name}/${product.id}`}
-                        className="flex items-center gap-4"
-                      >
-                        <LazyLoadImage
-                          src={product.img}
-                          className="size-[80px] object-contain"
-                          effect="blur"
+                    <div className="lg:w-[69%] flex items-center gap-5">
+                      <div className="flex items-center gap-3 lg:justify-between ">
+                        <input
+                          type="checkbox"
+                          name="chechbox cart"
+                          id=""
+                          className="lg:size-4 size-5 hover:cursor-pointer"
+                          onChange={() => handleSelectedProducts(product)}
                         />
-                      </Link>
+                        <Link
+                          to={`/dp/${product.name}/${product.id}`}
+                          className="flex items-center gap-4"
+                        >
+                          <div className="flex items-center justify-center lg:px-4 p-2 bg-gray-100 lg:py-3 rounded-lg mr-3">
+                            <LazyLoadImage
+                              src={product.img}
+                              className="lg:size-14 size-16 object-contain"
+                              effect="blur"
+                            />
+                          </div>
+                        </Link>
+                      </div>
+                      <span className="font-medium overflow-hidden text-ellipsis whitespace-nowrap lg:block hidden ">
+                        {product.name}
+                      </span>
                     </div>
                     <Link
                       to={isMobile ? `/dp/${product.name}/${product.id}` : ""}
-                      className=" col-span-2 lg:flex lg:w-full lg:justify-between lg:items-center flex flex-col lg:flex-row hover:cursor-default"
+                      className=" col-span-2 lg:flex lg:w-full  lg:items-center flex flex-col lg:flex-row hover:cursor-default "
                     >
-                      <span className="font-normal overflow-hidden text-ellipsis whitespace-nowrap lg:w-[250px] lg:text-[17px] text-[16px]">
+                      <span className="font-medium overflow-hidden text-ellipsis whitespace-nowrap lg:hidden ">
                         {product.name}
                       </span>
-                      <span className=" text-[14px] text-gray-500">
-                        {product.color
-                          ? product.color.charAt(0).toUpperCase() +
-                            product.color.slice(1)
-                          : ""}
-                        {product.size ? "," : "None"}
-                        {product.size}
+                      <span className=" text-gray-500 w-[25%] break-words text-[13px]">
+                        None
                       </span>
-                      <div className="flex items-center justify-between lg:gap-14 lg:mt-0 mt-4">
-                        <span className="text-red-500 lg:text-black lg:font-normal  font-medium lg:text-[16px] text-[17px]">{`$${product.price}`}</span>
+                      {/* Mobile */}
+                      <div className="flex items-center justify-between lg:gap-14 lg:mt-0 mt-4 lg:hidden">
+                        <span className="text-red-500 lg:text-black lg:font-normal  font-medium">{`$${product.newPrice}`}</span>
                         <div className="">
-                          <div className="w-fit flex items-center border border-gray-400 rounded-s lg:py-1 rounded-e lg:px-2 px-1">
+                          <div className="w-fit flex items-center text-gray-500 border-2 border-gray-200 rounded-s rounded-e lg:px-2 px-1">
                             <div
-                              className="flex items-center justify-center hover:cursor-pointer text-[16px]"
+                              className="flex items-center justify-center hover:cursor-pointer "
                               onClick={(e) => {
                                 if (product.quantity > 1) {
                                   updateMinus(product, e);
@@ -187,11 +192,11 @@ const Cart = () => {
                             >
                               <MinusIcon className="size-[20px]" />
                             </div>
-                            <div className="flex items-center justify-center lg:w-[50px] w-[30px] text-[17px] font-medium leading-[28px]">
+                            <div className="flex items-center justify-center w-[30px]  font-medium leading-[28px]">
                               {product.quantity}
                             </div>
                             <div
-                              className="flex items-center justify-center hover:cursor-pointer text-[16px]"
+                              className="flex items-center justify-center hover:cursor-pointer ]"
                               onClick={(e) => {
                                 updatePlus(product, e);
                               }}
@@ -201,14 +206,43 @@ const Cart = () => {
                           </div>
                         </div>
                       </div>
-                      <span className=" text-red-500 font-medium lg:block hidden">
+                      <span className="text-red-500 lg:text-black lg:font-normal  font-medium hidden lg:block w-[25%]">{`$${product.newPrice}`}</span>
+                      <div className="lg:block hidden w-[25%]">
+                        <div className="w-fit flex items-center text-gray-500 border-2 border-gray-200 rounded-s rounded-e lg:px-2 px-1 ">
+                          <div
+                            className="flex items-center justify-center hover:cursor-pointer "
+                            onClick={(e) => {
+                              if (product.quantity > 1) {
+                                updateMinus(product, e);
+                              } else {
+                                removeToCart(product);
+                              }
+                            }}
+                          >
+                            <MinusIcon className="size-[20px]" />
+                          </div>
+                          <div className="flex items-center justify-center w-[30px]  font-medium leading-[28px]">
+                            {product.quantity}
+                          </div>
+                          <div
+                            className="flex items-center justify-center hover:cursor-pointer ]"
+                            onClick={(e) => {
+                              updatePlus(product, e);
+                            }}
+                          >
+                            <PlusIcon className="size-[20px]" />
+                          </div>
+                        </div>
+                      </div>
+                      <span className=" text-red-500 font-medium lg:block hidden w-[25%]">
                         {`$${
-                          Math.round(product.quantity * product.price * 100) /
-                          100
+                          Math.round(
+                            product.quantity * product.newPrice * 100
+                          ) / 100
                         }  `}
                       </span>
 
-                      <div className="lg:block hidden">
+                      <div className="lg:block hidden w-[25%]">
                         <button
                           className=" w-fit"
                           onClick={() => removeToCart(product)}
@@ -226,10 +260,10 @@ const Cart = () => {
               onLeave={() => setIsScrollLast(false)}
             >
               <div
-                className={`flex lg:flex-row flex-col lg:items-center  justify-between lg:px-[40px] lg:py-[24px] rounded shadow-add py-5 px-4  gap-4 w-full bg-white transition-all duration-300 `}
+                className={`flex lg:flex-row flex-col lg:items-center  justify-between lg:px-[40px] lg:py-4 rounded shadow-add py-5 px-4  gap-4 w-full bg-white transition-all duration-300 `}
               >
                 <div className="flex items-center gap-2">
-                  <span className="lg:text-[20px] text-[18px]">
+                  <span className="lg:text-[18px] text-[16px]">
                     Total to pay
                   </span>
                   <span className="lg:text-[20px] text-[18px] font-medium text-[#db4444]">{`$${
@@ -254,9 +288,9 @@ const Cart = () => {
               } ${isScrollFooter ? "checkout hidden" : ""}
               ${canBuy ? "lg:pl-[135px]" : ""} `}
             >
-              <div className="bg-white w-full h-full flex lg:flex-row flex-col lg:items-center justify-between lg:px-[40px] lg:py-[24px] rounded shadow-add py-5 px-4 ">
+              <div className="bg-white w-full h-full flex lg:flex-row flex-col lg:items-center justify-between lg:px-[40px] lg:py-4 rounded shadow-add py-5 px-4 ">
                 <div className="flex items-center gap-2">
-                  <span className="lg:text-[20px] text-[18px]">
+                  <span className="lg:text-[18px] text-[16px]">
                     Total to pay
                   </span>
                   <span className="lg:text-[20px] text-[18px] font-medium text-[#db4444]">{`$${

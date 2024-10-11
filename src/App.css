@@ -4,6 +4,10 @@ html {
   padding: 0;
   box-sizing: border-box;
 }
+ion-icon {
+  font-size: 28px;
+  color: #9499a3;
+}
 /* Đối với tất cả trình duyệt */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

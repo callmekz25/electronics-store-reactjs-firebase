@@ -9,6 +9,7 @@ import { UserContext } from "../Context/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOrdersByUser } from "../FetchAPI/FetchAPI";
 import SkeletonOrder from "../components/SkekletonOrder";
+import NoData from "../components/NoData";
 const MyOrders = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
@@ -42,8 +43,8 @@ const MyOrders = () => {
             My Orders
           </span>
         </div>
-        <div className=" py-[80px]">
-          <div className="grid grid-cols-4">
+        <>
+          <div className="grid grid-cols-4 pb-36">
             <div className=" col-span-1 flex flex-col gap-[24px]">
               <button className="text-[16px] w-fit font-medium leading-[24px]">
                 My Orders
@@ -52,10 +53,16 @@ const MyOrders = () => {
             <div className="pb-[30px] px-[50px] col-span-3 ">
               <div className="flex items-center  justify-between text-[14px] leading-[21px] font-medium text-gray-400 pb-8">
                 <button
-                  className="flex items-center justify-center px-5 py-1 text-black border-2 border-black rounded-2xl"
+                  className="flex items-center justify-center px-5 py-1  border-2 text-black border-black rounded-2xl"
                   onClick={() => navigate("/orders/purchase/status=all")}
                 >
                   All
+                </button>
+                <button
+                  className="flex items-center justify-center px-5 py-1  border-2 border-gray-400 rounded-2xl"
+                  onClick={() => navigate("/orders/purchase/status=pending")}
+                >
+                  Pending
                 </button>
                 <button
                   className="flex items-center justify-center px-5 py-1 border-2 border-gray-400 rounded-2xl"
@@ -64,7 +71,10 @@ const MyOrders = () => {
                   Shipping
                 </button>
 
-                <button className="flex items-center justify-center px-5 py-1 border-2 border-gray-400 rounded-2xl">
+                <button
+                  className="flex items-center justify-center px-5 py-1 border-2 border-gray-400 rounded-2xl"
+                  onClick={() => navigate("/orders/purchase/status=completed")}
+                >
                   Completed
                 </button>
 
@@ -79,7 +89,7 @@ const MyOrders = () => {
                   Returns
                 </button>
               </div>
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-6 mt-5">
                 {!isLoading ? (
                   data ? (
                     data.length > 0 ? (
@@ -109,7 +119,7 @@ const MyOrders = () => {
                           // Thông tin chung của đơn hàng user order
                           return (
                             <div
-                              className="relative p-6 border-2 border-gray-300 rounded-xl"
+                              className="relative p-6  bg-[#ffff]  rounded-xl"
                               key={product.id}
                             >
                               <div className="flex items-center gap-3 text-[13px] font-medium">
@@ -123,7 +133,7 @@ const MyOrders = () => {
                                       ? "bg-[#ffe8e5]"
                                       : ""
                                   } ${
-                                    product.status === "Confirm"
+                                    product.status === "Confirmed"
                                       ? "bg-[#fce5ff]"
                                       : ""
                                   } ${
@@ -134,8 +144,7 @@ const MyOrders = () => {
                                     product.status === "Completed"
                                       ? "bg-[#d0fbd4]"
                                       : ""
-                                  }
-                                                        `}
+                                  }`}
                                 >
                                   <div
                                     className={`rounded-full size-[13px] ${
@@ -147,7 +156,7 @@ const MyOrders = () => {
                                         ? "bg-[#de491c]"
                                         : ""
                                     }  ${
-                                      product.status === "Confirm"
+                                      product.status === "Confirmed"
                                         ? "bg-[#9a1cde]"
                                         : ""
                                     } ${
@@ -170,7 +179,7 @@ const MyOrders = () => {
                                         ? "text-[#e04728]"
                                         : ""
                                     } ${
-                                      product.status === "Confirm"
+                                      product.status === "Confirmed"
                                         ? "text-[#bb28e0]"
                                         : ""
                                     } ${
@@ -183,10 +192,7 @@ const MyOrders = () => {
                                         : ""
                                     }`}
                                   >
-                                    {product.status.toString().toLowerCase() ===
-                                    "confirm"
-                                      ? "Pending"
-                                      : product.status}
+                                    {product.status}
                                   </span>
                                 </div>
                                 <span className="text-gray-400">|</span>
@@ -237,13 +243,13 @@ const MyOrders = () => {
                                 }
                               )}
                               <div
-                                className="absolute top-[50%] right-[50px] translate-y-[-50%] size-[60px] rounded-full flex items-center justify-center hover:cursor-pointer"
+                                className="absolute top-[50%] right-[50px] translate-y-[-50%] size-[60px] rounded-full flex items-center justify-center hover:cursor-pointer hover:scale-125  transition-all duration-300"
                                 onClick={() =>
                                   // Xử lí chuyển trang sang order details gồm id đơn hàng, tổng giá tiền đơn hàng, những sản phẩm đã đặt
                                   navigate(`/order-detail/${product.orderId}`, {
                                     state: {
-                                      orders: product,
-                                      total: product.total,
+                                      orderId: product.orderId,
+                                      userId: user.userId,
                                     },
                                   })
                                 }
@@ -254,9 +260,7 @@ const MyOrders = () => {
                           );
                         })
                     ) : (
-                      <div className="text-[17px] text-center py-16 font-normal text-gray-400">
-                        You have no orders
-                      </div>
+                      <NoData title={"No Orders"} />
                     )
                   ) : (
                     <div className="text-[17px] text-center py-16 font-normal text-gray-400">
@@ -273,7 +277,7 @@ const MyOrders = () => {
               </div>
             </div>
           </div>
-        </div>
+        </>
       </>
 
       <Footer />
