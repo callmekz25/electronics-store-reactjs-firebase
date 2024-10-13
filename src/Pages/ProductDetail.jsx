@@ -7,11 +7,10 @@ import { useParams } from "react-router-dom";
 import UserIconNone from "../Assets/UserIcon/360_F_795951406_h17eywwIo36DU2L8jXtsUcEXqPeScBUq-removebg-preview.webp";
 import Truck from "../Assets/ProductDetail/icon-delivery.svg";
 import Return from "../Assets/ProductDetail/Icon-return.svg";
-import { useState, useEffect, useContext, useMemo, useCallback } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { Error } from "./Error";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-
 import { fetchProductById, postReviewByProductId } from "../FetchAPI/FetchAPI";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +25,7 @@ import { fetchReviewsByProductId } from "../FetchAPI/FetchAPI";
 import { useQueryClient } from "@tanstack/react-query";
 const ProductDetail = () => {
   const queryClient = useQueryClient();
-  const [active, setActive] = useState("");
+  const [activeColor, setActiveColor] = useState("");
   // State đếm số lượng sản phẩm khi user increase hoặc decrease
   const [count, setCount] = useState(1);
   const { addToCart, addSuccess, isLogIn, setIsLogIn } =
@@ -212,6 +211,7 @@ const ProductDetail = () => {
     setTwoStar(percentRate.two);
     setOneStar(percentRate.one);
   }, [percentRate]);
+  console.log(activeColor);
 
   if (isError) {
     return <Error />;
@@ -383,9 +383,9 @@ const ProductDetail = () => {
               </span>
             </div>
             <div className="pt-[80px] grid grid-cols-3 gap-[40px] ">
-              <div className="col-span-2 flex flex-col justify-between">
+              <div className="col-span-2 h-fit flex flex-col justify-between">
                 <div
-                  className={`bg-[#f6f5f8] rounded-2xl row-span-1 flex items-center justify-center relative overflow-hidden p-8 `}
+                  className={`bg-[#f0eeed] rounded-2xl row-span-1 flex items-center justify-center relative overflow-hidden p-8 `}
                 >
                   <div className="flex items-center w-full h-full row-span-2 overflow-hidden">
                     {data.img.slice(1).map((img, index) => {
@@ -425,44 +425,10 @@ const ProductDetail = () => {
                     <ChevronRightIcon className="size-[40px]" />
                   </button>
                 </div>
-                <div className="border border-black mt-14 rounded-2xl  h-fit">
-                  <div className="flex items-center gap-4 px-4 py-[24px] ">
-                    <LazyLoadImage
-                      effect="blur"
-                      src={Truck}
-                      alt=""
-                    />
-                    <div className="flex flex-col gap-2">
-                      <span className="text-[16px] font-medium leading-[24p]">
-                        Free Delivery
-                      </span>
-                      <span className="text-[12px] font-medium leading-[18px] underline">
-                        Enter your postal code for Delivery Availability
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-300 h-[1px]"></div>
-                  <div className="flex items-center gap-4 px-4 py-[24px] ">
-                    <LazyLoadImage
-                      effect="blur"
-                      src={Return}
-                      alt=""
-                    />
-                    <div className="flex flex-col gap-2">
-                      <span className="text-[16px] font-medium leading-[24p]">
-                        Return Delivery
-                      </span>
-                      <span className="text-[12px] font-medium leading-[18px] underline">
-                        Free 30 Days Delivery Returns. Details
-                      </span>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               <div className="flex flex-col">
-                <span className="text-[28px] font-semibold leading-[35px] tracking-[0.72px]">
+                <span className="text-[30px] font-black leading-[35px] tracking-[0.72px]">
                   {data.name}
                 </span>
                 <div className={`flex items-center gap-2 pt-4`}>
@@ -473,8 +439,8 @@ const ProductDetail = () => {
                     {`(${reviewsData.length})`}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 pb-2 pt-7">
-                  <span className="text-[23px] text-black font-medium  leading-[24px] tracking-[0.92px]">
+                <div className="flex items-center gap-2 py-5">
+                  <span className="text-[25px] text-black font-semibold  leading-[24px] tracking-[0.92px]">
                     {`$${data.newPrice}`}
                   </span>
                   <span
@@ -484,9 +450,46 @@ const ProductDetail = () => {
                   >
                     {`$${data.oldPrice}`}
                   </span>
+                  {data.sales ? (
+                    <div className="bg-[#ffeaea] flex items-center justify-center rounded-full py-[4px] px-4  top-[12px] left-[12px]">
+                      <span className="lg:text-[14px] text-[18px]  text-red-500 font-medium leading-[18px]">
+                        -{data.sales}
+                      </span>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
-                <div className="h-[2px] my-[24px] bg-black opacity-20"></div>
-                <div className="pb-4">
+                {data.colors[0] !== "" ? (
+                  <div className="flex flex-col gap-2 border-t border-gray-200 py-8">
+                    <span className="text-[14px] text-gray-400">
+                      Select Colors
+                    </span>
+                    <div className="flex items-center gap-5">
+                      {data.colors.map((color) => {
+                        return (
+                          <div
+                            className={`flex items-center justify-center p-[3px]  rounded-full ${
+                              activeColor === color
+                                ? "border-2 border-blue-500"
+                                : ""
+                            }`}
+                            key={color}
+                          >
+                            <button
+                              className={` size-10 rounded-full shadow-lg `}
+                              style={{ backgroundColor: color }}
+                              onClick={() => setActiveColor(color)}
+                            ></button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
+                {/* <div className="pb-4">
                   <span className="text-[20px] font-medium leading-[24px]">{`Infomations about ${data.name}`}</span>
                 </div>
                 {data.cate === "laptop" ? (
@@ -628,33 +631,33 @@ const ProductDetail = () => {
                   </div>
                 ) : (
                   ""
-                )}
-                <div className="flex flex-col gap-4 mt-8">
-                  <div className="flex items-center border w-fit border-black rounded-full h-[44px]  px-2">
-                    <div
-                      className="flex items-center justify-center hover:cursor-pointer"
-                      onClick={() => {
-                        setCount(count - 1);
-                        if (count === 0) {
-                          setCount(0);
-                        }
-                      }}
-                    >
-                      <box-icon name="minus"></box-icon>
+                )} */}
+                <div className="flex flex-col gap-4  border-t border-gray-200">
+                  <div className="flex items-center justify-between gap-3 py-8">
+                    <div className="flex items-center border w-fit bg-[#f0f0f0] rounded-full h-[44px]  px-2">
+                      <div
+                        className="flex items-center justify-center hover:cursor-pointer"
+                        onClick={() => {
+                          setCount(count - 1);
+                          if (count === 0) {
+                            setCount(0);
+                          }
+                        }}
+                      >
+                        <box-icon name="minus"></box-icon>
+                      </div>
+                      <div className="flex items-center justify-center w-[60px] text-[16px] font-medium leading-[28px]">
+                        {count}
+                      </div>
+                      <div
+                        className="flex items-center justify-center hover:cursor-pointer"
+                        onClick={() => setCount(count + 1)}
+                      >
+                        <box-icon name="plus"></box-icon>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-center w-[60px] text-[20px] font-medium leading-[28px]">
-                      {count}
-                    </div>
-                    <div
-                      className="flex items-center justify-center hover:cursor-pointer"
-                      onClick={() => setCount(count + 1)}
-                    >
-                      <box-icon name="plus"></box-icon>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between gap-3 py-4">
                     <button
-                      className="flex items-center justify-center border-2 border-black rounded-full group  w-full py-[10px] text-[16px] font-medium leading-[24px] hover:bg-black transition-all duration-500"
+                      className="flex items-center justify-center border-2 border-black text-black rounded-full group  w-full py-[10px] text-[16px] font-medium leading-[24px]  transition-all duration-500"
                       onClick={() => {
                         if (data.cate === "laptop") {
                           addToCart(
@@ -669,6 +672,7 @@ const ProductDetail = () => {
                           addToCart(
                             {
                               ...data,
+                              color: activeColor,
                               quantity: count,
                             },
                             count
@@ -676,42 +680,80 @@ const ProductDetail = () => {
                         }
                       }}
                     >
-                      <span className="text-black group-hover:text-white">
-                        Add to cart
-                      </span>
-                    </button>
-                    <button
-                      className="bg-[#0077ed] rounded-full w-full flex items-center justify-center text-white  py-[12px] text-[16px] font-medium leading-[24px] hover:opacity-85 transition-all duration-500"
-                      onClick={() =>
-                        handleBuyNow(data, count, active, totalPriceQuantity)
-                      }
-                    >
-                      {loadBuy ? (
-                        <div className="w-[68px] flex items-center justify-center h-[24px]">
-                          <div className="loader-buy"></div>
-                        </div>
-                      ) : (
-                        <span>Buy now</span>
-                      )}
+                      <span className="">Add to cart</span>
                     </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 mt-5">
+                <div className="">
+                  <button
+                    className="bg-black rounded-full w-full flex items-center justify-center text-white  py-[12px] text-[16px] font-medium leading-[24px] hover:opacity-85 transition-all duration-500"
+                    onClick={() =>
+                      handleBuyNow(data, count, activeColor, totalPriceQuantity)
+                    }
+                  >
+                    {loadBuy ? (
+                      <div className="w-[68px] flex items-center justify-center h-[24px]">
+                        <div className="loader-buy"></div>
+                      </div>
+                    ) : (
+                      <span>Buy now</span>
+                    )}
+                  </button>
+                </div>
+
+                {/* Total * quantity */}
+                {/* <div className="flex items-center gap-3 mt-5">
                   <span className="text-[28px] font-medium leading-[21px]">
                     Total:
                   </span>
                   <span className="text-[24px] font-normal leading-[24px] tracking-[0.72px]">
                     {`$${Math.round(totalPriceQuantity * 100) / 100}`}
                   </span>
+                </div> */}
+              </div>
+            </div>
+            <div className="grid grid-cols-3 py-7">
+              <div className="border border-black  rounded-2xl   h-fit col-span-2 ">
+                <div className="flex items-center gap-4 px-4 py-[24px] ">
+                  <LazyLoadImage
+                    effect="blur"
+                    src={Truck}
+                    alt=""
+                  />
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[16px] font-medium leading-[24p]">
+                      Free Delivery
+                    </span>
+                    <span className="text-[12px] font-medium leading-[18px] underline">
+                      Enter your postal code for Delivery Availability
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-gray-300 h-[1px]"></div>
+                <div className="flex items-center gap-4 px-4 py-[24px] ">
+                  <LazyLoadImage
+                    effect="blur"
+                    src={Return}
+                    alt=""
+                  />
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[16px] font-medium leading-[24p]">
+                      Return Delivery
+                    </span>
+                    <span className="text-[12px] font-medium leading-[18px] underline">
+                      Free 30 Days Delivery Returns. Details
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-3 py-[100px]">
-              <div className="border border-black rounded-lg  col-span-2 p-[25px]">
+
+            <div className=" pb-20">
+              <div className="">
                 <span className="text-[25px] font-medium">
                   Reviews {data.name}
                 </span>
-                <div className="flex flex-col gap-8 py-8">
+                <div className="flex items-center justify-between py-8">
                   <div className="flex items-center gap-2">
                     <span className="text-[28px] leading-[28px] text-yellow-500 font-medium">
                       {Math.round(totalAvgRate * 10) / 10 || 0}
@@ -721,77 +763,15 @@ const ProductDetail = () => {
                       {reviewsData.length} Reviews
                     </span>
                   </div>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-3">
-                      <span>5</span>
-                      <span>
-                        <StarIconFilled className="w-4 h-4 text-yellow-500" />
-                      </span>
-                      <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                        <div
-                          className={`absolute h-full rounded-full bg-yellow-500  top-0 left-0 `}
-                          style={{ width: `${fiveStar}%` }}
-                        ></div>
-                      </div>
-                      <span>{fiveStar}%</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span>4</span>
-                      <span>
-                        <StarIconFilled className="w-4 h-4 text-yellow-500" />
-                      </span>
-                      <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                        <div
-                          className=" absolute h-full rounded-full bg-yellow-500 top-0 left-0"
-                          style={{ width: `${fourStar}%` }}
-                        ></div>
-                      </div>
-                      <span>{fourStar}%</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span>3</span>
-                      <span>
-                        <StarIconFilled className="w-4 h-4 text-yellow-500" />
-                      </span>
-                      <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                        <div
-                          className=" absolute h-full rounded-full bg-yellow-500  top-0 left-0"
-                          style={{ width: `${threeStar}%` }}
-                        ></div>
-                      </div>
-                      <span>{threeStar}%</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span>2</span>
-                      <span>
-                        <StarIconFilled className="w-4 h-4 text-yellow-500" />
-                      </span>
-                      <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                        <div
-                          className=" absolute h-full rounded-full bg-yellow-500 top-0 left-0"
-                          style={{ width: `${twoStar}%` }}
-                        ></div>
-                      </div>
-                      <span>{twoStar}%</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span>1</span>
-                      <span>
-                        <StarIconFilled className="w-4 h-4 text-yellow-500" />
-                      </span>
-                      <div className="relative h-[6px] rounded-full bg-gray-300 w-[200px]">
-                        <div
-                          className=" absolute h-full rounded-full bg-yellow-500  top-0 left-0"
-                          style={{ width: `${oneStar}%` }}
-                        ></div>
-                      </div>
-                      <span>{oneStar}%</span>
-                    </div>
-                  </div>
+                  <button
+                    className="flex items-center justify-center font-normal py-3 px-6 text-white bg-black transition-all duration-500 hover:opacity-85 rounded-full"
+                    onClick={() => handleCheckUserIsLogInToReview()}
+                  >
+                    Write a review
+                  </button>
                 </div>
-                <>
+                <div className="grid grid-cols-2 gap-4">
                   {reviewsData
-
                     .sort(
                       (a, b) =>
                         new Date(
@@ -816,41 +796,35 @@ const ProductDetail = () => {
                     .map((reviews, index) => {
                       return (
                         <div
-                          className={`flex flex-col gap-2 border-b-2 border-gray-200 py-5 ${
-                            index > 1 ? "hidden" : "flex"
+                          className={`flex flex-col gap-2 p-8 border rounded-2xl border-gray-200 py-5 ${
+                            index > 3 ? "hidden" : "flex"
                           }`}
                           key={index}
                         >
                           <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-2">
-                              <LazyLoadImage
-                                src={UserIconNone}
-                                className="size-[30px]"
-                                effect="blur"
-                              />
-                              <span className="text-[17px] font-medium leading-[24px]">
-                                {reviews.userName}
-                              </span>
-                            </div>
-                            <span className="text-gray-400">|</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[14px] text-gray-500">
-                                {reviews.createdAt}
-                              </span>
+                            <div className="flex items-center">
+                              {renderStars(reviews.rate, "size-6")}
                             </div>
                           </div>
-                          <div className="flex items-center">
-                            {renderStars(reviews.rate, "size-4")}
+                          <span className="text-[17px] font-medium leading-[24px] mt-4">
+                            {reviews.userName}
+                          </span>
+                          <p className="text-gray-500 font-normal">
+                            "{reviews.userReview}"
+                          </p>
+                          <div className="mt-4">
+                            <span className="text-[14px] text-gray-500">
+                              Post on {reviews.createdAt}
+                            </span>
                           </div>
-                          <p>{reviews.userReview}</p>
                         </div>
                       );
                     })}
-                </>
+                </div>
 
-                <div className="grid grid-cols-2 gap-4 py-7">
+                <div className="flex items-center justify-center mt-16">
                   <button
-                    className={`flex items-center justify-center py-3 border-2 font-medium border-black rounded-lg transition-all duration-500 hover:bg-black hover:text-white ${
+                    className={`flex items-center justify-center py-3 px-[45px] border font-normal border-gray-300 rounded-full  ${
                       reviewsData.length === 0 ? "hidden" : "flex"
                     }`}
                     onClick={() =>
@@ -861,13 +835,7 @@ const ProductDetail = () => {
                       })
                     }
                   >
-                    View more reviews
-                  </button>
-                  <button
-                    className="flex items-center justify-center font-medium py-3 text-white bg-blue-500 transition-all duration-500 hover:opacity-85 rounded-lg"
-                    onClick={() => handleCheckUserIsLogInToReview()}
-                  >
-                    Write your review
+                    View All Reviews
                   </button>
                 </div>
               </div>

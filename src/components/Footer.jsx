@@ -26,7 +26,7 @@ const Footer = () => {
     }
   };
   return (
-    <div className="py-[40px] lg:flex lg:justify-around grid grid-cols-1 gap-[30px] px-[20px] lg:px-0">
+    <div className="py-[40px] lg:flex lg:justify-around grid grid-cols-1 gap-[30px] px-[20px] lg:px-0 bg-[#f0f0f0]">
       <ul className="flex flex-col gap-[24px]">
         <li className="text-[24px] font-semibold leading-[24px] tracking-[0.72px]">
           Exclusive

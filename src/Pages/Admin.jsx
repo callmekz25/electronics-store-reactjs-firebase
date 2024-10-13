@@ -71,7 +71,6 @@ const Admin = () => {
 
     for (let i = 0; i < files.length; i++) {
       files[i].preview = URL.createObjectURL(files[i]);
-      console.log(files[i]);
     }
     setImgPreview(files);
   };

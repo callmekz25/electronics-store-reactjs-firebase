@@ -56,32 +56,31 @@ const CardProductsStandard = ({ data, index, animation = true }) => {
         data-aos-duration="1000"
         data-aos-delay={`${index * 100}`}
       >
-        <div className="flex flex-col gap-[16px] bg-[#ffffff] rounded-lg card-shadow snap-start ">
-          <div className=" flex items-center justify-center bg-[#f6f6f6] relative  hover:cursor-pointer rounded-t-md overflow-hidden pb-10">
+        <div className="flex flex-col gap-[16px] snap-start ">
+          <div className=" flex items-center justify-center bg-[#f0eeed] py-14   hover:cursor-pointer rounded-2xl overflow-hidden ">
             <div className="image-product">
               <LazyLoadImage
                 src={data.img}
                 alt="ImageProduct"
                 effect="blur"
                 sizes="(max-width: 600px) 200px, 400px"
-                className="lg:size-[200px] size-[200px] object-contain lg:pt-[60px] pt-[50px] "
+                className="lg:size-[200px] size-[200px] object-contain "
               />
             </div>
-            {data.sales ? (
-              <div className="bg-[#DB4444] flex items-center justify-center rounded py-[4px] px-[12px] absolute top-[12px] left-[12px]">
-                <span className="lg:text-[12px] text-[16px] text-white font-normal leading-[18px]">
-                  {data.sales}
-                </span>
-              </div>
-            ) : (
-              ""
-            )}
           </div>
-          <div className="flex flex-col gap-2 px-6 lg:px-6 pb-4 ">
-            <span className="text-[20px] lg:text-[19px] font-semibold leading-[24px] min-h-[75px]">
+          <div className="flex flex-col gap-2  pb-4 ">
+            <span className="text-[19px] lg:text-[17px] font-semibold ">
               {data.name}
             </span>
-            <div className="flex items-center gap-3 text-[19px] lg:text-[16px] font-medium leading-[24px]">
+            <div className={`flex items-center gap-2 `}>
+              <div className={`flex items-center gap-1  `}>
+                {renderStars(totalAvgRate)}
+              </div>
+              <span className="text-gray-400 text-[14px]">
+                ({isLoading ? "0" : reviewsData.length})
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-[19px] lg:text-[18px] font-semibold leading-[24px]">
               <span className="">{`$${data.newPrice}`}</span>
               <span
                 className={`line-through lg:text-[14px] text-[16px] text-black opacity-50  ${
@@ -90,14 +89,15 @@ const CardProductsStandard = ({ data, index, animation = true }) => {
               >
                 {`$${data.oldPrice}`}
               </span>
-            </div>
-            <div className={`flex items-center gap-2 `}>
-              <div className={`flex items-center gap-1  `}>
-                {renderStars(totalAvgRate)}
-              </div>
-              <span className="text-gray-400 text-[14px]">
-                ({isLoading ? "0" : reviewsData.length})
-              </span>
+              {data.sales ? (
+                <div className="bg-[#ffeaea] flex items-center justify-center rounded-full py-[4px] px-4  top-[12px] left-[12px]">
+                  <span className="lg:text-[12px] text-[16px]  text-red-500 font-medium leading-[18px]">
+                    {data.sales}
+                  </span>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>

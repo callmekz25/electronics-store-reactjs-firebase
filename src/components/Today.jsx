@@ -125,11 +125,11 @@ export const Today = () => {
         data-aos-duration="1000"
       >
         <Link
-          className="bg-[#0077ed] rounded-full flex items-center justify-center py-3 px-[30px] hover:opacity-90"
+          className="border border-gray-300 rounded-full flex items-center justify-center py-2.5 px-[50px] transition-all duration-300 hover:opacity-90 hover:bg-black group"
           to="/sales"
         >
-          <button className="text-white text-[16px] font-medium leading-[24px]">
-            View More
+          <button className="text-black text-[16px] font-medium leading-[24px] group-hover:text-white">
+            View All
           </button>
         </Link>
       </div>

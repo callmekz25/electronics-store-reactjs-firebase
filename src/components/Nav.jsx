@@ -86,7 +86,7 @@ const Nav = ({ hidden }) => {
         <div className="flex items-center justify-between ">
           <Link
             to="/"
-            className="lg:text-[24px] text-[24px] font-bold leading-[24px]"
+            className="lg:text-[30px] text-[22px] font-black leading-[24px]"
           >
             Exclusive
           </Link>
@@ -133,7 +133,7 @@ const Nav = ({ hidden }) => {
                 type="text"
                 name="search"
                 id="search"
-                className="pl-[20px] pr-[50px] py-2 placeholder:text-[12px] placeholder:font-normal placeholder:leading-[18px]  outline-none bg-[#e9e8e8] rounded text-[13px]"
+                className="pl-[20px] pr-[50px] py-2 placeholder:text-[12px] placeholder:font-normal placeholder:leading-[18px]  outline-none bg-[#f0f0f0] rounded-full text-[13px]"
                 placeholder="What are you looking for?"
               />
               <button className="size-[20px] absolute right-[12px] top-[50%] translate-y-[-50%]">
