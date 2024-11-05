@@ -202,12 +202,12 @@ const Profile = () => {
   };
 
   return (
-    <div className="lg:px-[135px] px-[20px]">
+    <>
       <Nav />
       {loading || loadingChange ? (
         <Loading />
       ) : (
-        <>
+        <div className="lg:px-[100px] mb-20 px-[20px]">
           <div className=" py-[80px]">
             <div className="flex items-center justify-between text-[14px] font-normal leading-[21px]">
               <div className="flex items-center gap-2">
@@ -539,7 +539,7 @@ const Profile = () => {
                         <label htmlFor="fname">Password</label>
 
                         <input
-                          type="text"
+                          type="password"
                           id="name"
                           className=" rounded px-4 py-[13px] bg-[#eae8e8] w-full"
                           onChange={(e) => setPassword(e.target.value)}
@@ -605,11 +605,11 @@ const Profile = () => {
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
       <Footer />
       <ToastContainer />
-    </div>
+    </>
   );
 };
 export default Profile;

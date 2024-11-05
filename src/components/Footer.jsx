@@ -1,32 +1,42 @@
 import { toast } from "react-toastify";
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import { PaperAirplaneIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
-  const HandleEmail = () => {
+  const handleEmail = () => {
     if (email) {
-      const formData = new FormData();
-      formData.append("entry.2054652529", email);
-      postGoogleForrm(formData);
     } else {
       toast.error("Please enter your email!");
     }
-    async function postGoogleForrm(data) {
-      fetch(
-        "https://docs.google.com/forms/u/0/d/e/1FAIpQLSfbW8kFURsU8PZXVUVcG1MM1a7iRmGk2bdgE0ZIXYVwoUlhyQ/formResponse",
-        {
-          method: "POST",
-          body: data,
-          mode: "no-cors",
-        }
-      );
-      toast.success("Your email send!");
-      setEmail("");
-    }
   };
   return (
-    <div className="py-[40px] lg:flex lg:justify-around grid grid-cols-1 gap-[30px] px-[20px] lg:px-0 bg-[#f0f0f0]">
+    <div className="relative lg:flex lg:justify-between grid grid-cols-1 gap-[30px] lg:px-[100px] px-[20px] bg-[#f0f0f0] pt-[166px] pb-10">
+      <div className=" absolute left-0 w-full bottom-[100%] translate-y-[50%] px-[20px] lg:px-[100px]">
+        <div className=" bg-black rounded-2xl py-8 px-16 w-full flex items-center justify-between">
+          <span className="text-white font-bold text-[40px] max-w-[50%] uppercase leading-[45px]">
+            Stay upto date about our latest offers
+          </span>
+          <div className="flex flex-col justify-between gap-3">
+            <div className="relative">
+              <EnvelopeIcon className="size-6 text-gray-500 absolute left-3 top-[50%] translate-y-[-50%]" />
+              <input
+                type="text"
+                className="w-full rounded-full  py-3.5 pl-12 pr-4 outline-none text-[14px]"
+                placeholder="Enter your email address"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+              />
+            </div>
+            <button
+              className="w-full rounded-full bg-white py-3.5 px-20 text-[14px] font-medium transition-all duration-300 hover:scale-105"
+              onClick={handleEmail}
+            >
+              Subcribe to Newsletetter
+            </button>
+          </div>
+        </div>
+      </div>
       <ul className="flex flex-col gap-[24px]">
         <li className="text-[24px] font-semibold leading-[24px] tracking-[0.72px]">
           Exclusive
@@ -35,30 +45,7 @@ const Footer = () => {
         <li className="text-[16px] font-normal leading-[24px]">
           Get 10% off your first order
         </li>
-        <li>
-          <form
-            className=""
-            id="formFooter"
-          >
-            <div className="relative">
-              <input
-                type="email"
-                id="emailFooter"
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className=" border-gray-400 border-2  outline-none rounded px-[16px] py-[10px] placeholder:text-[16px] placeholder:font-normal placeholder:leading-[24px] w-full"
-              />
-              <button
-                type="submit"
-                form="form"
-                onClick={HandleEmail}
-                className="absolute right-[16px] top-[50%] translate-y-[-50%]"
-              >
-                <PaperAirplaneIcon className="text-black size-[25px]" />
-              </button>
-            </div>
-          </form>
-        </li>
+        <li></li>
       </ul>
       <ul className="flex flex-col gap-[24px]">
         <li className="text-[20px] font-medium leading-[28px]">Support</li>

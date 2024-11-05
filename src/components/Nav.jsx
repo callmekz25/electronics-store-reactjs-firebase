@@ -81,7 +81,7 @@ const Nav = ({ hidden }) => {
   }, [isActiveMenu]);
 
   return (
-    <div className="px-[20px] lg:px-0">
+    <div className="px-[20px] lg:px-[100px]">
       <div className="lg:py-[40px] py-[20px]">
         <div className="flex items-center justify-between ">
           <Link

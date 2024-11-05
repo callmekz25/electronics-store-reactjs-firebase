@@ -69,7 +69,9 @@ const Customers = () => {
                           <td className="px-5 py-5">
                             {customer.address || "null"}
                           </td>
-                          <td className="px-5 py-5">{customer.verify}</td>
+                          <td className="px-5 py-5 text-green-400">
+                            {customer.verify}
+                          </td>
                         </tr>
                       );
                     })

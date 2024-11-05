@@ -87,13 +87,13 @@ const LogIn = () => {
     }
   };
   return (
-    <div className="lg:px-[135px] ">
+    <div className="">
       {loading || loadingChange ? (
         <Loading />
       ) : (
         <>
           <Nav hidden="hidden" />
-          <div className="lg:py-[60px] py-[40px] px-[20px]">
+          <div className="lg:py-[60px] py-[40px] lg:px-[100px] px-[20px] mb-[100px]">
             <h5
               className="lg:text-[40px] font-semibold leading-[44px] text-[30px]"
               data-aos="fade-in"

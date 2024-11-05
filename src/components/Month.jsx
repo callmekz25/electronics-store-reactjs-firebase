@@ -11,7 +11,7 @@ export const Month = () => {
   });
 
   return (
-    <div className=" lg:pl-0 pl-[20px] lg:py-[100px] py-[40px]">
+    <div className=" lg:px-[100px] pl-[20px] lg:py-[100px]  py-[40px]">
       <div className="flex items-end justify-between pr-[20px] lg:pr-0">
         <div className="flex flex-col gap-[24px]">
           <div
@@ -58,8 +58,8 @@ export const Month = () => {
         data-aos="fade-up"
         data-aos-duration="1000"
       >
-        <button className="border border-gray-300 rounded-full flex items-center justify-center py-2.5 px-[50px] transition-all duration-300 hover:opacity-90 hover:bg-black group">
-          <span className="text-black text-[16px] font-medium leading-[24px] group-hover:text-white">
+        <button className=" rounded-full flex items-center justify-center py-2.5 px-[50px] transition-all hover:opacity-90 hover:scale-105 duration-300 bg-[#0077ed]">
+          <span className="text-white text-[16px] font-medium leading-[24px] group-hover:text-white">
             View All
           </span>
         </button>

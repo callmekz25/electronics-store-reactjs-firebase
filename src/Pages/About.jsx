@@ -15,9 +15,9 @@ const About = () => {
   const [onViewPort, setOnViewPort] = useState(false);
 
   return (
-    <div className="lg:px-[135px]">
+    <div className="bg-white">
       <Nav />
-      <div className=" pb-[140px] px-[20px] lg:px-0">
+      <div className=" pb-[140px] px-[20px] lg:px-[100px]">
         <div className="flex items-center  gap-2 py-[80px]">
           <span className="text-[14px] font-normal opacity-40 leading-[21px]">
             Home
@@ -62,7 +62,7 @@ const About = () => {
           </div>
         </div>
       </div>
-      <div className="lg:px-[135px] px-[20px] grid lg:grid-cols-4 grid-cols-2 lg:gap-[34px] gap-x-5 gap-y-10 pb-[30px]">
+      <div className="lg:px-[100px] px-[20px] grid lg:grid-cols-4 grid-cols-2 lg:gap-[34px] gap-x-5 gap-y-10 pb-[30px]">
         <Waypoint
           onEnter={() => setOnViewPort(true)}
           onLeave={() => setOnViewPort(true)}
@@ -187,7 +187,9 @@ const About = () => {
           </div>
         </Waypoint>
       </div>
-      <Featured />
+      <div className="mb-20">
+        <Featured />
+      </div>
       <Footer />
       <ToastContainer />
     </div>

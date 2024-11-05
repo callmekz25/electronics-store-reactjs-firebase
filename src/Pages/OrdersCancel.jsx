@@ -34,9 +34,9 @@ const OrdersCancel = () => {
   }
 
   return (
-    <div className="lg:px-[135px] px-[20px]">
+    <div className="bg-white">
       <Nav />
-      <>
+      <div className="lg:px-[100px] mb-20 px-[20px]">
         <div className="flex items-center gap-2 py-[80px]">
           <span className="text-[14px] font-normal opacity-40 leading-[21px]">
             Profile
@@ -114,7 +114,7 @@ const OrdersCancel = () => {
                       )
                       .map((product) => {
                         return (
-                          <div className="relative p-6 bg-[#ffff] rounded-xl">
+                          <div className="relative p-6 bg-[#ffff] rounded-xl border border-gray-200 shadow">
                             <div className="flex items-center gap-3 text-[13px] font-medium">
                               <div className="px-4 py-1  bg-[#ffe9e5] rounded-full flex items-center gap-2">
                                 <div className="bg-[#e03728] rounded-full size-[13px]"></div>
@@ -185,7 +185,7 @@ const OrdersCancel = () => {
             </div>
           </div>
         </>
-      </>
+      </div>
 
       <Footer />
     </div>

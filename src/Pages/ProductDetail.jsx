@@ -4,7 +4,6 @@ import { ToastContainer } from "react-toastify";
 import { StarIcon as StarIconFilled } from "@heroicons/react/24/solid";
 import "boxicons";
 import { useParams } from "react-router-dom";
-import UserIconNone from "../Assets/UserIcon/360_F_795951406_h17eywwIo36DU2L8jXtsUcEXqPeScBUq-removebg-preview.webp";
 import Truck from "../Assets/ProductDetail/icon-delivery.svg";
 import Return from "../Assets/ProductDetail/Icon-return.svg";
 import { useState, useEffect, useContext, useMemo } from "react";
@@ -42,11 +41,11 @@ const ProductDetail = () => {
   const [starReview, setStarReview] = useState(0);
   const [comment, setComment] = useState(null);
   // State percent of star
-  const [fiveStar, setFiveStar] = useState(0);
-  const [fourStar, setFourStar] = useState(0);
-  const [threeStar, setThreeStar] = useState(0);
-  const [twoStar, setTwoStar] = useState(0);
-  const [oneStar, setOneStar] = useState(0);
+  // const [fiveStar, setFiveStar] = useState(0);
+  // const [fourStar, setFourStar] = useState(0);
+  // const [threeStar, setThreeStar] = useState(0);
+  // const [twoStar, setTwoStar] = useState(0);
+  // const [oneStar, setOneStar] = useState(0);
   // URL param
   const { productId } = useParams();
   // User Context
@@ -172,52 +171,51 @@ const ProductDetail = () => {
   }, [totalRate]);
 
   // Chỉ tính lại logic khi có thêm dữ liệu reviews thay đổi
-  const percentRate = useMemo(() => {
-    let totalReviews;
-    let count;
-    if (reviewsData) {
-      count = countingRate(reviewsData);
-      totalReviews = reviewsData.length;
-    }
-    // Trả về object
-    return {
-      five:
-        totalReviews > 0
-          ? Math.round((count.five / totalReviews) * 100 * 100) / 100
-          : 0,
-      four:
-        totalReviews > 0
-          ? Math.round((count.four / totalReviews) * 100 * 100) / 100
-          : 0,
-      three:
-        totalReviews > 0
-          ? Math.round((count.three / totalReviews) * 100 * 100) / 100
-          : 0,
-      two:
-        totalReviews > 0
-          ? Math.round((count.two / totalReviews) * 100 * 100) / 100
-          : 0,
-      one:
-        totalReviews > 0
-          ? Math.round((count.one / totalReviews) * 100 * 100) / 100
-          : 0,
-    };
-  }, [reviewsData]);
+  // const percentRate = useMemo(() => {
+  //   let totalReviews;
+  //   let count;
+  //   if (reviewsData) {
+  //     count = countingRate(reviewsData);
+  //     totalReviews = reviewsData.length;
+  //   }
+  //   // Trả về object
+  //   return {
+  //     five:
+  //       totalReviews > 0
+  //         ? Math.round((count.five / totalReviews) * 100 * 100) / 100
+  //         : 0,
+  //     four:
+  //       totalReviews > 0
+  //         ? Math.round((count.four / totalReviews) * 100 * 100) / 100
+  //         : 0,
+  //     three:
+  //       totalReviews > 0
+  //         ? Math.round((count.three / totalReviews) * 100 * 100) / 100
+  //         : 0,
+  //     two:
+  //       totalReviews > 0
+  //         ? Math.round((count.two / totalReviews) * 100 * 100) / 100
+  //         : 0,
+  //     one:
+  //       totalReviews > 0
+  //         ? Math.round((count.one / totalReviews) * 100 * 100) / 100
+  //         : 0,
+  //   };
+  // }, [reviewsData]);
   // Dùng sideEffect để render lại UI khi đã tính lại logic
-  useEffect(() => {
-    setFiveStar(percentRate.five);
-    setFourStar(percentRate.four);
-    setThreeStar(percentRate.three);
-    setTwoStar(percentRate.two);
-    setOneStar(percentRate.one);
-  }, [percentRate]);
-  console.log(activeColor);
+  // useEffect(() => {
+  //   setFiveStar(percentRate.five);
+  //   setFourStar(percentRate.four);
+  //   setThreeStar(percentRate.three);
+  //   setTwoStar(percentRate.two);
+  //   setOneStar(percentRate.one);
+  // }, [percentRate]);
 
   if (isError) {
     return <Error />;
   }
   return (
-    <div className="lg:px-[135px] px-[20px] bg-[#ffff]">
+    <div className="bg-white">
       <Nav />
       {addSuccess && (
         <div className="overlay-notifi">
@@ -364,8 +362,8 @@ const ProductDetail = () => {
               </div>
             </div>
           )}
-          <div className="">
-            <div className="flex items-center gap-2 py-[80px]">
+          <div className="lg:px-[100px] px-[20px] bg-[#ffff]">
+            <div className="flex items-center gap-2 pt-[50px]">
               <span className="text-[14px] font-normal opacity-40 leading-[21px]">
                 Home
               </span>
@@ -473,11 +471,11 @@ const ProductDetail = () => {
                               activeColor === color
                                 ? "border-2 border-blue-500"
                                 : ""
-                            }`}
+                            } ${color === null ? "hidden" : "block"}`}
                             key={color}
                           >
                             <button
-                              className={` size-10 rounded-full shadow-lg `}
+                              className={` size-10 rounded-full shadow-lg  `}
                               style={{ backgroundColor: color }}
                               onClick={() => setActiveColor(color)}
                             ></button>

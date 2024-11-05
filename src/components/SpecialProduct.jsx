@@ -3,7 +3,7 @@ import Product from "../Assets/SpecialProduct/Product.webp";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 export const SpecialProduct = () => {
   return (
-    <div className="py-[80px] px-[20px] lg:px-0">
+    <div className="py-[80px] px-[20px] lg:px-[100px]">
       <div className="bg-black  w-full h-full flex items-center  lg:flex-row flex-col justify-between lg:px-[56px] px-[20px] rounded-2xl lg:py-[70px] py-[30px]">
         <div className="flex flex-col gap-[32px] ">
           <span

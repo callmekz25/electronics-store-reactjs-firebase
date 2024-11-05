@@ -31,7 +31,7 @@ export const Section = () => {
   };
 
   return (
-    <div className="flex px-[20px] lg:px-0">
+    <div className="flex px-[20px] lg:px-[100px]">
       <div className="w-full pt-[40px] ">
         <div className=" bg-black relative overflow-hidden flex items-center rounded-2xl">
           <div

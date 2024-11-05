@@ -2,12 +2,11 @@ import Phone from "../Assets/Category/Category-CellPhone.webp";
 import Computer from "../Assets/Category/Category-Computer.webp";
 import SmartWatch from "../Assets/Category/Category-SmartWatch.webp";
 import HeadPhone from "../Assets/Category/Category-Headphone.webp";
-import Gaming from "../Assets/Category/Category-Gamepad.webp";
 import { Link } from "react-router-dom";
 import { BoxCategory } from "./BoxCategory";
 export const Category = () => {
   return (
-    <div className="lg:py-[80px] py-[40px] lg:px-0 px-[20px] border-b border-[gray-500]">
+    <div className="lg:py-[80px] py-[40px] lg:px-[100px] px-[20px] border-b border-[gray-500]">
       <div className="flex flex-col gap-[24px]">
         <div
           className="flex items-center gap-[16px]"

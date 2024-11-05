@@ -21,7 +21,7 @@ const Home = () => {
     return <Loading />;
   }
   return (
-    <div className="App lg:px-[135px] bg-[#ffff]">
+    <div className="App  bg-[#ffff]">
       <Nav />
       <Section />
       <Today />
@@ -31,6 +31,7 @@ const Home = () => {
       <ExploreProducts />
       <Featured />
       <Footer />
+
       <ToastContainer />
     </div>
   );

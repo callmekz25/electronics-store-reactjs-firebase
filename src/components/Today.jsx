@@ -67,7 +67,7 @@ export const Today = () => {
   };
 
   return (
-    <div className="pt-[140px]  pb-[60px] border-b border-[gray-500] pl-[20px] lg:px-0">
+    <div className="pt-[140px]  pb-[60px] border-b border-[gray-500] pl-[20px] lg:px-[100px]">
       <div className="flex lg:items-end lg:justify-between pr-[20px] lg:flex-row flex-col">
         <div
           className="flex flex-col gap-[24px]"
@@ -125,10 +125,10 @@ export const Today = () => {
         data-aos-duration="1000"
       >
         <Link
-          className="border border-gray-300 rounded-full flex items-center justify-center py-2.5 px-[50px] transition-all duration-300 hover:opacity-90 hover:bg-black group"
+          className=" rounded-full flex items-center justify-center py-2.5 px-[50px] transition-all  hover:opacity-90 hover:scale-105 duration-300 bg-[#0077ed]"
           to="/sales"
         >
-          <button className="text-black text-[16px] font-medium leading-[24px] group-hover:text-white">
+          <button className="text-white text-[16px] font-medium leading-[24px]">
             View All
           </button>
         </Link>

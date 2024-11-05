@@ -73,18 +73,17 @@ const Cart = () => {
       document.documentElement.style.overflow = "auto";
     };
   }, [canBuy]);
-  console.log(cartItems);
 
   if (isError) {
     return <Error />;
   }
   return (
-    <div className="lg:px-[135px] bg-[#ffff]">
+    <div className="bg-white">
       <Nav />
       {isLoading ? (
         <SkeletonCart />
       ) : (
-        <>
+        <div className="lg:px-[100px] mb-[200px] px-[20px]">
           {canBuy && (
             <div className="overlay">
               <div className="bg-white rounded p-5 flex flex-col lg:h-[250px] lg:w-[450px] justify-between">
@@ -114,7 +113,7 @@ const Cart = () => {
             </div>
           </div>
           <div className=" text-[14 px] font-normal leading-[24px] pb-[50px] px-[20px] lg:px-0  relative">
-            <div className="lg:flex hidden items-center justify-between px-[40px] py-[24px]  font-medium gap- bg-white ">
+            <div className="lg:flex hidden items-center justify-between px-[40px] py-[24px]  font-medium gap- bg-white shadow-lg">
               <div className="flex items-center justify-between gap-4 w-[69%] ">
                 <span className="">Products</span>
               </div>
@@ -330,7 +329,7 @@ const Cart = () => {
               </div>
             </div> */}
           </div>
-        </>
+        </div>
       )}
       <Waypoint
         onEnter={() => setIsScrollFooter(true)}

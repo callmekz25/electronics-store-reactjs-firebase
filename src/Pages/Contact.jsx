@@ -4,7 +4,7 @@ import Email from "../Assets/Contact/icons-mail.svg";
 import Phone from "../Assets/Contact/icons-phone.svg";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-
+import { sendMailSupport } from "../Service/SendMail";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 const Contact = () => {
   const [email, setEmail] = useState("");
@@ -14,38 +14,17 @@ const Contact = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const HandleContact = () => {
-    if (email && name && phone) {
-      const formData = new FormData();
-      formData.append("entry.1127365641", name);
-      formData.append("entry.745302295", email);
-      formData.append("entry.1691568330", phone);
-      formData.append("entry.609877363", message);
-      postGoogleForrm(formData);
+  const handleContact = async (name, email, phone, message) => {
+    if (email && name && phone && message) {
+      sendMailSupport(name, phone, email, message);
     } else {
       toast.error("Please enter your information!");
     }
-    async function postGoogleForrm(data) {
-      fetch(
-        "https://docs.google.com/forms/u/0/d/e/1FAIpQLSc1rRRhWlmHXqPfDndq04jMe8k3CCrNj9ZVfv5NmC2bIb6U2g/formResponse",
-
-        {
-          method: "POST",
-          body: data,
-          mode: "no-cors",
-        }
-      );
-      toast.success("Your message send!");
-      setName("");
-      setEmail("");
-      setPhone("");
-      setMessage("");
-    }
   };
   return (
-    <div className="lg:px-[135px]">
+    <div className="bg-white">
       <Nav />
-      <div className=" pb-[140px] px-[20px] lg:px-0">
+      <div className="px-[20px] lg:px-[100px] mb-[300px] ">
         <div className="flex items-center gap-2 py-[80px]">
           <span className="text-[14px] font-normal opacity-40 leading-[21px]">
             Home
@@ -58,7 +37,10 @@ const Contact = () => {
           </span>
         </div>
         <div className="flex gap-[30px] lg:flex-row flex-col">
-          <div className="px-[35px] py-[40px] flex flex-col  justify-center rounded-xl shadow-xl">
+          <div
+            className="px-[35px] py-[40px] flex flex-col  justify-center rounded-xl shadow-xl"
+            data-aos="fade-in"
+          >
             <div className="flex flex-col gap-[32px]">
               <>
                 <div className="flex items-center gap-4">
@@ -100,25 +82,25 @@ const Contact = () => {
               </div>
             </div>
           </div>
-          <div className=" rounded-xl shadow-xl lg:py-[40px] lg:px-[32px] px-7 py-10">
-            <form
-              action=""
-              className="flex flex-col gap-[32px] lg:items-end"
-            >
+          <div
+            className=" rounded-xl shadow-xl lg:py-[40px] lg:px-[32px] px-7 py-10"
+            data-aos="fade-in"
+          >
+            <form className="flex flex-col gap-[32px] lg:items-end">
               <div className="grid lg:grid-cols-3 lg:grid-rows-4 lg:gap-x-4 grid-cols-1 gap-y-[32px]">
                 <input
                   type="text"
                   id="name"
                   name="name"
                   onChange={(e) => setName(e.target.value)}
-                  className="border-2 border-gray-200 rounded-lg lg:py-4 lg:px-[13px] py-3 px-4 col-span-1 text-[16px] font-normal leading-[24px] outline-none"
+                  className="border-2 border-gray-200 rounded-md lg:py-2.5 lg:px-[13px] py-3 px-4 col-span-1 text-[16px] font-normal lg:h-fit leading-[24px] outline-none"
                   placeholder="Your Name"
                 />
                 <input
                   type="text"
                   id="email"
                   name="email"
-                  className="border-2 border-gray-200  rounded-lg lg:py-4 lg:px-[13px] py-3 px-4 text-[16px] font-normal leading-[24px] outline-none"
+                  className="border-2 border-gray-200  rounded-md lg:py-2.5 lg:h-fit lg:px-[13px] py-3 px-4 text-[16px] font-normal leading-[24px] outline-none"
                   placeholder="Your Email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -126,7 +108,7 @@ const Contact = () => {
                   type="text"
                   id="phone"
                   name="phone"
-                  className="border-2 border-gray-200 rounded-lg lg:py-4 lg:px-[13px] py-3 px-4 text-[16px] font-normal leading-[24px] outline-none "
+                  className="border-2 border-gray-200 rounded-md lg:py-2.5 lg:h-fit lg:px-[13px] py-3 px-4 text-[16px] font-normal leading-[24px] outline-none "
                   placeholder="Your Phone"
                   onChange={(e) => setPhone(e.target.value)}
                 />
@@ -134,15 +116,15 @@ const Contact = () => {
                   type="text"
                   id="message"
                   name="message"
-                  className="border-2 border-gray-200 lg:row-span-3 lg:col-span-3 rounded-lg lg:py-4 lg:px-[13px] py-3 px-4 text-[16px] font-normal leading-[24px] resize-none outline-none "
+                  className="border-2 border-gray-200 lg:row-span-3 lg:col-span-3 rounded-md lg:py-4 lg:px-[13px] py-3 px-4 text-[16px] font-normal leading-[24px] resize-none outline-none "
                   placeholder="Your Message"
                   onChange={(e) => setMessage(e.target.value)}
                 />
               </div>
               <button
                 type="button"
-                onClick={HandleContact}
-                className="text-white bg-[#db4444] rounded flex items-center justify-center py-4 px-[48px] lg:w-fit w-full text-[16px] font-medium leading-[24px]"
+                onClick={() => handleContact(name, phone, email, message)}
+                className="text-white bg-[#db4444] rounded flex items-center justify-center py-2.5 px-[30px] lg:w-fit w-full lg:text-[14px] text-[16px] font-medium leading-[24px]"
               >
                 Send Message
               </button>

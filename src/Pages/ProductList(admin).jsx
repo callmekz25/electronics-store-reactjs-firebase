@@ -84,7 +84,7 @@ const ProductsList = () => {
   const filterRef = useRef("");
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
-  const [perOfPage, setPerOfPage] = useState(10);
+  const [perOfPage, setPerOfPage] = useState(20);
   const {
     data: products,
     isLoading,

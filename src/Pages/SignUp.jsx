@@ -160,11 +160,11 @@ const SignUp = () => {
     }
   };
   return (
-    <div className="lg:px-[135px] ">
+    <div className="bg-white">
       {!loading ? (
         <>
           <Nav hidden="hidden" />
-          <div className="lg:py-[60px] py-[40px] px-[20px]">
+          <div className="lg:py-[100px] py-[40px] px-[20px] lg:px-[100px] mb-[100px]">
             <h5
               className="lg:text-[40px] text-[30px] font-semibold leading-[44px]"
               data-aos="fade-in"

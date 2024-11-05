@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { db } from "../firebase";
 import { doc, updateDoc, getDoc, increment, setDoc } from "firebase/firestore";
 import { useQuery } from "@tanstack/react-query";
+
 // Icon
 
 import {
@@ -26,6 +27,7 @@ const OrdersList = () => {
   const [isUpdateStatus, setIsUpdateStatus] = useState(false);
   const [status, setStatus] = useState(null);
   const [orderUpdate, setOrderUpdate] = useState(null);
+  const [clickAction, setClickAction] = useState(false);
   // Phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const [perOfPage, setPerOfPage] = useState(10);
@@ -36,7 +38,7 @@ const OrdersList = () => {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["orders"],
+    queryKey: ["orders list"],
     queryFn: () => fetchAllOrders(user),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -135,10 +137,9 @@ const OrdersList = () => {
 
   const lastIndex = currentPage * perOfPage;
   const firstIndex = lastIndex - perOfPage;
-  const currentList = orders.slice(firstIndex, lastIndex);
-  console.log(currentList);
+  const currentList = orders?.slice(firstIndex, lastIndex);
 
-  if (isLoading && loading) {
+  if (isLoading || loading) {
     return <Loading />;
   }
   if (isError) {
@@ -254,15 +255,15 @@ const OrdersList = () => {
                   <td className="py-3  px-5">Order ID</td>
                   <td className="py-3 px-5">Customer</td>
                   <td className="py-3 px-5">Date</td>
-                  <td className="py-3 px-5">Quantity</td>
+                  <td className="py-3 px-5">Items</td>
                   <td className="py-3 px-5">Revenue</td>
                   <td className="py-3 px-5">Status</td>
                   <td className="py-3 px-5">Actions</td>
                 </tr>
               </thead>
               <tbody>
-                {orders
-                  ? orders.map((order) => {
+                {currentList
+                  ? currentList.map((order) => {
                       return (
                         <tr
                           className="text-[14px] border-b-2 border-[#f5f5f5] font-medium "
@@ -271,7 +272,9 @@ const OrdersList = () => {
                           <td className="py-5 px-5 w-[300px]">
                             {order.orderId}
                           </td>
-                          <td className="px-5 py-5">{order.name}</td>
+                          <td className="px-5 py-5 text-blue-500">
+                            {order.name}
+                          </td>
                           <td className="px-5 py-5">
                             {order.createdAt.split(" ")[0]}
                           </td>
@@ -334,6 +337,13 @@ const OrdersList = () => {
                   : "Customers is empty"}
               </tbody>
             </table>
+            <Pagination
+              totalPosts={orders.length}
+              postsPerPage={perOfPage}
+              // Callback để lấy ra currentPage để tính toán lại index và lấy ra products để render
+              setCurrentPage={setCurrentPage}
+              currentPage={currentPage}
+            />
           </div>
         </div>
       </div>

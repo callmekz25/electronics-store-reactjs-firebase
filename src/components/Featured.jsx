@@ -4,7 +4,7 @@ import tick from "../Assets/Featured/shield-tick.svg";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 const Featured = () => {
   return (
-    <div className="py-[200px] lg:px-[135px] px-[20px]">
+    <div className="py-[200px] lg:px-[100px] px-[20px]">
       <div className="flex items-center justify-center">
         <div className="grid grid-cols-2 lg:grid-cols-3 lg:gap-[88px] gap-[30px]">
           <div

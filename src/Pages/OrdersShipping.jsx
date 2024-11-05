@@ -32,9 +32,9 @@ const OrdersShipping = () => {
     return <Error />;
   }
   return (
-    <div className="lg:px-[135px] px-[20px]">
+    <div className="bg-white">
       <Nav />
-      <>
+      <div className="lg:px-[100px] mb-20 px-[20px]">
         <div className="flex items-center gap-2 py-[80px]">
           <span className="text-[14px] font-normal opacity-40 leading-[21px]">
             Profile
@@ -117,7 +117,7 @@ const OrdersShipping = () => {
                         // Thông tin chung của đơn hàng user order
                         return (
                           <div
-                            className="relative p-6 bg-[#ffff] rounded-xl"
+                            className="relative p-6 bg-[#ffff] rounded-xl border border-gray-200 shadow"
                             key={product.id}
                           >
                             <div className="flex items-center gap-3 text-[13px] font-medium">
@@ -225,7 +225,7 @@ const OrdersShipping = () => {
             </div>
           </div>
         </>
-      </>
+      </div>
 
       <Footer />
     </div>

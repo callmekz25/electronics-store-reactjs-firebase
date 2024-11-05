@@ -1,8 +1,8 @@
 import emailjs from "emailjs-com";
 // Hàm gửi mail cho user khi order sản phẩm
 const SendOrderConfirmation = async (product, user, totalPrice) => {
-    const generateProductDetails = () => {
-        return `
+  const generateProductDetails = () => {
+    return `
                 <div style="text-align: center; padding: 10px;">
     <div style="max-width: 600px; margin: 0 auto;">
         <p style="font-size: 30px; font-weight: bold;">Exclusive</p>
@@ -21,7 +21,7 @@ const SendOrderConfirmation = async (product, user, totalPrice) => {
             <div style="border-top: 2px solid #e5e5e5; margin: 5px 0;"></div>
             <p style="padding-top: 4px; font-size: 20px; text-align: start;">Order summary</p>
             ${product.map((product) => {
-                return `<div style="padding: 10px; border-bottom: 2px solid #e5e5e5">
+              return `<div style="padding: 10px; border-bottom: 2px solid #e5e5e5">
                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr style="border-bottom: 2px solid #e5e5e5;">
                         <td style="width: 80px;">
@@ -33,15 +33,15 @@ const SendOrderConfirmation = async (product, user, totalPrice) => {
                         </td>
                         <td style="text-align: left; width: 270px; overflow: hidden; text-overflow: ellipsis;">
                             <p style="font-size: 16px; margin-left: 10px; ">${
-                                product.name
+                              product.name
                             }</p>
                         </td>
                         <td style="text-align: left;">
                             <p style="font-size: 16px; ">${
-                                product.color
-                                    ? product.color.charAt(0).toUpperCase() +
-                                      product.color.slice(1)
-                                    : ""
+                              product.color
+                                ? product.color.charAt(0).toUpperCase() +
+                                  product.color.slice(1)
+                                : ""
                             }</p> 
                         </td>
                         <td style="text-align: left;">
@@ -49,9 +49,9 @@ const SendOrderConfirmation = async (product, user, totalPrice) => {
                         </td>
                         <td style="text-align: right;">
                             <p style="font-size: 18px; font-weight: normal; margin: 0;">$${
-                                Math.round(
-                                    product.quantity * product.price * 100
-                                ) / 100
+                              Math.round(
+                                product.quantity * product.price * 100
+                              ) / 100
                             }</p>
                         </td>
                     </tr>
@@ -60,7 +60,7 @@ const SendOrderConfirmation = async (product, user, totalPrice) => {
             })}
              <div style="padding: 10px; text-align: right;">
                         <p style="font-size: 18px;"><strong>Total Amount:</strong> $${
-                            Math.round(totalPrice * 100) / 100
+                          Math.round(totalPrice * 100) / 100
                         }</p>
                     </div>
             <div style="padding-top: 4px; padding-bottom: 14px; border-top: 2px solid #e5e5e5; border-bottom: 2px solid #e5e5e5;">
@@ -69,25 +69,25 @@ const SendOrderConfirmation = async (product, user, totalPrice) => {
                     <tr>
                         <td style="padding: 5px 0; text-align: start;"><strong>Name:</strong></td>
                         <td style="padding: 5px 0; text-align: start;">${
-                            user.name
+                          user.name
                         }</td>
                     </tr>
                     <tr>
                         <td style="padding: 5px 0; text-align: start;"><strong>Phone number:</strong></td>
                         <td style="padding: 5px 0; text-align: start;">${
-                            user.phone
+                          user.phone
                         }</td>
                     </tr>
                     <tr>
                         <td style="padding: 5px 0; text-align: start;"><strong>Address:</strong></td>
                         <td style="padding: 5px 0; text-align: start;">${
-                            user.address
+                          user.address
                         }</td>
                     </tr>
                     <tr>
                         <td style="padding: 5px 0; text-align: start;"><strong>Email:</strong></td>
                         <td style="padding: 5px 0; text-align: start;">${
-                            user.email
+                          user.email
                         }</td>
                     </tr>
                 </table>
@@ -99,32 +99,55 @@ const SendOrderConfirmation = async (product, user, totalPrice) => {
     </div>
 </div>
                         `;
-    };
+  };
 
-    const templateParams = {
-        user_name: user.name,
-        user_email: user.email,
-        user_address: user.address,
-        user_phone: user.phone,
-        date: new Date().toLocaleDateString(),
-        product_details: generateProductDetails(),
-    };
+  const templateParams = {
+    user_name: user.name,
+    user_email: user.email,
+    user_address: user.address,
+    user_phone: user.phone,
+    date: new Date().toLocaleDateString(),
+    product_details: generateProductDetails(),
+  };
 
-    await emailjs
-        .send(
-            process.env.REACT_APP_SERVICE_ID,
-            process.env.REACT_APP_TEMPLATE_ID,
-            templateParams,
-            process.env.REACT_APP_USER_ID
-        )
-        .then(
-            (result) => {
-                console.log(result.text);
-            },
-            (error) => {
-                console.log(error.text);
-            }
-        );
+  await emailjs
+    .send(
+      process.env.REACT_APP_SERVICE_ID,
+      process.env.REACT_APP_TEMPLATE_ID,
+      templateParams,
+      process.env.REACT_APP_USER_ID
+    )
+    .then(
+      (result) => {
+        console.log(result.text);
+      },
+      (error) => {
+        console.log(error.text);
+      }
+    );
 };
+const sendMailSupport = async (name, phone, email, message) => {
+  const templateParams = {
+    user_name: name,
+    user_email: email,
+    user_phone: phone,
+    user_message: message,
+  };
 
-export { SendOrderConfirmation };
+  await emailjs
+    .send(
+      process.env.REACT_APP_SERVICE_ID,
+      process.env.REACT_APP_TEMPLATE_CONTACT_ID,
+      templateParams,
+      process.env.REACT_APP_USER_ID
+    )
+    .then(
+      (result) => {
+        console.log(result.text);
+      },
+      (error) => {
+        console.log(error.text);
+      }
+    );
+};
+export { SendOrderConfirmation, sendMailSupport };
