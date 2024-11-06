@@ -715,7 +715,7 @@ const Phones = () => {
                     className="px-4 py-1 bg-[#0077ed] border-2 ml-auto border-[#0077ed] text-white font-medium rounded-lg text-[15px]"
                     onClick={() => applyFilter()}
                   >
-                    Show
+                    Apply
                   </button>
                 </div>
               </div>

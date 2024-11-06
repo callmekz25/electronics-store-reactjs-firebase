@@ -117,14 +117,10 @@ export const CartProvider = ({ children }) => {
   const removeToCart = (product) => {
     removeCartMutation.mutate(product);
   };
-  const updatePlus = (product, e) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const updatePlus = (product) => {
     updateQuantityPlusCartItems.mutate(product);
   };
-  const updateMinus = (product, e) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const updateMinus = (product) => {
     updateQuantityMinusMutation.mutate(product);
   };
 

@@ -87,7 +87,7 @@ const LogIn = () => {
     }
   };
   return (
-    <div className="">
+    <div className="bg-white">
       {loading || loadingChange ? (
         <Loading />
       ) : (
@@ -125,7 +125,7 @@ const LogIn = () => {
                     type="text"
                     id="email"
                     name="email"
-                    className={`mt-2 outline-none border-2  rounded-md lg:py-2 py-3 px-4  text-[16px] leading-[24px] font-normal  w-full focus:border-blue-500 focus:border-2 focus:bg-white  ${
+                    className={`mt-2 outline-none border-2  rounded-md lg:py-2 py-3 px-2  text-[16px] leading-[24px] font-normal  w-full focus:border-blue-500 focus:border-2 focus:bg-white  ${
                       errorEmailMessage
                         ? "border-[#fc3939] bg-[#fff2f4]"
                         : "border-[#d6d6d8]"
@@ -151,7 +151,7 @@ const LogIn = () => {
                     id="password"
                     name="password"
                     type={`${showPass ? "text" : "password"}`}
-                    className={`mt-2 outline-none border-2  rounded-md lg:py-2 py-3 px-4  text-[16px] leading-[24px] font-normal  w-full focus:border-blue-500 focus:border-2  ${
+                    className={`mt-2 outline-none border-2  rounded-md lg:py-2 py-3 px-2  text-[16px] leading-[24px] font-normal  w-full focus:border-blue-500 focus:border-2  ${
                       errorPasswordMessage
                         ? "border-[#fc3939] bg-[#fff2f4]"
                         : "border-[#d6d6d8] bg-white"

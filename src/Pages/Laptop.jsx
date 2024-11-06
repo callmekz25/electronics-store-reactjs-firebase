@@ -596,10 +596,10 @@ const Laptops = () => {
     return <Error />;
   }
   return (
-    <div className="lg:px-[135px] bg-[#ffff]">
+    <div className=" bg-[#ffff]">
       <Nav />
-      <>
-        <div className="lg:py-[80px] py-[40px] px-[20px]">
+      <div className="lg:px-[100px] px-[20px] mb-[100px]">
+        <div className="lg:py-[80px] py-[40px]">
           <div className="flex items-center gap-2">
             <span className="text-[14px] font-normal opacity-40 leading-[21px]">
               Categories
@@ -612,7 +612,7 @@ const Laptops = () => {
             </span>
           </div>
         </div>
-        <div className="pb-[140px] px-[20px] flex gap-4 lg:flex-row flex-col">
+        <div className="pb-[140px] flex gap-4 lg:flex-row flex-col">
           <button
             className="py-2 px-3 border-2 border-gray-300 rounded-md w-fit lg:hidden flex items-center relative gap-2"
             onClick={() => setIsFilter(true)}
@@ -1044,7 +1044,7 @@ const Laptops = () => {
                     className="px-4 py-1 bg-[#0077ed] border-2 ml-auto border-[#0077ed] text-white font-medium rounded-lg text-[15px]"
                     onClick={() => applyFilter()}
                   >
-                    Show
+                    Apply
                   </button>
                 </div>
               </div>
@@ -1519,9 +1519,9 @@ const Laptops = () => {
             )}
           </div>
         </div>
-        <Footer />
-        <ToastContainer />
-      </>
+      </div>
+      <Footer />
+      <ToastContainer />
     </div>
   );
 };

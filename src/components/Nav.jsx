@@ -146,16 +146,11 @@ const Nav = ({ hidden }) => {
                   className={`size-[27px] ${hidden} hover:cursor-pointer`}
                   onClick={() => handleCart()}
                 />
-
                 <div
-                  className={`absolute top-[-10px] right-[-10px] bg-black rounded-full size-[20px] flex items-center justify-center text-white text-[14px] ${
-                    !isLoading && cartItems && !loading && user
-                      ? "flex"
-                      : "hidden"
-                  } ${hidden}`}
-                >
-                  {!cartItems ? 0 : cartItems.length}
-                </div>
+                  className={`absolute top-[-2px] right-[-5px] bg-[#f00045] size-[5px] rounded-full ${
+                    cartItems?.length > 0 ? "block" : "hidden"
+                  }`}
+                ></div>
               </div>
             </>
 

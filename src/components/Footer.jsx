@@ -11,13 +11,13 @@ const Footer = () => {
     }
   };
   return (
-    <div className="relative lg:flex lg:justify-between grid grid-cols-1 gap-[30px] lg:px-[100px] px-[20px] bg-[#f0f0f0] pt-[166px] pb-10">
+    <div className="relative lg:flex lg:justify-between grid grid-cols-1 gap-[30px] lg:px-[100px] px-[20px] bg-[#f0f0f0] lg:pt-[166px] pt-[200px] pb-10">
       <div className=" absolute left-0 w-full bottom-[100%] translate-y-[50%] px-[20px] lg:px-[100px]">
-        <div className=" bg-black rounded-2xl py-8 px-16 w-full flex items-center justify-between">
-          <span className="text-white font-bold text-[40px] max-w-[50%] uppercase leading-[45px]">
+        <div className=" bg-black rounded-2xl py-8 px-5 lg:px-16 w-full flex lg:flex-row flex-col items-center justify-between">
+          <span className="text-white font-bold text-[40px] lg:max-w-[50%] uppercase leading-[45px]">
             Stay upto date about our latest offers
           </span>
-          <div className="flex flex-col justify-between gap-3">
+          <div className="flex flex-col justify-between gap-3 mt-5 lg:mt-0">
             <div className="relative">
               <EnvelopeIcon className="size-6 text-gray-500 absolute left-3 top-[50%] translate-y-[-50%]" />
               <input
