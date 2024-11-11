@@ -1,11 +1,14 @@
 import { toast } from "react-toastify";
-import { PaperAirplaneIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
+import { EnvelopeIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { sendDiscount } from "../Service/SendMail";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
+
   const handleEmail = () => {
     if (email) {
+      sendDiscount(email, "DFAKJGPQ");
     } else {
       toast.error("Please enter your email!");
     }
@@ -32,7 +35,7 @@ const Footer = () => {
               className="w-full rounded-full bg-white py-3.5 px-20 text-[14px] font-medium transition-all duration-300 hover:scale-105"
               onClick={handleEmail}
             >
-              Subcribe to Newsletetter
+              Subcribe to Discount
             </button>
           </div>
         </div>

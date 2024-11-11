@@ -4,6 +4,7 @@ import {
   TagIcon,
   UsersIcon,
   ChevronDownIcon,
+  TicketIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
@@ -11,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 const SideBar = ({ isActive }) => {
   const navigate = useNavigate();
   const [clickProduct, setClickProduct] = useState(false);
+  const [clickCoupon, setClickCoupon] = useState(false);
 
   return (
     <>
@@ -133,6 +135,26 @@ const SideBar = ({ isActive }) => {
                   Stock
                 </span>
               </div>
+            </div>
+          </li>
+          <li
+            className={`p-2  rounded-lg flex items-center transition-all duration-200 gap-4 hover:cursor-pointer relative ${
+              isActive === "coupon" || clickCoupon ? "text-[#2278f0]" : ""
+            } ${clickProduct ? "mt-9" : "mt-0"}`}
+            onClick={() => {
+              setClickCoupon(!clickCoupon);
+              navigate("/admin/coupon");
+            }}
+          >
+            <TicketIcon
+              className={`size-[20px] ${
+                isActive === "allCoupon" ? "text-[#2278f0]" : ""
+              }`}
+            />
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] leading-[24px] pt-1 font-medium">
+                Coupon
+              </span>
             </div>
           </li>
         </ul>

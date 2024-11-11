@@ -268,3 +268,27 @@ export const fetchOrdersCancel = async (user) => {
     return;
   }
 };
+export const fetchCoupon = async () => {
+  try {
+    const queryCoupon = query(collection(db, "Coupons"));
+    const querySnap = await getDocs(queryCoupon);
+    const couponData = querySnap.docs.map((doc) => doc.data());
+    return couponData;
+  } catch (error) {
+    return;
+  }
+};
+export const addCoupon = async (counpon) => {
+  try {
+    const id = uuid();
+    const ref = doc(db, "Coupons", id);
+    const couponData = {
+      counponID: id,
+      ...counpon,
+    };
+    await setDoc(ref, couponData);
+    console.log("Success!");
+  } catch (error) {
+    console.log(error);
+  }
+};

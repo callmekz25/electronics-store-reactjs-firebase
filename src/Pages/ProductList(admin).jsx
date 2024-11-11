@@ -393,9 +393,6 @@ const ProductsList = () => {
     currentList = allProducts.slice(firstIndex, lastIndex);
   }
 
-  if (isLoading || loading) {
-    return <Loading />;
-  }
   if (isError) {
     return <Error />;
   }
@@ -1037,424 +1034,437 @@ const ProductsList = () => {
         </div>
       )}
       <SideBar isActive={"stock"} />
-      <div className={`bg-[#f0f1f3]  px-[50px] py-5 col-span-5`}>
-        <div className="bg-[#ffffff] rounded-lg px-6 py-5 flex flex-col gap-5">
-          <h3 className="text-[22px] font-medium">Overall</h3>
-          <div className="grid grid-cols-4">
-            <div className="flex flex-col justify-between font-medium">
-              <span className="text-[#2278f0]">Categories</span>
-              <span>14</span>
-            </div>
-
-            <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
-              <span className=" text-[#e59f4c]">Total Products</span>
-              <div className="flex items-center justify-between">
+      {loading || isLoading ? (
+        <div className="col-span-5">
+          <Loading />
+        </div>
+      ) : (
+        <div className={`bg-[#f0f1f3]  px-[50px] py-5 col-span-5`}>
+          <div className="bg-[#ffffff] rounded-lg px-6 py-5 flex flex-col gap-5">
+            <h3 className="text-[22px] font-medium">Overall</h3>
+            <div className="grid grid-cols-4">
+              <div className="flex flex-col justify-between font-medium">
+                <span className="text-[#2278f0]">Categories</span>
                 <span>14</span>
-                <span>$20039</span>
               </div>
-            </div>
 
-            <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
-              <span className=" text-[#9472c5]">Total Selling</span>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
+                <span className=" text-[#e59f4c]">Total Products</span>
+                <div className="flex items-center justify-between">
+                  <span>14</span>
+                  <span>$20039</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
+                <span className=" text-[#9472c5]">Total Selling</span>
+                <div className="flex items-center justify-between">
+                  <span>14</span>
+                  <span>$20039</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
+                <span className="">Total Products</span>
                 <span>14</span>
-                <span>$20039</span>
               </div>
-            </div>
-
-            <div className="flex flex-col gap-4 border-l-2 border-gray-300 px-14 font-medium">
-              <span className="">Total Products</span>
-              <span>14</span>
             </div>
           </div>
-        </div>
-        <div className=" py-[50px]">
-          <div className="bg-[#ffffff] rounded-lg py-5 px-3 w-full">
-            <div className="flex items-center px-5 justify-between">
-              <h2 className="text-[20px] font-medium">Products</h2>
-              <div className="flex items-center gap-4">
-                {/* Search */}
-                <div className="relative">
-                  <MagnifyingGlassIcon
-                    className="absolute size-5 left-2 top-[50%] translate-y-[-50%] text-[#9ca3af] hover:cursor-pointer"
-                    onClick={(e) => activeSearch(e)}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search by ID or name"
-                    className="border-2 rounded-lg px-8 py-[6px] outline-[#0047ff] w-full text-[14px]"
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    value={searchValue}
-                    onKeyDown={(e) => handleKeyDown(e)}
-                  />
-                </div>
-                {/* Filter */}
-                <div className="flex items-center">
+          <div className=" py-[50px]">
+            <div className="bg-[#ffffff] rounded-lg py-5 px-3 w-full">
+              <div className="flex items-center px-5 justify-between">
+                <h2 className="text-[20px] font-medium">Products</h2>
+                <div className="flex items-center gap-4">
+                  {/* Search */}
                   <div className="relative">
-                    <button
-                      className={`flex items-center gap-3 rounded-lg border-2  px-4 py-[6px] ${
-                        activeFilter ? "border-[#0047ff]" : "border-gray-300"
-                      }`}
-                      onClick={() => setActiveFilter(true)}
-                    >
-                      <AdjustmentsHorizontalIcon className="size-5" />
-                      <span className="text-[15px] font-normal text-gray-500">
-                        Filters
-                      </span>
-                    </button>
-                    {activeFilter && (
-                      <div
-                        className="bg-[#ffff] rounded-xl shadow-popup  w-[400px] overflow-hidden  absolute top-[110%] right-0  border border-gray-200"
-                        ref={filterRef}
+                    <MagnifyingGlassIcon
+                      className="absolute size-5 left-2 top-[50%] translate-y-[-50%] text-[#9ca3af] hover:cursor-pointer"
+                      onClick={(e) => activeSearch(e)}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search by ID or name"
+                      className="border-2 rounded-lg px-8 py-[6px] outline-[#0047ff] w-full text-[14px]"
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      value={searchValue}
+                      onKeyDown={(e) => handleKeyDown(e)}
+                    />
+                  </div>
+                  {/* Filter */}
+                  <div className="flex items-center">
+                    <div className="relative">
+                      <button
+                        className={`flex items-center gap-3 rounded-lg border-2  px-4 py-[6px] ${
+                          activeFilter ? "border-[#0047ff]" : "border-gray-300"
+                        }`}
+                        onClick={() => setActiveFilter(true)}
                       >
-                        <div className="flex items-center justify-between border-b-2 border-gray-100 py-2 px-3 bg-[#f9f9f9]">
-                          <span className="font-medium">Filter</span>
-                          <XMarkIcon
-                            className="size-6 hover:cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              setActiveFilter(false);
-                            }}
-                          />
-                        </div>
-                        <div className="px-3 py-4 flex flex-col gap-5 text-[15px] font-normal">
-                          <div className="flex flex-col gap-4">
-                            <div className="flex items-center justify-between">
-                              <label
-                                htmlFor=""
-                                className="text-[#b2b2bd]"
-                              >
-                                Select Date
-                              </label>
-                              <span
-                                className="text-[#2754f9] font-medium hover:cursor-pointer"
-                                onClick={() => {
-                                  setFromDate("");
-                                  setToDate("");
-                                }}
-                              >
-                                Clear
-                              </span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="flex flex-col gap-1">
+                        <AdjustmentsHorizontalIcon className="size-5" />
+                        <span className="text-[15px] font-normal text-gray-500">
+                          Filters
+                        </span>
+                      </button>
+                      {activeFilter && (
+                        <div
+                          className="bg-[#ffff] rounded-xl shadow-popup  w-[400px] overflow-hidden  absolute top-[110%] right-0  border border-gray-200"
+                          ref={filterRef}
+                        >
+                          <div className="flex items-center justify-between border-b-2 border-gray-100 py-2 px-3 bg-[#f9f9f9]">
+                            <span className="font-medium">Filter</span>
+                            <XMarkIcon
+                              className="size-6 hover:cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setActiveFilter(false);
+                              }}
+                            />
+                          </div>
+                          <div className="px-3 py-4 flex flex-col gap-5 text-[15px] font-normal">
+                            <div className="flex flex-col gap-4">
+                              <div className="flex items-center justify-between">
                                 <label
-                                  htmlFor="from"
-                                  className="font-medium"
+                                  htmlFor=""
+                                  className="text-[#b2b2bd]"
                                 >
-                                  From:
+                                  Select Date
                                 </label>
+                                <span
+                                  className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                  onClick={() => {
+                                    setFromDate("");
+                                    setToDate("");
+                                  }}
+                                >
+                                  Clear
+                                </span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="flex flex-col gap-1">
+                                  <label
+                                    htmlFor="from"
+                                    className="font-medium"
+                                  >
+                                    From:
+                                  </label>
+                                  <input
+                                    type="date"
+                                    name="fromDate"
+                                    id="from"
+                                    onChange={(e) =>
+                                      setFromDate(e.target.value)
+                                    }
+                                    value={fromDate}
+                                    className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                                  />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label
+                                    htmlFor="to"
+                                    className="font-medium"
+                                  >
+                                    To:
+                                  </label>
+                                  <input
+                                    type="date"
+                                    name="toDate"
+                                    id="to"
+                                    onChange={(e) => setToDate(e.target.value)}
+                                    value={toDate}
+                                    className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              <div className="flex items-center justify-between">
+                                <label
+                                  htmlFor="category"
+                                  className="text-[#b2b2bd]"
+                                >
+                                  Category
+                                </label>
+                                <span
+                                  className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                  onClick={() => setFilterByCategory("")}
+                                >
+                                  Clear
+                                </span>
+                              </div>
+                              <select
+                                name="category"
+                                id="category"
+                                className="border-2 rounded-md px-2 py-[6px] outline-none w-full "
+                                value={filterByCategory}
+                                onChange={(e) =>
+                                  setFilterByCategory(e.target.value)
+                                }
+                              >
+                                <option value=""></option>
+                                <option value="phone">Phone</option>
+                                <option value="laptop">Laptop</option>
+                              </select>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              <div className="flex items-center justify-between">
+                                <label
+                                  htmlFor="brand"
+                                  className="text-[#b2b2bd]"
+                                >
+                                  Brand
+                                </label>
+                                <span
+                                  className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                  onClick={() => setFilterByBrand("")}
+                                >
+                                  Clear
+                                </span>
+                              </div>
+                              <select
+                                name="brand"
+                                id="brand"
+                                className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                                onChange={(e) =>
+                                  setFilterByBrand(e.target.value)
+                                }
+                                value={filterByBrand}
+                              >
+                                <option value=""></option>
+                                <option value="iphone">iphone</option>
+                                <option value="samsung">samsung</option>
+                                <option value="vivo">vivo</option>
+                                <option value="xiaomi">xiaomi</option>
+                                <option value="oppo">oppo</option>
+                                <option value="acer">acer</option>
+                                <option value="asus">asus</option>
+                                <option value="dell">dell</option>
+                                <option value="lenovo">lenovo</option>
+                                <option value="macbook">macbook</option>
+                                <option value="hp">hp</option>
+                                <option value="msi">msi</option>
+                              </select>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              <div className="flex items-center justify-between">
+                                <label
+                                  htmlFor="price"
+                                  className="text-[#b2b2bd]"
+                                >
+                                  Price
+                                </label>
+                                <span
+                                  className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                  onClick={() => setFilterByPrice("")}
+                                >
+                                  Clear
+                                </span>
+                              </div>
+                              <select
+                                name="price"
+                                id="price"
+                                className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                                onChange={(e) =>
+                                  setFilterByPrice(e.target.value)
+                                }
+                                value={filterByPrice}
+                              >
+                                <option value=""></option>
+                                <option value="0-50">$0 - $50</option>
+                                <option value="50-100">$50 - $100</option>
+                                <option value="100-200">$100 - $200</option>
+                                <option value="200-500">$200 - $500</option>
+                                <option value="500-1000">$500 - $1000</option>
+                                <option value="1000-1500">$1000 - $1500</option>
+                                <option value="1500-2000">$1500 - $2000</option>
+                              </select>
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              <div className="flex items-center justify-between">
+                                <label
+                                  htmlFor=""
+                                  className="text-[#b2b2bd]"
+                                >
+                                  Sales
+                                </label>
+                                <span
+                                  className="text-[#2754f9] font-medium hover:cursor-pointer"
+                                  onClick={() => setFilterBySales("")}
+                                >
+                                  Clear
+                                </span>
+                              </div>
+                              <div className="flex items-center  gap-4 w-full">
+                                <label htmlFor="sales">Sales</label>
                                 <input
-                                  type="date"
-                                  name="fromDate"
-                                  id="from"
-                                  onChange={(e) => setFromDate(e.target.value)}
-                                  value={fromDate}
-                                  className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
+                                  type="radio"
+                                  name="sales"
+                                  id="sales"
+                                  className="size-4"
+                                  onChange={() => setFilterBySales(true)}
+                                  checked={filterBySales ? true : false}
+                                />
+                                <label htmlFor="notSales">No Sales</label>
+                                <input
+                                  type="radio"
+                                  name="sales"
+                                  id="notSales"
+                                  className="size-4"
+                                  onChange={() => setFilterBySales(false)}
+                                  checked={filterBySales ? false : true}
                                 />
                               </div>
-                              <div className="flex flex-col gap-1">
-                                <label
-                                  htmlFor="to"
-                                  className="font-medium"
-                                >
-                                  To:
-                                </label>
-                                <input
-                                  type="date"
-                                  name="toDate"
-                                  id="to"
-                                  onChange={(e) => setToDate(e.target.value)}
-                                  value={toDate}
-                                  className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
-                                />
-                              </div>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-4">
-                            <div className="flex items-center justify-between">
-                              <label
-                                htmlFor="category"
-                                className="text-[#b2b2bd]"
-                              >
-                                Category
-                              </label>
-                              <span
-                                className="text-[#2754f9] font-medium hover:cursor-pointer"
-                                onClick={() => setFilterByCategory("")}
-                              >
-                                Clear
-                              </span>
-                            </div>
-                            <select
-                              name="category"
-                              id="category"
-                              className="border-2 rounded-md px-2 py-[6px] outline-none w-full "
-                              value={filterByCategory}
-                              onChange={(e) =>
-                                setFilterByCategory(e.target.value)
-                              }
+                          <div className="flex items-center gap-4 justify-between border-t-2 border-gray-100 px-3 py-6 font-normal">
+                            <button
+                              onClick={(e) => {
+                                handleResetFilter(e);
+                              }}
+                              className="py-[6px] px-4 border-2 border-gray-300 rounded-md"
                             >
-                              <option value=""></option>
-                              <option value="phone">Phone</option>
-                              <option value="laptop">Laptop</option>
-                            </select>
-                          </div>
-                          <div className="flex flex-col gap-4">
-                            <div className="flex items-center justify-between">
-                              <label
-                                htmlFor="brand"
-                                className="text-[#b2b2bd]"
-                              >
-                                Brand
-                              </label>
-                              <span
-                                className="text-[#2754f9] font-medium hover:cursor-pointer"
-                                onClick={() => setFilterByBrand("")}
-                              >
-                                Clear
-                              </span>
-                            </div>
-                            <select
-                              name="brand"
-                              id="brand"
-                              className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
-                              onChange={(e) => setFilterByBrand(e.target.value)}
-                              value={filterByBrand}
+                              Reset
+                            </button>
+                            <button
+                              onClick={(e) => applyFilter(e)}
+                              className="bg-[#0047ff] border-2 border-[#0047ff] rounded-md px-5 py-[6px] text-[15px]  text-white"
                             >
-                              <option value=""></option>
-                              <option value="iphone">iphone</option>
-                              <option value="samsung">samsung</option>
-                              <option value="vivo">vivo</option>
-                              <option value="xiaomi">xiaomi</option>
-                              <option value="oppo">oppo</option>
-                              <option value="acer">acer</option>
-                              <option value="asus">asus</option>
-                              <option value="dell">dell</option>
-                              <option value="lenovo">lenovo</option>
-                              <option value="macbook">macbook</option>
-                              <option value="hp">hp</option>
-                              <option value="msi">msi</option>
-                            </select>
-                          </div>
-                          <div className="flex flex-col gap-4">
-                            <div className="flex items-center justify-between">
-                              <label
-                                htmlFor="price"
-                                className="text-[#b2b2bd]"
-                              >
-                                Price
-                              </label>
-                              <span
-                                className="text-[#2754f9] font-medium hover:cursor-pointer"
-                                onClick={() => setFilterByPrice("")}
-                              >
-                                Clear
-                              </span>
-                            </div>
-                            <select
-                              name="price"
-                              id="price"
-                              className="border-2 rounded-md px-4 py-[6px] outline-none w-full"
-                              onChange={(e) => setFilterByPrice(e.target.value)}
-                              value={filterByPrice}
-                            >
-                              <option value=""></option>
-                              <option value="0-50">$0 - $50</option>
-                              <option value="50-100">$50 - $100</option>
-                              <option value="100-200">$100 - $200</option>
-                              <option value="200-500">$200 - $500</option>
-                              <option value="500-1000">$500 - $1000</option>
-                              <option value="1000-1500">$1000 - $1500</option>
-                              <option value="1500-2000">$1500 - $2000</option>
-                            </select>
-                          </div>
-                          <div className="flex flex-col gap-4">
-                            <div className="flex items-center justify-between">
-                              <label
-                                htmlFor=""
-                                className="text-[#b2b2bd]"
-                              >
-                                Sales
-                              </label>
-                              <span
-                                className="text-[#2754f9] font-medium hover:cursor-pointer"
-                                onClick={() => setFilterBySales("")}
-                              >
-                                Clear
-                              </span>
-                            </div>
-                            <div className="flex items-center  gap-4 w-full">
-                              <label htmlFor="sales">Sales</label>
-                              <input
-                                type="radio"
-                                name="sales"
-                                id="sales"
-                                className="size-4"
-                                onChange={() => setFilterBySales(true)}
-                                checked={filterBySales ? true : false}
-                              />
-                              <label htmlFor="notSales">No Sales</label>
-                              <input
-                                type="radio"
-                                name="sales"
-                                id="notSales"
-                                className="size-4"
-                                onChange={() => setFilterBySales(false)}
-                                checked={filterBySales ? false : true}
-                              />
-                            </div>
+                              Apply
+                            </button>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4 justify-between border-t-2 border-gray-100 px-3 py-6 font-normal">
-                          <button
-                            onClick={(e) => {
-                              handleResetFilter(e);
-                            }}
-                            className="py-[6px] px-4 border-2 border-gray-300 rounded-md"
-                          >
-                            Reset
-                          </button>
-                          <button
-                            onClick={(e) => applyFilter(e)}
-                            className="bg-[#0047ff] border-2 border-[#0047ff] rounded-md px-5 py-[6px] text-[15px]  text-white"
-                          >
-                            Apply
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <table
-              className="w-full"
-              style={{ padding: "20px" }}
-            >
-              <thead className="text-[#667085]">
-                <tr className="text-[15px] font-medium">
-                  <td className="px-5 py-3 rounded-tl-lg rounded-bl-lg">
-                    Image
-                  </td>
-                  <td className="px-5 py-3">Product ID</td>
-                  <td className="px-5 py-3">Product Name</td>
-                  <td className="px-5 py-3">Category</td>
-                  <td className="px-5 py-3">Brand</td>
-                  <td className="px-5 py-3">Sales</td>
-                  <td className="px-5 py-3">Date</td>
-                  <td className="px-5 py-3">Buying Price</td>
-                  <td className="px-5 py-3 rounded-tr-lg rounded-br-lg">
-                    Actions
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {currentList
-                  ? currentList
-                      .sort(
-                        (a, b) =>
-                          new Date(
-                            b.createdAt
-                              ? b.createdAt
-                                  .split(" ")[0]
-                                  .split("/")
-                                  .reverse()
-                                  .join("-")
-                              : ""
-                          ) -
-                          new Date(
-                            a.createdAt
-                              ? a.createdAt
-                                  .split(" ")[0]
-                                  .split("/")
-                                  .reverse()
-                                  .join("-")
-                              : ""
-                          )
-                      )
-                      .map((product) => {
-                        return (
-                          <tr
-                            className="text-[14px] border-b-2 border-[#f5f5f5] font-medium"
-                            key={product.id}
-                          >
-                            <td className="px-5 py-5">
-                              {product.cate === "laptop"
-                                ? product.img.map((img, index) => {
-                                    return (
-                                      <div
-                                        className={`${
-                                          index + 1 > 1 ? "hidden" : "block"
-                                        } `}
-                                        key={index}
-                                      >
-                                        <LazyLoadImage
-                                          src={img}
-                                          alt=""
-                                          effect="blur"
-                                          className={` size-[40px] object-contain`}
-                                        />
-                                      </div>
-                                    );
-                                  })
-                                : ""}
-                              {product.cate === "phone" ? (
-                                <img
-                                  src={product.img}
-                                  alt=""
-                                  className="size-[40px] object-contain"
+              <table
+                className="w-full"
+                style={{ padding: "20px" }}
+              >
+                <thead className="text-[#667085]">
+                  <tr className="text-[15px] font-medium">
+                    <td className="px-5 py-3 rounded-tl-lg rounded-bl-lg">
+                      Image
+                    </td>
+                    <td className="px-5 py-3">Product ID</td>
+                    <td className="px-5 py-3">Product Name</td>
+                    <td className="px-5 py-3">Category</td>
+                    <td className="px-5 py-3">Brand</td>
+                    <td className="px-5 py-3">Sales</td>
+                    <td className="px-5 py-3">Date</td>
+                    <td className="px-5 py-3">Buying Price</td>
+                    <td className="px-5 py-3 rounded-tr-lg rounded-br-lg">
+                      Actions
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentList
+                    ? currentList
+                        .sort(
+                          (a, b) =>
+                            new Date(
+                              b.createdAt
+                                ? b.createdAt
+                                    .split(" ")[0]
+                                    .split("/")
+                                    .reverse()
+                                    .join("-")
+                                : ""
+                            ) -
+                            new Date(
+                              a.createdAt
+                                ? a.createdAt
+                                    .split(" ")[0]
+                                    .split("/")
+                                    .reverse()
+                                    .join("-")
+                                : ""
+                            )
+                        )
+                        .map((product) => {
+                          return (
+                            <tr
+                              className="text-[14px] border-b-2 border-[#f5f5f5] font-medium"
+                              key={product.id}
+                            >
+                              <td className="px-5 py-5">
+                                {product.cate === "laptop"
+                                  ? product.img.map((img, index) => {
+                                      return (
+                                        <div
+                                          className={`${
+                                            index + 1 > 1 ? "hidden" : "block"
+                                          } `}
+                                          key={index}
+                                        >
+                                          <LazyLoadImage
+                                            src={img}
+                                            alt=""
+                                            effect="blur"
+                                            className={` size-[40px] object-contain`}
+                                          />
+                                        </div>
+                                      );
+                                    })
+                                  : ""}
+                                {product.cate === "phone" ? (
+                                  <img
+                                    src={product.img}
+                                    alt=""
+                                    className="size-[40px] object-contain"
+                                  />
+                                ) : (
+                                  ""
+                                )}
+                              </td>
+                              <td className="px-5 py-5">{product.id}</td>
+                              <td className="px-5 py-5">{product.name}</td>
+                              <td className="px-5 py-5">{product.cate}</td>
+                              <td className="px-5 py-5">{product.brand}</td>
+                              <td className="px-5 py-5 text-red-500">
+                                {product.sales}
+                              </td>
+                              <td className="px-5 py-5 text-gray-500">
+                                {product.createdAt
+                                  ? product.createdAt.split(" ")[0]
+                                  : ""}
+                              </td>
+                              <td className="px-5 py-5">${product.newPrice}</td>
+                              <td className="px-5 py-5 flex items-center gap-3">
+                                <PencilSquareIcon
+                                  className="size-[20px] text-blue-500 hover:cursor-pointer"
+                                  onClick={() => {
+                                    setIsEdit(true);
+                                    setProductEdit(product);
+                                  }}
                                 />
-                              ) : (
-                                ""
-                              )}
-                            </td>
-                            <td className="px-5 py-5">{product.id}</td>
-                            <td className="px-5 py-5">{product.name}</td>
-                            <td className="px-5 py-5">{product.cate}</td>
-                            <td className="px-5 py-5">{product.brand}</td>
-                            <td className="px-5 py-5 text-red-500">
-                              {product.sales}
-                            </td>
-                            <td className="px-5 py-5 text-gray-500">
-                              {product.createdAt
-                                ? product.createdAt.split(" ")[0]
-                                : ""}
-                            </td>
-                            <td className="px-5 py-5">${product.newPrice}</td>
-                            <td className="px-5 py-5 flex items-center gap-3">
-                              <PencilSquareIcon
-                                className="size-[20px] text-blue-500 hover:cursor-pointer"
-                                onClick={() => {
-                                  setIsEdit(true);
-                                  setProductEdit(product);
-                                }}
-                              />
-                              <TrashIcon
-                                className="size-[20px] text-red-500 hover:cursor-pointer"
-                                onClick={() => {
-                                  setIsDelete(true);
-                                  setProductWantDelete(product);
-                                }}
-                              />
-                            </td>
-                          </tr>
-                        );
-                      })
-                  : "Customers is empty"}
-              </tbody>
-            </table>
-            <Pagination
-              totalPosts={allProducts.length}
-              postsPerPage={perOfPage}
-              // Callback để lấy ra currentPage để tính toán lại index và lấy ra products để render
-              setCurrentPage={setCurrentPage}
-              currentPage={currentPage}
-            />
+                                <TrashIcon
+                                  className="size-[20px] text-red-500 hover:cursor-pointer"
+                                  onClick={() => {
+                                    setIsDelete(true);
+                                    setProductWantDelete(product);
+                                  }}
+                                />
+                              </td>
+                            </tr>
+                          );
+                        })
+                    : "Customers is empty"}
+                </tbody>
+              </table>
+              <Pagination
+                totalPosts={allProducts.length}
+                postsPerPage={perOfPage}
+                // Callback để lấy ra currentPage để tính toán lại index và lấy ra products để render
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
       <ToastContainer />
     </div>
   );

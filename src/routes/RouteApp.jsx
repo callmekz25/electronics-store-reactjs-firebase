@@ -28,6 +28,7 @@ import OrdersList from "../Pages/OrderList(admin)";
 import ProductsList from "../Pages/ProductList(admin)";
 import OrdersPending from "../Pages/OrdersPending";
 import OrdersCompleted from "../Pages/OrdersCompleted";
+import Coupon from "../Pages/Counpon(admin)";
 // Lazy load các component
 // const Home = lazy(() => import("../Pages/Home"));
 // const LogIn = lazy(() => import("../Pages/LogIn"));
@@ -73,6 +74,12 @@ const RouteApp = () => {
             path="/admin/add"
             element={
               user ? user.role === "admin" ? <Admin /> : <Error /> : <LogIn />
+            }
+          />
+          <Route
+            path="/admin/coupon"
+            element={
+              user ? user.role === "admin" ? <Coupon /> : <Error /> : <LogIn />
             }
           />
           <Route

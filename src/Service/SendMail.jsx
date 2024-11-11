@@ -126,6 +126,7 @@ const SendOrderConfirmation = async (product, user, totalPrice) => {
       }
     );
 };
+// Hàm gửi mail khi user còn hỗ trợ
 const sendMailSupport = async (name, phone, email, message) => {
   const templateParams = {
     user_name: name,
@@ -150,4 +151,119 @@ const sendMailSupport = async (name, phone, email, message) => {
       }
     );
 };
-export { SendOrderConfirmation, sendMailSupport };
+const sendDiscount = async (email, discount) => {
+  const genTemplate = () => {
+    return ` <div
+      style="
+        width: 100%;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 20px auto;
+      "
+    >
+      <div
+        style="
+          text-align: center;
+          background-color: black;
+          color: white;
+          padding: 20px;
+          border-radius: 8px 8px 0 0;
+        "
+      >
+        <h1 style="margin: 0; font-size: 24px">
+          Special Discount Just for You!
+        </h1>
+      </div>
+      <div style="padding: 20px; line-height: 1.6">
+        <h2 style="color: black; font-size: 20px">Hello!</h2>
+        <p>
+          Thank you for being a valued customer. To show our appreciation, we're
+          giving you a special discount code that you can use on your next
+          purchase.
+        </p>
+        <p>Use the code below to enjoy your discount:</p>
+        <div
+          style="
+            display: block;
+            width: fit-content;
+            margin: 20px auto;
+            padding: 15px 20px;
+            background-color: #333;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            text-align: center;
+            letter-spacing: 2px;
+          "
+        >
+          ${discount}
+        </div>
+        <p>Click the button below to start shopping now!</p>
+        <a
+          href="http://localhost:3000/"
+          style="
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: black;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            margin: 20px 0;
+            font-weight: 700;
+            transition: background-color 0.3s;
+          "
+        >
+          Shop Now
+        </a>
+      </div>
+      <div
+        style="
+          text-align: center;
+          font-size: 14px;
+          color: #777;
+          margin-top: 20px;
+        "
+      >
+        <p>
+          If you have any questions, feel free to.
+          <a
+            href="mailto:nguyenhongkhanhvinh2511@gmail.com"
+            style="color: #4caf50"
+          >
+            contact us
+          </a>
+          .
+        </p>
+        <p>Thank you for choosing our store!</p>
+      </div>
+    </div>`;
+  };
+  const templateParams = {
+    user_email: email,
+    template: genTemplate(),
+  };
+
+  await emailjs
+    .send(
+      process.env.REACT_APP_SERVICE_ID_2,
+      process.env.REACT_APP_TEMPLATE_ID_2,
+      templateParams,
+      process.env.REACT_APP_USER_ID_2
+    )
+    .then(
+      (result) => {
+        console.log(result.text);
+      },
+      (error) => {
+        console.log(error.text);
+      }
+    );
+};
+export { SendOrderConfirmation, sendMailSupport, sendDiscount };

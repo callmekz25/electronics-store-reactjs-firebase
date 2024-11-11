@@ -176,7 +176,6 @@ const Admin = () => {
       [name]: value,
     }));
   };
-  console.log(brand);
 
   return (
     <div className="grid grid-cols-6">

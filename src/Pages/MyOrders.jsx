@@ -1,6 +1,6 @@
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
-import { memo, useContext, useEffect, useState } from "react";
+import { memo, useContext, useEffect } from "react";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import { Error } from "./Error";

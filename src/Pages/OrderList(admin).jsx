@@ -139,9 +139,6 @@ const OrdersList = () => {
   const firstIndex = lastIndex - perOfPage;
   const currentList = orders?.slice(firstIndex, lastIndex);
 
-  if (isLoading || loading) {
-    return <Loading />;
-  }
   if (isError) {
     return <Error />;
   }
@@ -192,161 +189,172 @@ const OrdersList = () => {
         </div>
       )}
       <SideBar isActive={"orders"} />
-      <div className={`bg-[#f0f1f3]   px-[50px] py-5 col-span-5`}>
-        <div className="py-7">
-          <div className="bg-[#ffffff] rounded-lg py-5 px-6">
-            <h2 className="font-medium text-[20px]">Overall Orders</h2>
-            <div className="grid grid-cols-5">
-              <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300  py-3">
-                <div className="flex flex-col gap-4 font-medium">
-                  <span className="text-[15px] text-[#2278f0]">
-                    Total orders
-                  </span>
-                  <span className=" text-[20px]">{totalOrdersToday || 0}</span>
+      {loading || isLoading ? (
+        <div className="col-span-5">
+          <Loading />
+        </div>
+      ) : (
+        <div className={`bg-[#f0f1f3]   px-[50px] py-5 col-span-5`}>
+          <div className="py-7">
+            <div className="bg-[#ffffff] rounded-lg py-5 px-6">
+              <h2 className="font-medium text-[20px]">Overall Orders</h2>
+              <div className="grid grid-cols-5">
+                <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300  py-3">
+                  <div className="flex flex-col gap-4 font-medium">
+                    <span className="text-[15px] text-[#2278f0]">
+                      Total orders
+                    </span>
+                    <span className=" text-[20px]">
+                      {totalOrdersToday || 0}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300  px-10">
-                <div className="flex flex-col gap-4 font-medium">
-                  <span className="text-[15px] text-[#e19133]">
-                    Total Received
-                  </span>
-                  <span className=" text-[20px] ">{totalOrders || 0}</span>
+                <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300  px-10">
+                  <div className="flex flex-col gap-4 font-medium">
+                    <span className="text-[15px] text-[#e19133]">
+                      Total Received
+                    </span>
+                    <span className=" text-[20px] ">{totalOrders || 0}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 px-10">
-                <div className="flex flex-col gap-4 font-medium">
-                  <span className="text-[15px] text-[#8e65cb]">
-                    Total Returned
-                  </span>
-                  <span className="font-semibold text-[20px]">20</span>
+                <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 px-10">
+                  <div className="flex flex-col gap-4 font-medium">
+                    <span className="text-[15px] text-[#8e65cb]">
+                      Total Returned
+                    </span>
+                    <span className="font-semibold text-[20px]">20</span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 px-10 ">
-                <div className="flex flex-col gap-4 font-medium">
-                  <span className="text-[15px] text-[#30c07d] ">
-                    On the way
-                  </span>
-                  <span className="font-semibold text-[20px]">
-                    {totalShipping || 0}
-                  </span>
+                <div className="flex flex-col justify-center gap-2 border-r-2 border-gray-300 px-10 ">
+                  <div className="flex flex-col gap-4 font-medium">
+                    <span className="text-[15px] text-[#30c07d] ">
+                      On the way
+                    </span>
+                    <span className="font-semibold text-[20px]">
+                      {totalShipping || 0}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col justify-center gap-2  px-10">
-                <div className="flex flex-col gap-4 font-medium">
-                  <span className="text-[15px] text-[#f36960] ">
-                    Total Cancelled
-                  </span>
-                  <span className="font-semibold text-[20px]">
-                    {totalCancel || 0}
-                  </span>
+                <div className="flex flex-col justify-center gap-2  px-10">
+                  <div className="flex flex-col gap-4 font-medium">
+                    <span className="text-[15px] text-[#f36960] ">
+                      Total Cancelled
+                    </span>
+                    <span className="font-semibold text-[20px]">
+                      {totalCancel || 0}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className=" py-[50px]">
-          <div className=" bg-[#ffffff] rounded-lg py-5 px-3 w-full">
-            <table
-              className="w-full"
-              style={{ padding: "20px" }}
-            >
-              <thead className="text-[#667085]">
-                <tr className="text-[15px] font-medium">
-                  <td className="py-3  px-5">Order ID</td>
-                  <td className="py-3 px-5">Customer</td>
-                  <td className="py-3 px-5">Date</td>
-                  <td className="py-3 px-5">Items</td>
-                  <td className="py-3 px-5">Revenue</td>
-                  <td className="py-3 px-5">Status</td>
-                  <td className="py-3 px-5">Actions</td>
-                </tr>
-              </thead>
-              <tbody>
-                {currentList
-                  ? currentList.map((order) => {
-                      return (
-                        <tr
-                          className="text-[14px] border-b-2 border-[#f5f5f5] font-medium "
-                          key={order.orderId}
-                        >
-                          <td className="py-5 px-5 w-[300px]">
-                            {order.orderId}
-                          </td>
-                          <td className="px-5 py-5 text-blue-500">
-                            {order.name}
-                          </td>
-                          <td className="px-5 py-5">
-                            {order.createdAt.split(" ")[0]}
-                          </td>
-                          <td className="px-5 py-5">{order.products.length}</td>
-                          <td className=" py-5 px-5">
-                            ${Math.round(order.total * 100) / 100}
-                          </td>
-                          <td className="py-5 px-5">
-                            <span
-                              className={` text-[13px] font-semibold ${
-                                order.status === "Shipping"
-                                  ? "text-[#f99b43]"
-                                  : ""
-                              } ${
-                                order.status === "Cancel"
-                                  ? " text-[#f14c3c]"
-                                  : ""
-                              } ${
-                                order.status === "Completed"
-                                  ? " text-[#12b76a]"
-                                  : ""
-                              } ${
-                                order.status === "Pending"
-                                  ? " text-[#aa19bd]"
-                                  : ""
-                              } ${
-                                order.status === "Confirmed"
-                                  ? " text-[#1366d9]"
-                                  : ""
-                              }`}
-                            >
-                              {order.status}
-                            </span>
-                          </td>
-                          <td className="px-5 py-8 flex gap-4 items-center">
-                            <PencilSquareIcon
-                              className="size-[23px] text-gray-400 hover:cursor-pointer"
-                              onClick={() => {
-                                setOrderUpdate(order);
-                                setIsUpdateStatus(true);
-                              }}
-                            />
-                            <ListBulletIcon
-                              className="size-[23px] text-gray-400 hover:cursor-pointer"
-                              onClick={() => {
-                                navigate(
-                                  `/admin/orders/user=/${order.userId}`,
-                                  {
-                                    state: {
-                                      ordersUser: order,
-                                    },
-                                  }
-                                );
-                              }}
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })
-                  : "Customers is empty"}
-              </tbody>
-            </table>
-            <Pagination
-              totalPosts={orders.length}
-              postsPerPage={perOfPage}
-              // Callback để lấy ra currentPage để tính toán lại index và lấy ra products để render
-              setCurrentPage={setCurrentPage}
-              currentPage={currentPage}
-            />
+          <div className=" py-[50px]">
+            <div className=" bg-[#ffffff] rounded-lg py-5 px-3 w-full">
+              <table
+                className="w-full"
+                style={{ padding: "20px" }}
+              >
+                <thead className="text-[#667085]">
+                  <tr className="text-[15px] font-medium">
+                    <td className="py-3  px-5">Order ID</td>
+                    <td className="py-3 px-5">Customer</td>
+                    <td className="py-3 px-5">Date</td>
+                    <td className="py-3 px-5">Items</td>
+                    <td className="py-3 px-5">Revenue</td>
+                    <td className="py-3 px-5">Status</td>
+                    <td className="py-3 px-5">Actions</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentList
+                    ? currentList.map((order) => {
+                        return (
+                          <tr
+                            className="text-[14px] border-b-2 border-[#f5f5f5] font-medium "
+                            key={order.orderId}
+                          >
+                            <td className="py-5 px-5 w-[300px]">
+                              {order.orderId}
+                            </td>
+                            <td className="px-5 py-5 text-blue-500">
+                              {order.name}
+                            </td>
+                            <td className="px-5 py-5">
+                              {order.createdAt.split(" ")[0]}
+                            </td>
+                            <td className="px-5 py-5">
+                              {order.products.length}
+                            </td>
+                            <td className=" py-5 px-5">
+                              ${Math.round(order.total * 100) / 100}
+                            </td>
+                            <td className="py-5 px-5">
+                              <span
+                                className={` text-[13px] font-semibold ${
+                                  order.status === "Shipping"
+                                    ? "text-[#f99b43]"
+                                    : ""
+                                } ${
+                                  order.status === "Cancel"
+                                    ? " text-[#f14c3c]"
+                                    : ""
+                                } ${
+                                  order.status === "Completed"
+                                    ? " text-[#12b76a]"
+                                    : ""
+                                } ${
+                                  order.status === "Pending"
+                                    ? " text-[#aa19bd]"
+                                    : ""
+                                } ${
+                                  order.status === "Confirmed"
+                                    ? " text-[#1366d9]"
+                                    : ""
+                                }`}
+                              >
+                                {order.status}
+                              </span>
+                            </td>
+                            <td className="px-5 py-8 flex gap-4 items-center">
+                              <PencilSquareIcon
+                                className="size-[23px] text-gray-400 hover:cursor-pointer"
+                                onClick={() => {
+                                  setOrderUpdate(order);
+                                  setIsUpdateStatus(true);
+                                }}
+                              />
+                              <ListBulletIcon
+                                className="size-[23px] text-gray-400 hover:cursor-pointer"
+                                onClick={() => {
+                                  navigate(
+                                    `/admin/orders/user=/${order.userId}`,
+                                    {
+                                      state: {
+                                        ordersUser: order,
+                                      },
+                                    }
+                                  );
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })
+                    : "Customers is empty"}
+                </tbody>
+              </table>
+              <Pagination
+                totalPosts={orders.length}
+                postsPerPage={perOfPage}
+                // Callback để lấy ra currentPage để tính toán lại index và lấy ra products để render
+                setCurrentPage={setCurrentPage}
+                currentPage={currentPage}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
       <ToastContainer />
     </div>
   );
