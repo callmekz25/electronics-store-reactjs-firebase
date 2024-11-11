@@ -1,7 +1,7 @@
 import Skeleton from "react-loading-skeleton";
 const SkeletonCart = () => {
   return (
-    <div className="flex flex-col gap-[40px] pb-[140px]">
+    <div className="flex flex-col gap-[40px] pb-[140px] lg:px-[100px]">
       <div className="py-[80px]"></div>
       <div className="flex items-center justify-between px-[40px] py-[24px]  shadow-cart">
         <Skeleton

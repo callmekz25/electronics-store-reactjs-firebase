@@ -77,18 +77,14 @@ const Phones = () => {
           );
         }
         // Lọc sản phẩm theo giá tiền
-
-        if (minPrice || maxPrice) {
+        if (priceRange > 0) {
           // Xử lí khi chọn option thì cho page hiện tại là 1
           setCurrentPage(1);
-
           filtered = filtered.filter(
-            (product) =>
-              Number(product.newPrice) >= minPrice &&
-              Number(product.newPrice) <= maxPrice
+            (product) => Number(product.newPrice) <= priceRange
           );
-          window.scrollTo(0, 0);
         }
+
         // Lọc sản phẩm theo ram
         if (selectedRam.length > 0) {
           setCurrentPage(1);
@@ -117,6 +113,7 @@ const Phones = () => {
       }
     }
   }, [
+    priceRange,
     selectedBrands,
     data,
     minPrice,
@@ -296,9 +293,9 @@ const Phones = () => {
     return <Error />;
   }
   return (
-    <div className="lg:px-[135px] bg-[#ffff]">
+    <div className="bg-[#ffff]">
       <Nav />
-      <div className="px-[20px]">
+      <div className="px-[20px] lg:px-[100px] mb-[200px]">
         <div className=" lg:py-[80px] py-[40px]">
           <div className="flex items-center gap-2">
             <span className="text-[14px] font-normal opacity-40 leading-[21px]">
@@ -354,7 +351,7 @@ const Phones = () => {
                 <span className="text-[17px] font-semibold  leading-[21px]">
                   Price, $ USD
                 </span>
-                <form
+                {/* <form
                   action=""
                   className="flex flex-col py-3"
                 >
@@ -398,7 +395,22 @@ const Phones = () => {
                       />
                     </div>
                   </div>
-                </form>
+                </form> */}
+                <div className="flex items-center gap-3">
+                  <span>$0</span>
+                  <span>-</span>
+                  <span>${priceRange}</span>
+                </div>
+                <input
+                  type="range"
+                  name="price"
+                  id="price"
+                  value={priceRange}
+                  min={0}
+                  max={10000}
+                  step={200}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                />
               </div>
             </div>
             <div className="border-t-2 border-[gray-500] py-3">

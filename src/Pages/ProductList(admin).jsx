@@ -1036,7 +1036,7 @@ const ProductsList = () => {
           </div>
         </div>
       )}
-      <SideBar isActive={"products"} />
+      <SideBar isActive={"stock"} />
       <div className={`bg-[#f0f1f3]  px-[50px] py-5 col-span-5`}>
         <div className="bg-[#ffffff] rounded-lg px-6 py-5 flex flex-col gap-5">
           <h3 className="text-[22px] font-medium">Overall</h3>

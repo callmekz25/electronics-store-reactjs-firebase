@@ -143,12 +143,12 @@ const OrderDetails = () => {
   };
 
   return (
-    <div className="lg:px-[135px] px-[20px]">
+    <div className="bg-white">
       <Nav />
       {isLoading ? (
         <Loading />
       ) : (
-        <>
+        <div className="lg:px-[100px] px-[20px] mb-[200px]">
           <>
             {isCancel && (
               <div className="overlay">
@@ -180,7 +180,7 @@ const OrderDetails = () => {
               </div>
             )}
 
-            <div className="">
+            <>
               <div className="flex items-center gap-2">
                 <span className="text-[14px] font-normal opacity-40 leading-[21px]">
                   Profile
@@ -215,7 +215,7 @@ const OrderDetails = () => {
                               <OrderProgress steps={steps} />
                             </div>
                             <div className="flex flex-col gap-7">
-                              <div className="flex flex-col bg-[#ffff] rounded-xl">
+                              <div className="flex flex-col border-2 border-gay-200 rounded-xl">
                                 {order.products.map((product) => (
                                   <div
                                     key={product.id}
@@ -319,9 +319,9 @@ const OrderDetails = () => {
                     );
                   })
                 : "Ccc"}
-            </div>
+            </>
           </>
-        </>
+        </div>
       )}
       <Footer />
     </div>

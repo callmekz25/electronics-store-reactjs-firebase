@@ -3,11 +3,14 @@ import {
   CubeIcon,
   TagIcon,
   UsersIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 const SideBar = ({ isActive }) => {
   const navigate = useNavigate();
+  const [clickProduct, setClickProduct] = useState(false);
 
   return (
     <>
@@ -58,7 +61,7 @@ const SideBar = ({ isActive }) => {
               navigate("/admin/orders");
             }}
           >
-            <CubeIcon 
+            <CubeIcon
               className={`size-[20px] ${
                 isActive === "orders" ? "text-[#2278f0]" : ""
               }`}
@@ -68,21 +71,69 @@ const SideBar = ({ isActive }) => {
             </span>
           </li>
           <li
-            className={`p-2  rounded-lg flex items-center gap-4 hover:cursor-pointer ${
-              isActive === "products" ? "text-[#2278f0]" : ""
+            className={`p-2  rounded-lg relative flex items-center gap-4 hover:cursor-pointer 
             }`}
             onClick={() => {
-              navigate("/admin/products");
+              setClickProduct(!clickProduct);
             }}
           >
             <TagIcon
               className={`size-[20px]  ${
-                isActive === "products" ? "text-[#2278f0]" : ""
+                clickProduct || isActive === "add" || isActive === "stock"
+                  ? "text-[#2278f0]"
+                  : ""
               }`}
             />
-            <span className="text-[15px] leading-[24px] pt-1 font-medium">
-              Products
-            </span>
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-[15px] leading-[24px]  font-medium ${
+                  clickProduct || isActive === "add" || isActive === "stock"
+                    ? "text-[#2278f0]"
+                    : ""
+                }`}
+              >
+                Products
+              </span>
+              <ChevronDownIcon
+                className={`size-4 transition-all duration-300 ${
+                  clickProduct ? " rotate-180 text-[#2278f0]" : ""
+                } ${
+                  isActive === "add" || isActive === "stock"
+                    ? "text-[#2278f0]"
+                    : ""
+                }`}
+              />
+            </div>
+            <div
+              className={`flex flex-col gap-2 absolute top-10 left-14  overflow-hidden ${
+                clickProduct ? "h-auto" : "h-0"
+              }`}
+            >
+              <div>
+                <span
+                  className={`text-[13px] leading-[24px] hover:text-[#2278f0] font-medium  transition-all duration-200 ${
+                    clickProduct ? "opacity-100" : "opacity-0"
+                  } ${isActive === "add" ? "text-[#2278f0]" : ""}`}
+                  onClick={() => {
+                    navigate("/admin/add");
+                  }}
+                >
+                  Add new product
+                </span>
+              </div>
+              <div>
+                <span
+                  className={`text-[13px] leading-[24px] hover:text-[#2278f0]  font-medium  transition-all duration-200  ${
+                    clickProduct ? "opacity-100" : "opacity-0"
+                  } ${isActive === "stock" ? "text-[#2278f0]" : ""}`}
+                  onClick={() => {
+                    navigate("/admin/products");
+                  }}
+                >
+                  Stock
+                </span>
+              </div>
+            </div>
           </li>
         </ul>
       </div>

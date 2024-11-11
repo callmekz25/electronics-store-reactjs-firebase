@@ -458,32 +458,36 @@ const ProductDetail = () => {
                     ""
                   )}
                 </div>
-                {data.colors[0] !== "" ? (
-                  <div className="flex flex-col gap-2 border-t border-gray-200 py-8">
-                    <span className="text-[14px] text-gray-400">
-                      Select Colors
-                    </span>
-                    <div className="flex items-center gap-5">
-                      {data.colors.map((color) => {
-                        return (
-                          <div
-                            className={`flex items-center justify-center p-[3px]  rounded-full ${
-                              activeColor === color
-                                ? "border-2 border-blue-500"
-                                : ""
-                            } ${color === null ? "hidden" : "block"}`}
-                            key={color}
-                          >
-                            <button
-                              className={` size-10 rounded-full shadow-lg  `}
-                              style={{ backgroundColor: color }}
-                              onClick={() => setActiveColor(color)}
-                            ></button>
-                          </div>
-                        );
-                      })}
+                {data.colors.length > 0 ? (
+                  data.colors[0].includes("#") ? (
+                    <div className="flex flex-col gap-2 border-t border-gray-200 py-8">
+                      <span className="text-[17px] font-medium text-[#474a51] ">
+                        Colors
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {data.colors.map((color) => {
+                          return (
+                            <div
+                              className={`flex items-center justify-center p-[2px]  rounded-full ${
+                                activeColor === color
+                                  ? "border-2 border-blue-500"
+                                  : ""
+                              } ${color === null ? "hidden" : "block"}`}
+                              key={color}
+                            >
+                              <button
+                                className={` size-8 rounded-full shadow-lg  `}
+                                style={{ backgroundColor: color }}
+                                onClick={() => setActiveColor(color)}
+                              ></button>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    ""
+                  )
                 ) : (
                   ""
                 )}
@@ -636,9 +640,10 @@ const ProductDetail = () => {
                       <div
                         className="flex items-center justify-center hover:cursor-pointer"
                         onClick={() => {
-                          setCount(count - 1);
-                          if (count === 0) {
-                            setCount(0);
+                          if (count === 1) {
+                            setCount(1);
+                          } else {
+                            setCount(count - 1);
                           }
                         }}
                       >

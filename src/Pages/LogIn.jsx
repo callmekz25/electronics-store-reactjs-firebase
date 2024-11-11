@@ -86,13 +86,132 @@ const LogIn = () => {
       }
     }
   };
+
   return (
     <div className="bg-white">
+      {/* <>
+        <Nav hidden="hidden" />
+        <div
+          className={`${
+            loadingChange
+              ? "overlay flex justify-center items-center"
+              : "hidden"
+          }`}
+        >
+          <div className="bg-red-500 flex items-center justify-center p-5">
+            <Loading />
+          </div>
+        </div>
+        <div className="lg:py-[60px] py-[40px] lg:px-[100px] px-[20px] mb-[100px]">
+          <h5
+            className="lg:text-[40px] font-semibold leading-[44px] text-[30px]"
+            data-aos="fade-in"
+          >
+            Sign in to pay faster.
+          </h5>
+          <div
+            className="flex justify-center items-center flex-col py-[40px]"
+            data-aos="fade-in"
+          >
+            <h1 className="lg:text-[30px] font-semibold lg:leading-[44px] text-[25px]">
+              Sign in to Exclusive
+            </h1>
+
+            <form
+              onSubmit={handleLogIn}
+              className="flex flex-col  pt-[48px] gap-[40px] lg:w-[400px]"
+            >
+              <div className="relative">
+                <label
+                  htmlFor="email"
+                  className={`text-[#999999] text-[16px] font-normal ${
+                    errorEmailMessage ? "text-[#fc3939]" : ""
+                  }`}
+                >
+                  Email
+                </label>
+                <input
+                  type="text"
+                  id="email"
+                  name="email"
+                  className={`mt-2 outline-none border-2  rounded-md lg:py-2 py-3 px-2  text-[16px] leading-[24px] font-normal  w-full focus:border-blue-500 focus:border-2 focus:bg-white  ${
+                    errorEmailMessage
+                      ? "border-[#fc3939] bg-[#fff2f4]"
+                      : "border-[#d6d6d8]"
+                  }`}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onInput={() => setErrorEmailMessage("")}
+                  onBlur={(e) => handleBlurInput(e.target)}
+                />
+                <span className="absolute bottom-[-30%] left-0 text-[14px] text-[#fc3939] font-medium">
+                  {errorEmailMessage}
+                </span>
+              </div>
+              <div className="relative">
+                <label
+                  htmlFor="email"
+                  className={`text-[#999999] text-[16px] font-normal ${
+                    errorPasswordMessage ? "text-[#fc3939]" : ""
+                  }`}
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type={`${showPass ? "text" : "password"}`}
+                  className={`mt-2 outline-none border-2  rounded-md lg:py-2 py-3 px-2  text-[16px] leading-[24px] font-normal  w-full focus:border-blue-500 focus:border-2  ${
+                    errorPasswordMessage
+                      ? "border-[#fc3939] bg-[#fff2f4]"
+                      : "border-[#d6d6d8] bg-white"
+                  }`}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onInput={() => setErrorPasswordMessage("")}
+                  onBlur={(e) => handleBlurInput(e.target)}
+                />
+                <EyeSlashIcon
+                  className={`size-[20px] text-gray-500 absolute right-[5%] top-[50%] translate-y-[30%] hover:cursor-pointer ${
+                    showPass ? "hidden" : "block"
+                  }`}
+                  onClick={() => setShowPass(true)}
+                />
+                <EyeIcon
+                  className={`size-[20px] text-gray-500 absolute right-[5%] top-[50%] translate-y-[30%] hover:cursor-pointer ${
+                    showPass ? "block" : "hidden"
+                  }`}
+                  onClick={() => setShowPass(false)}
+                />
+                <span className="absolute bottom-[-30%] left-0 text-[14px] text-[#fc3939] font-medium">
+                  {errorPasswordMessage}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between mt-5">
+                <button
+                  className="flex items-center justify-center bg-[#0077ed] py-3 rounded text-white text-[16px] font-medium leading-[26px] px-[48px]"
+                  type="submit"
+                >
+                  Sign In
+                </button>
+                <Link
+                  to="/"
+                  className="text-[#0077ed] text-[14px] font-normal leading-[24px] hover:underline"
+                >
+                  Forget Password?
+                </Link>
+              </div>
+            </form>
+          </div>
+        </div>
+        <Footer />
+        <ToastContainer />
+      </> */}
       {loading || loadingChange ? (
         <Loading />
       ) : (
         <>
           <Nav hidden="hidden" />
+
           <div className="lg:py-[60px] py-[40px] lg:px-[100px] px-[20px] mb-[100px]">
             <h5
               className="lg:text-[40px] font-semibold leading-[44px] text-[30px]"

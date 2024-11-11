@@ -5,7 +5,7 @@ const ListLaptops = ({ filteredProducts }) => {
     <>
       {filteredProducts.length > 0 ? (
         <div
-          className={`grid lg:grid-cols-3 grid-cols-1 gap-x-[30px] gap-y-[40px]`}
+          className={`grid lg:grid-cols-3 grid-cols-1 gap-x-[30px] gap-y-[40px] lg:pl-10`}
         >
           {filteredProducts.map((product) => {
             return (

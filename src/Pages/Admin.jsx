@@ -180,7 +180,7 @@ const Admin = () => {
 
   return (
     <div className="grid grid-cols-6">
-      <SideBar isActive={"home"} />
+      <SideBar isActive={"add"} />
       <div className={`bg-[#f8f8f8] px-[20px] py-5 col-span-5`}>
         <span className="font-semibold text-[22px]">Create a New product</span>
         <div className="grid grid-cols-6 gap-2 mt-5">

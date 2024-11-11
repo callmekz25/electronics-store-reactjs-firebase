@@ -1,5 +1,5 @@
 import "../App.css";
-import React, { Suspense, lazy, useContext } from "react";
+import React, { Suspense, useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Loading } from "../components/Loading";
 import { Error } from "../Pages/Error";
@@ -70,7 +70,13 @@ const RouteApp = () => {
           />
           {/*  Check user khi chuyển router admin  */}
           <Route
-            path="/admin"
+            path="/admin/add"
+            element={
+              user ? user.role === "admin" ? <Admin /> : <Error /> : <LogIn />
+            }
+          />
+          <Route
+            path="/admin/add"
             element={
               user ? user.role === "admin" ? <Admin /> : <Error /> : <LogIn />
             }

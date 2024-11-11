@@ -5,7 +5,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { TrashIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
 import { Error } from "./Error";
-import { PlusIcon, MinusIcon, TagIcon } from "@heroicons/react/24/outline";
+import {
+  PlusIcon,
+  MinusIcon,
+  TagIcon,
+  ShoppingCartIcon,
+} from "@heroicons/react/24/outline";
 import SkeletonCart from "../components/SkeletonCart";
 import useMobile from "../Hooks/useMobile";
 import { CartContext } from "../Context/CartContext";
@@ -114,9 +119,10 @@ const Cart = () => {
           </div>
           <div className="grid lg:grid-cols-3 grid-cols-1  gap-6">
             <div className="lg:col-span-2 h-fit font-normal leading-[24px]  p-5  overflow-hidden  border-2 rounded-2xl">
-              {!cartItems ? (
-                <div className="flex items-center justify-center py-[100px]">
-                  <span className="text-[20px] font-normal leading-[24px] text-[#999999]">
+              {cartItems.length <= 0 ? (
+                <div className="flex items-center justify-center py-[145px] gap-3">
+                  <ShoppingCartIcon className="size-10 text-gray-300" />
+                  <span className="text-[19px] font-light leading-[24px] text-gray-300">
                     Your cart is empty
                   </span>
                 </div>
@@ -124,7 +130,7 @@ const Cart = () => {
                 cartItems.map((product, index) => {
                   return (
                     <div
-                      className={`flex lg:gap-4     bg-white  text-[15px] py-4  ${
+                      className={`flex lg:gap-4   bg-white  text-[15px] py-4  ${
                         index < cartItems.length - 1
                           ? "border-b border-gray-200"
                           : ""
@@ -181,7 +187,11 @@ const Cart = () => {
                             <MinusIcon
                               className="size-5 hover:cursor-pointer"
                               onClick={() => {
-                                updateMinus(product);
+                                if (product.quantity === 1) {
+                                  removeToCart(product);
+                                } else {
+                                  updateMinus(product);
+                                }
                               }}
                             />
                             <span>{product.quantity}</span>
@@ -206,7 +216,11 @@ const Cart = () => {
                             <MinusIcon
                               className="size-5 hover:cursor-pointer"
                               onClick={() => {
-                                updateMinus(product);
+                                if (product.quantity === 1) {
+                                  removeToCart(product);
+                                } else {
+                                  updateMinus(product);
+                                }
                               }}
                             />
                             <span>{product.quantity}</span>

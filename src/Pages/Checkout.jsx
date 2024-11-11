@@ -266,271 +266,275 @@ const Checkout = () => {
   };
 
   return (
-    <PayPalScriptProvider options={initialOptions}>
-      <div className="lg:px-[135px] px-[20px]">
-        <Nav />
-        {loading || loadingChange ? (
-          <Loading />
-        ) : products && user ? (
-          <>
-            <div className="">
-              <div className="flex items-center gap-2 py-[80px]">
-                <span className="text-[14px] font-normal opacity-40 leading-[21px]">
-                  Home
-                </span>
-                <span className="text-[14px] font-normal opacity-40 leading-[21px]">
-                  /
-                </span>
-                <span className="text-black text-[14px] font-normal  leading-[21px]">
-                  CheckOut
-                </span>
-              </div>
-            </div>
-            <>
-              <span className="text-[36px] font-medium leading-[30px] tracking-[1.44px]">
-                Billing Details
-              </span>
-              <div className="grid grid-cols-2 gap-[150px] py-[48px]">
-                <form className=" flex flex-col gap-[32px] text-[16px] font-normal leading-[24px]">
-                  <div className="relative flex flex-col gap-2">
-                    <label
-                      htmlFor="bname"
-                      className="opacity-40"
-                    >
-                      <span>Name</span>
-                      <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="bname"
-                      value={info.name}
-                      className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
-                        errorName
-                          ? "border-[#fc3939] border-2 bg-[#fff9f9]"
-                          : ""
-                      }`}
-                      onChange={(e) =>
-                        setInfo({
-                          name: e.target.value,
-                          address: info.address,
-                          phone: info.phone,
-                          email: info.email,
-                        })
-                      }
-                      onInput={() => setErrorName("")}
-                    />
-                    <span className="text-red-500 text-[13px]  absolute bottom-[-27px] font-normal ml-1">
-                      {errorName}
-                    </span>
-                  </div>
-                  <div className="relative flex flex-col gap-2">
-                    <label
-                      htmlFor="bemail"
-                      className="opacity-40"
-                    >
-                      <span>Email</span>
-                      <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="bemail"
-                      value={info.email}
-                      className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
-                        errorEmail
-                          ? "border-[#fc3939] border-2 bg-[#fff9f9]"
-                          : ""
-                      }`}
-                      onChange={(e) =>
-                        setInfo({
-                          name: info.name,
-                          email: e.target.value,
-                          address: info.address,
-                          phone: info.phone,
-                        })
-                      }
-                      onInput={() => setErrorEmail("")}
-                    />
-                    <span className="text-red-500 text-[13px]  absolute bottom-[-27px] font-normal ml-1">
-                      {errorEmail}
-                    </span>
-                  </div>
-                  <div className="relative flex flex-col gap-2">
-                    <label
-                      htmlFor="bphone"
-                      className="opacity-40"
-                    >
-                      <span>Phone Number</span>
-                      <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="bphone"
-                      value={info.phone}
-                      className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
-                        errorPhone
-                          ? "border-[#fc3939] border-2 bg-[#fff9f9]"
-                          : ""
-                      }`}
-                      onChange={(e) =>
-                        setInfo({
-                          phone: e.target.value,
-                          name: info.name,
-                          email: info.email,
-                          address: info.address,
-                        })
-                      }
-                      onInput={() => setErrorPhone("")}
-                    />
-                    <span className="text-red-500 text-[13px]  absolute bottom-[-27px] font-normal ml-1">
-                      {errorPhone}
-                    </span>
-                  </div>
-                  <div className="relative flex flex-col gap-2">
-                    <label
-                      htmlFor="baddress"
-                      className="opacity-40"
-                    >
-                      <span> Address</span>
-                      <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="baddress"
-                      value={info.address}
-                      className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
-                        errorAddress
-                          ? "border-[#fc3939] border-2 bg-[#fff9f9]"
-                          : ""
-                      }`}
-                      onChange={(e) =>
-                        setInfo({
-                          address: e.target.value,
-                          name: info.name,
-                          email: info.email,
-                          phone: info.phone,
-                        })
-                      }
-                      onInput={() => setErrorAddress("")}
-                    />
-                    <span className="text-red-500 text-[13px]  absolute bottom-[-27px] font-normal ml-1">
-                      {errorAddress}
-                    </span>
-                  </div>
-                </form>
-                <div className="flex flex-col gap-[32px] py-[50px] text-[16px] font-normal  leading-[24px]">
-                  {products.map((product) => {
-                    return (
-                      <div
-                        className="flex items-center justify-between"
-                        key={product.id}
-                      >
-                        <div className="flex items-center gap-4">
-                          <LazyLoadImage
-                            effect="blur"
-                            src={product.img}
-                            alt={product.name}
-                            className="size-[60px] object-contain"
-                          />
-                          <span>{product.name}</span>
-                          <span>x {product.quantity}</span>
-                          <span>
-                            {product.color
-                              ? product.color.charAt(0).toUpperCase() +
-                                product.color.slice(1)
-                              : ""}
-                          </span>
-                        </div>
-                        <span>
-                          $
-                          {Math.round(product.price * product.quantity * 100) /
-                            100}
-                        </span>
-                      </div>
-                    );
-                  })}
-
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between ">
-                      <span className="font-medium">Subtotal:</span>
-                      <span>${Math.round(total * 100) / 100}</span>
-                    </div>
-                    <div className="border-b border-black"></div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between ">
-                      <span className="font-medium">Shipping:</span>
-                      <span>Free</span>
-                    </div>
-                    <div className="border-b border-black"></div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between ">
-                      <span className="font-semibold text-[20px]">Total:</span>
-                      <span className="font-medium text-[18px]">
-                        ${Math.round(total * 100) / 100}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <span>Choose method to pay</span>
-                    <div className="flex flex-col gap-4 border border-black rounded py-4 px-5">
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="cash"
-                          id="cod"
-                          className="size-4 hover:cursor-pointer"
-                          checked={optionPay === "cod" ? true : false}
-                          onChange={() => setOptionPay("cod")}
-                        />
-                        <label htmlFor="cod">Cash On Delivery (COD)</label>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="cash"
-                          id="pp"
-                          checked={optionPay === "pp" ? true : false}
-                          className="size-4 hover:cursor-pointer"
-                          onChange={() => setOptionPay("pp")}
-                        />
-                        <label htmlFor="pp">PayPal Payment (PP)</label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end pt-5 min-h-[140px]">
-                    {optionPay === "cod" && (
-                      <button
-                        className=" rounded bg-[#DB4444] px-[48px] py-2 text-white text-[16px] font-medium leading-[24px]"
-                        onClick={() =>
-                          handleOrder(products, info, total, "cod")
-                        }
-                      >
-                        Order
-                      </button>
-                    )}
-                    {optionPay === "pp" && (
-                      <PayPalButtons
-                        disabled={false}
-                        createOrder={createOrder}
-                        onApprove={() =>
-                          handleOrderByPaypal(products, info, total, "pp")
-                        }
-                      />
-                    )}
-                  </div>
+    <div className="bg-white">
+      <PayPalScriptProvider options={initialOptions}>
+        <div className=" pb-[100px]">
+          <Nav />
+          {loading || loadingChange ? (
+            <Loading />
+          ) : products && user ? (
+            <div className="lg:px-[100px] px-[20px]">
+              <div className="">
+                <div className="flex items-center gap-2 py-[80px]">
+                  <span className="text-[14px] font-normal opacity-40 leading-[21px]">
+                    Home
+                  </span>
+                  <span className="text-[14px] font-normal opacity-40 leading-[21px]">
+                    /
+                  </span>
+                  <span className="text-black text-[14px] font-normal  leading-[21px]">
+                    CheckOut
+                  </span>
                 </div>
               </div>
-            </>
-          </>
-        ) : (
-          <Error />
-        )}
-        <Footer />
+              <>
+                <span className="text-[36px] font-medium leading-[30px] tracking-[1.44px]">
+                  Billing Details
+                </span>
+                <div className="grid grid-cols-2 gap-[150px] py-[48px]">
+                  <form className=" flex flex-col gap-[32px] text-[16px] font-normal leading-[24px]">
+                    <div className="relative flex flex-col gap-2">
+                      <label
+                        htmlFor="bname"
+                        className="opacity-40"
+                      >
+                        <span>Name</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="bname"
+                        value={info.name}
+                        className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
+                          errorName
+                            ? "border-[#fc3939] border-2 bg-[#fff9f9]"
+                            : ""
+                        }`}
+                        onChange={(e) =>
+                          setInfo({
+                            name: e.target.value,
+                            address: info.address,
+                            phone: info.phone,
+                            email: info.email,
+                          })
+                        }
+                        onInput={() => setErrorName("")}
+                      />
+                      <span className="text-red-500 text-[13px]  absolute bottom-[-27px] font-normal ml-1">
+                        {errorName}
+                      </span>
+                    </div>
+                    <div className="relative flex flex-col gap-2">
+                      <label
+                        htmlFor="bemail"
+                        className="opacity-40"
+                      >
+                        <span>Email</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="bemail"
+                        value={info.email}
+                        className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
+                          errorEmail
+                            ? "border-[#fc3939] border-2 bg-[#fff9f9]"
+                            : ""
+                        }`}
+                        onChange={(e) =>
+                          setInfo({
+                            name: info.name,
+                            email: e.target.value,
+                            address: info.address,
+                            phone: info.phone,
+                          })
+                        }
+                        onInput={() => setErrorEmail("")}
+                      />
+                      <span className="text-red-500 text-[13px]  absolute bottom-[-27px] font-normal ml-1">
+                        {errorEmail}
+                      </span>
+                    </div>
+                    <div className="relative flex flex-col gap-2">
+                      <label
+                        htmlFor="bphone"
+                        className="opacity-40"
+                      >
+                        <span>Phone Number</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="bphone"
+                        value={info.phone}
+                        className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
+                          errorPhone
+                            ? "border-[#fc3939] border-2 bg-[#fff9f9]"
+                            : ""
+                        }`}
+                        onChange={(e) =>
+                          setInfo({
+                            phone: e.target.value,
+                            name: info.name,
+                            email: info.email,
+                            address: info.address,
+                          })
+                        }
+                        onInput={() => setErrorPhone("")}
+                      />
+                      <span className="text-red-500 text-[13px]  absolute bottom-[-27px] font-normal ml-1">
+                        {errorPhone}
+                      </span>
+                    </div>
+                    <div className="relative flex flex-col gap-2">
+                      <label
+                        htmlFor="baddress"
+                        className="opacity-40"
+                      >
+                        <span> Address</span>
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="baddress"
+                        value={info.address}
+                        className={`py-3 px-3 bg-[#efebeb] rounded outline-none ${
+                          errorAddress
+                            ? "border-[#fc3939] border-2 bg-[#fff9f9]"
+                            : ""
+                        }`}
+                        onChange={(e) =>
+                          setInfo({
+                            address: e.target.value,
+                            name: info.name,
+                            email: info.email,
+                            phone: info.phone,
+                          })
+                        }
+                        onInput={() => setErrorAddress("")}
+                      />
+                      <span className="text-red-500 text-[13px]  absolute bottom-[-27px] font-normal ml-1">
+                        {errorAddress}
+                      </span>
+                    </div>
+                  </form>
+                  <div className="flex flex-col gap-[32px] py-[50px] text-[16px] font-normal  leading-[24px]">
+                    {products.map((product) => {
+                      return (
+                        <div
+                          className="flex items-center justify-between"
+                          key={product.id}
+                        >
+                          <div className="flex items-center gap-4">
+                            <LazyLoadImage
+                              effect="blur"
+                              src={product.img}
+                              alt={product.name}
+                              className="size-[60px] object-contain"
+                            />
+                            <span>{product.name}</span>
+                            <span>x {product.quantity}</span>
+                            <span>
+                              {product.color
+                                ? product.color.charAt(0).toUpperCase() +
+                                  product.color.slice(1)
+                                : ""}
+                            </span>
+                          </div>
+                          <span>
+                            $
+                            {Math.round(
+                              product.newPrice * product.quantity * 100
+                            ) / 100}
+                          </span>
+                        </div>
+                      );
+                    })}
 
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between ">
+                        <span className="font-medium">Subtotal:</span>
+                        <span>${Math.round(total * 100) / 100}</span>
+                      </div>
+                      <div className="border-b border-black"></div>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between ">
+                        <span className="font-medium">Shipping:</span>
+                        <span>Free</span>
+                      </div>
+                      <div className="border-b border-black"></div>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between ">
+                        <span className="font-semibold text-[20px]">
+                          Total:
+                        </span>
+                        <span className="font-medium text-[18px]">
+                          ${Math.round(total * 100) / 100}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <span>Choose method to pay</span>
+                      <div className="flex flex-col gap-4 border border-black rounded py-4 px-5">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="cash"
+                            id="cod"
+                            className="size-4 hover:cursor-pointer"
+                            checked={optionPay === "cod" ? true : false}
+                            onChange={() => setOptionPay("cod")}
+                          />
+                          <label htmlFor="cod">Cash On Delivery (COD)</label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="cash"
+                            id="pp"
+                            checked={optionPay === "pp" ? true : false}
+                            className="size-4 hover:cursor-pointer"
+                            onChange={() => setOptionPay("pp")}
+                          />
+                          <label htmlFor="pp">PayPal Payment (PP)</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-end pt-5 min-h-[140px]">
+                      {optionPay === "cod" && (
+                        <button
+                          className=" rounded bg-[#DB4444] px-[48px] py-2 text-white text-[16px] font-medium leading-[24px]"
+                          onClick={() =>
+                            handleOrder(products, info, total, "cod")
+                          }
+                        >
+                          Order
+                        </button>
+                      )}
+                      {optionPay === "pp" && (
+                        <PayPalButtons
+                          disabled={false}
+                          createOrder={createOrder}
+                          onApprove={() =>
+                            handleOrderByPaypal(products, info, total, "pp")
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            </div>
+          ) : (
+            <Error />
+          )}
+        </div>
+        <Footer />
         <ToastContainer />
-      </div>
-    </PayPalScriptProvider>
+      </PayPalScriptProvider>
+    </div>
   );
 };
 export default Checkout;
