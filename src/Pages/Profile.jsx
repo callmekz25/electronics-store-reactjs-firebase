@@ -202,7 +202,7 @@ const Profile = () => {
   };
 
   return (
-    <>
+    <div className="bg-white">
       <Nav />
       {loading || loadingChange ? (
         <Loading />
@@ -609,7 +609,7 @@ const Profile = () => {
       )}
       <Footer />
       <ToastContainer />
-    </>
+    </div>
   );
 };
 export default Profile;

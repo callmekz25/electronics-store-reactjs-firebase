@@ -155,6 +155,7 @@ button:disabled:hover {
   justify-content: center;
   align-items: center;
 }
+
 .overlay-notifi {
   position: fixed;
   top: 0;
@@ -300,4 +301,41 @@ button:disabled:hover {
   100% {
     transform: rotate(1turn);
   }
+}
+
+.spinner-overlay {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  border-radius: 50%;
+  -webkit-mask: radial-gradient(farthest-side, #0000 40%, #7f7f90 41%);
+  background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(127, 127, 144, 1) 0
+      )
+      center/1.9px 100%,
+    linear-gradient(
+        90deg,
+        rgba(228, 228, 233, 0.25) 50%,
+        rgba(127, 127, 144, 0.75) 0
+      )
+      center/100% 1.9px;
+  background-repeat: no-repeat;
+  animation: spinner-d3o0rx 1s infinite steps(12);
+}
+
+.spinner-overlay::before,
+.spinner-overlay::after {
+  content: "";
+  grid-area: 1/1;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.915;
+  transform: rotate(30deg);
+}
+
+.spinner-overlay::after {
+  opacity: 0.83;
+  transform: rotate(60deg);
 }

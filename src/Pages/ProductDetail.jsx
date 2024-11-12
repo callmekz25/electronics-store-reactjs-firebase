@@ -111,11 +111,12 @@ const ProductDetail = () => {
       let productArr = [];
       // Update lại thuộc tính cho product
       product.quantity = count;
-      product.color = colorActive;
+      product.colorActive = colorActive;
       product.price = product.newPrice;
       product.itemTotal = product.newPrice * count;
       productArr.push(product);
       setLoadBuy(false);
+      console.log(productArr);
       navigate(`/checkout/state=/${product.id}`, {
         state: { products: productArr, total: totalPriceQuantity },
       });

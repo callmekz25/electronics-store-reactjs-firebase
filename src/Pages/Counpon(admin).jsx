@@ -3,7 +3,10 @@ import { Loading } from "../components/Loading";
 import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { addCoupon, fetchCoupon } from "../FetchAPI/FetchAPI";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Error } from "./Error";
 const Coupon = () => {
+  const queryClient = useQueryClient();
   const [clickAddCoupon, setClickAddCoupon] = useState(false);
   const [code, setCode] = useState("");
   const [des, setDes] = useState("");
@@ -11,6 +14,19 @@ const Coupon = () => {
   const [freeDelivery, setFreeDelivery] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [endDate, setEndDate] = useState("");
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["coupons"],
+    queryFn: () => fetchCoupon(),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
+  const resetState = () => {
+    setCode("");
+    setDes("");
+    setDiscount(0);
+    setQuantity(0);
+    setEndDate("");
+  };
   const getDate = () => {
     let date = new Date();
     let day = date.getDate();
@@ -18,6 +34,14 @@ const Coupon = () => {
     let year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+  const addCouponMutation = useMutation({
+    mutationFn: async (cp) => {
+      await addCoupon(cp);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries("coupons");
+    },
+  });
   const handleCreateCoupon = async () => {
     if (code && des && discount && freeDelivery && quantity && endDate) {
       const fomatDate = endDate.split("-").reverse().join("/");
@@ -30,42 +54,20 @@ const Coupon = () => {
         quantity: quantity,
         endDate: fomatDate,
       };
-      await addCoupon(cp);
+      addCouponMutation.mutate(cp);
+      setClickAddCoupon(false);
+      resetState();
     } else {
       console.log("False!");
     }
   };
-  const cp = [
-    {
-      code: "ZERODAY",
-      des: "Zero day counpon",
-      discount: 10,
-      free_delivery: false,
-      createdAt: getDate(),
-      quantity: 5,
-      endDate: getDate(),
-    },
-    {
-      code: "BLACKFRIDAY",
-      des: "Black friday",
-      discount: 20,
-      free_delivery: true,
-      createdAt: getDate(),
-      quantity: 10,
-      endDate: getDate(),
-    },
-    {
-      code: "KDAOM",
-      des: "Discount some product",
-      discount: 5,
-      free_delivery: false,
-      createdAt: getDate(),
-      quantity: 20,
-      endDate: getDate(),
-    },
-  ];
+  if (isError) {
+    return <Error />;
+  }
+
   return (
     <div className="grid grid-cols-6">
+      <SideBar isActive={"coupon"} />
       {clickAddCoupon ? (
         <div className="overlay">
           <div className="bg-white rounded-md   relative">
@@ -192,73 +194,72 @@ const Coupon = () => {
       ) : (
         ""
       )}
-      <SideBar isActive={"coupon"} />
-      {/* {loading || isLoading ? (
+      {isLoading ? (
         <div className="col-span-5">
           <Loading />
         </div>
-      ) : ( */}
-      <div className={`bg-[#f0f1f3] px-[50px] py-5 col-span-5 `}>
-        <h2 className="text-[25px] font-semibold">Coupon</h2>
-        <div className=" py-[50px]">
-          <div className="flex items-center justify-end my-4">
-            <button
-              className="px-6 font-medium py-2 hover:scale-105 transition-all duration-300 rounded-md bg-[#0077ed] text-white text-[14px]"
-              onClick={() => setClickAddCoupon(true)}
-            >
-              Add Coupon
-            </button>
-          </div>
-          <div className="bg-[#ffffff] rounded-lg py-5 px-3 w-full">
-            <table
-              className="w-full"
-              style={{ padding: "20px" }}
-            >
-              <thead className="text-[#667085]">
-                <tr className="text-[15px] font-medium">
-                  <td className="px-5 py-3 rounded-tl-lg rounded-bl-lg">
-                    Name
-                  </td>
-                  <td className="px-5 py-3">Description</td>
-                  <td className="px-5 py-3">Discount</td>
-                  <td className="px-5 py-3">Free Delivery</td>
-                  <td className="px-5 py-3">Quantity</td>
-                  <td className="px-5 py-3">Created At</td>
-                  <td className="px-5 py-3 rounded-tr-lg rounded-br-lg">
-                    EndDate
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {cp
-                  ? cp.map((customer) => {
-                      return (
-                        <tr
-                          className="text-[14px] border-b-2 border-[#f5f5f5] font-medium"
-                          key={customer.code}
-                        >
-                          <td className="px-5 py-5">{customer.code}</td>
-                          <td className="px-5 py-5">{customer.des}</td>
-                          <td className="px-5 py-5">{customer.discount}</td>
-                          <td className="px-5 py-5">
-                            {customer.free_delivery ? "Yes" : "No"}
-                          </td>
-                          <td className="px-5 py-5">{customer.quantity}</td>
-                          <td className="px-5 py-5">{customer.createdAt}</td>
+      ) : (
+        <div className={`bg-[#f0f1f3] px-[50px] py-5 col-span-5 `}>
+          <h2 className="text-[25px] font-semibold">Coupon</h2>
+          <div className=" py-[50px]">
+            <div className="flex items-center justify-end my-4">
+              <button
+                className="px-6 font-medium py-2 hover:scale-105 transition-all duration-300 rounded-md bg-[#0077ed] text-white text-[14px]"
+                onClick={() => setClickAddCoupon(true)}
+              >
+                Add Coupon
+              </button>
+            </div>
+            <div className="bg-[#ffffff] rounded-lg py-5 px-3 w-full">
+              <table
+                className="w-full"
+                style={{ padding: "20px" }}
+              >
+                <thead className="text-[#667085]">
+                  <tr className="text-[15px] font-medium">
+                    <td className="px-5 py-3 rounded-tl-lg rounded-bl-lg">
+                      Name
+                    </td>
+                    <td className="px-5 py-3">Description</td>
+                    <td className="px-5 py-3">Discount</td>
+                    <td className="px-5 py-3">Free Delivery</td>
+                    <td className="px-5 py-3">Quantity</td>
+                    <td className="px-5 py-3">Created At</td>
+                    <td className="px-5 py-3 rounded-tr-lg rounded-br-lg">
+                      EndDate
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data
+                    ? data.map((cp) => {
+                        return (
+                          <tr
+                            className="text-[14px] border-b-2 border-[#f5f5f5] font-medium"
+                            key={cp.code}
+                          >
+                            <td className="px-5 py-5">{cp.code}</td>
+                            <td className="px-5 py-5">{cp.des}</td>
+                            <td className="px-5 py-5">{cp.discount}</td>
+                            <td className="px-5 py-5">
+                              {cp.free_delivery ? "Yes" : "No"}
+                            </td>
+                            <td className="px-5 py-5">{cp.quantity}</td>
+                            <td className="px-5 py-5">{cp.createdAt}</td>
 
-                          <td className="px-5 py-5 text-red-500">
-                            {customer.endDate}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  : "Customers is empty"}
-              </tbody>
-            </table>
+                            <td className="px-5 py-5 text-red-500">
+                              {cp.endDate}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    : "Customers is empty"}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-      {/* )} */}
+      )}
     </div>
   );
 };
