@@ -8,5 +8,5 @@ This project is a hands-on learning experience with **ReactJS** and **Firebase**
 - To gain practical experience in building a web application with React and Firebase.  
 - To experiment with different approaches in project development.  
 
-## Disclaimer  
+## Final  
 This project is not intended for production use. As it was built while learning, there may be areas where best practices are not fully followed. Any feedback or suggestions for improvement are welcome!  
